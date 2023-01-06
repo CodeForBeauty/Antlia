@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Objects.h"
+#include "Texture.h"
 #include "linmath.h"
 
 
@@ -81,6 +82,9 @@ int main(void)
     glUseProgram(plane->material->program);
     plane->material->SetAlbedo(0, 0, 1, 1);
     plane->Update(proj);
+
+    Texture tex1("test.png");
+    std::cout << tex1.GetTexture();
 
     glEnable(GL_DEPTH_TEST);
 

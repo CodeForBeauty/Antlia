@@ -9,57 +9,74 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="include">
+    <Filter Include="res\shaders">
+      <UniqueIdentifier>{a5fa7c91-06a5-4e5f-beb8-036b5777b72a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="res\textures">
+      <UniqueIdentifier>{242d4137-6dcc-4e45-b373-15a74457ab12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{a5fa7c91-06a5-4e5f-beb8-036b5777b72a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>res</Filter>
-    </ClCompile>
-    <ClCompile Include="Metrics.cpp">
-      <Filter>res</Filter>
-    </ClCompile>
-    <ClCompile Include="Objects.cpp">
-      <Filter>res</Filter>
+    <ClCompile Include="stb.cpp">
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="linmath.cpp">
-      <Filter>res</Filter>
+      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>res</Filter>
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Metrics.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Objects.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
-      <Filter>include</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Objects.h">
-      <Filter>include</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Metrics.h">
-      <Filter>include</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="linmath.h">
-      <Filter>include</Filter>
+      <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
-      <Filter>include</Filter>
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\BasicVertex.vert">
-      <Filter>shaders</Filter>
+      <Filter>res\shaders</Filter>
     </None>
     <None Include="shaders\BasicFragment.frag">
-      <Filter>shaders</Filter>
+      <Filter>res\shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="test.png">
+      <Filter>res\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>
