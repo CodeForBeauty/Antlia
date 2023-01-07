@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "Texture.h"
 
 class Material
 {
@@ -21,6 +22,8 @@ public:
 	void SetSpecular(float value);
 	float GetSpecular();
 
+	void LoadTexture(const char* path, int slot = 0);
+
 	void SetPos(float x, float y, float z);
 	void SetRot(float* value);
 	void SetScale(float x, float y, float z);
@@ -30,10 +33,12 @@ private:
 	void CompileShaders();
 	Shader* vs;
 	Shader* fs;
+	Texture* texture;
 	float* albedo = new float[4] {1, 1, 1, 1};
 	float metalic = 0.0;
 	float roughness = 0.5;
 	float specular = 0.5;
+	bool useTexture = true;
 
 	unsigned int pos;
 	unsigned int rot;

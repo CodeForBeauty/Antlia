@@ -34,8 +34,8 @@ int main(void)
     glewInit();
 
 
-    Cube* plane = new Cube();
-    Cube* cube = new Cube();
+    Mesh* plane = new Cube();
+    Mesh* cube = new Cube();
     //cube->SetPosition(pos);
 
     glBindVertexArray(0);
@@ -53,14 +53,14 @@ int main(void)
     float* proj = new float[16] {
                                 1, 0, 0, 0,
                                 0, 1, 0, 0,
-                                0, 0, 1, 0,
+                                0, 0, 1, 1,
                                 0, 0, 1, 0
     };
     int width, height;
 
 
     float fov = linmath::deg2radians(45);
-    float far = 20;
+    float far = 200;
     float near = 0.5;
 
     float* rot3 = new float[16] {
@@ -82,9 +82,9 @@ int main(void)
     glUseProgram(plane->material->program);
     plane->material->SetAlbedo(0, 0, 1, 1);
     plane->Update(proj);
-
-    Texture tex1("test.png");
-    std::cout << tex1.GetTexture();
+    
+    cube->material->LoadTexture("test1.jpg", 2);
+    plane->material->LoadTexture("test.png", 1);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -97,7 +97,7 @@ int main(void)
 
         //cube->Move(move);
         i.x += 1;
-        i1.z += 1;
+        i1.y += 1;
         
         glUseProgram(cube->material->program);
 
@@ -106,7 +106,7 @@ int main(void)
         linmath::perspective(width, height, fov, far, near, proj);
 
         cube->material->SetProj(proj);
-        
+
         glBindVertexArray(cube->vao);
 
         glDrawElements(GL_TRIANGLES, cube->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);

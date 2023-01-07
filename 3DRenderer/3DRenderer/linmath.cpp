@@ -56,7 +56,7 @@ void linmath::perspective(float width, float height, float fov, float far, float
 {
     out[5] = 1 / std::tan(fov / 2);
     out[0] = ((float)height / width) * out[5];
-    out[10] = far / (far - near);
+    out[10] = -far / (far - near);
     out[11] = -out[10] * near;
 }
 float linmath::deg2radians(float degree)

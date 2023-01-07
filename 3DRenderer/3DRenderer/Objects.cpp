@@ -197,7 +197,9 @@ void Mesh::createBuffers()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * geometry->verticiesCount, geometry->verticies, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
 
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -214,12 +216,12 @@ void Plane::setGeometry()
 {
 	delete geometry;
 	geometry = new Geometry(
-		new float[12] {0.5,  0.5, 0,
-					  -0.5,  0.5, 0,
-					  -0.5, -0.5, 0,
-					   0.5, -0.5, 0},
+		new float[20] {0.5,  0.5, 0, 1.0, 1.0,
+					  -0.5,  0.5, 0, 0.0, 1.0,
+					  -0.5, -0.5, 0, 0.0, 0.0,
+					   0.5, -0.5, 0, 1.0, 0.0},
 		new unsigned int[6] {0, 1, 2,
-							 2, 3, 0}, 12, 6);
+							 2, 3, 0}, 20, 6);
 }
 
 
@@ -232,21 +234,21 @@ void Cube::setGeometry()
 {
 	delete geometry;
 	geometry = new Geometry(
-		new float[24] {
-				 0.5,  0.5, -0.5,
-				-0.5,  0.5, -0.5,
-				-0.5, -0.5, -0.5,
-				 0.5, -0.5, -0.5,
+		new float[40] {
+				 0.5,  0.5, -0.5, 1.0, 1.0,
+				-0.5,  0.5, -0.5, 0.0, 1.0,
+				-0.5, -0.5, -0.5, 0.0, 0.0,
+				 0.5, -0.5, -0.5, 1.0, 0.0,
 
-				 0.5, -0.5, 0.5,
-				 0.5,  0.5, 0.5,
+				 0.5, -0.5, 0.5, 1.0, 0.0,
+				 0.5,  0.5, 0.5, 1.0, 1.0,
 
-				-0.5,  0.5, 0.5,
-				-0.5, -0.5, 0.5
+				-0.5,  0.5, 0.5, 0.0, 1.0,
+				-0.5, -0.5, 0.5, 0.0, 0.0
 		},
 		new unsigned int[36] {
-					0, 1, 2,
-					2, 3, 0,
+					2, 1, 0,
+					0, 3, 2,
 
 					0, 3, 4,
 					4, 5, 0,
@@ -262,6 +264,6 @@ void Cube::setGeometry()
 
 					7, 6, 5,
 					5, 4, 7
-			}, 24, 36
+			}, 40, 36
 				);
 }

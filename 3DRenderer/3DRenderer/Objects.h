@@ -65,11 +65,11 @@ public:
 	void Update(float* proj);
 
 	Geometry* geometry = new Geometry(
-		new float[9] {0.5, 0.5, 0,
-					 -0.5, 0.5, 0,
-					 -0.5, -0.5, 0},
+		new float[15] {0.5, 0.5, 0, 1.0, 1.0,
+					 -0.5, 0.5, 0, 0.0, 1.0,
+					 -0.5, -0.5, 0, 0.0, 0.0},
 		new unsigned int[3] {0, 1, 2},
-		9, 3
+		15, 3
 	);
 	Material* material = new Material();
 	float* rotMetricies = new float[16] {

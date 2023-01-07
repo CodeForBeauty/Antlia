@@ -6,6 +6,7 @@ Material::Material()
 	fs = new Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
 	albedo = new float[4] {1, 1, 1, 1};
 	CompileShaders();
+	LoadTexture("test.png");
 }
 
 Material::Material(Shader* vs, Shader* fs) : vs(vs), fs(fs) { CompileShaders(); albedo = new float[4] {1, 1, 1, 1}; }
@@ -25,7 +26,7 @@ Material::~Material()
 {
 	glDeleteProgram(program);
 	glUseProgram(0);
-	delete vs, fs, albedo;
+	delete vs, fs, texture, albedo;
 }
 
 void Material::CompileShaders()
@@ -44,6 +45,7 @@ void Material::CompileShaders()
 	color = glGetUniformLocation(program, "u_Color");
 
 	glUniform4f(color, albedo[0], albedo[1], albedo[2], albedo[3]);
+
 }
 
 void Material::SetPos(float x, float y, float z)
@@ -99,4 +101,16 @@ void Material::SetSpecular(float value)
 float Material::GetSpecular()
 {
 	return specular;
+}
+
+void Material::LoadTexture(const char* path, int slot)
+{
+	glUseProgram(program);
+	if (texture)
+	{
+		delete texture;
+	}
+	texture = new Texture(path);
+	texture->Bind(slot);
+	glUniform1i(glGetUniformLocation(program, "u_Texture"), slot);
 }
