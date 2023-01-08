@@ -45,6 +45,9 @@
     <ClCompile Include="Texture.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -63,6 +66,9 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

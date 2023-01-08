@@ -152,6 +152,7 @@
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Metrics.cpp" />
     <ClCompile Include="Objects.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Metrics.h" />
     <ClInclude Include="Objects.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>

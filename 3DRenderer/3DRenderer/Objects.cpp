@@ -181,6 +181,7 @@ void Mesh::SetMaterial(Material* newMat)
 
 void Mesh::Update(float* proj)
 {
+	glUseProgram(material->program);
 	material->SetPos(position->x, position->y, position->z);
 	material->SetRot(rotMetricies);
 	material->SetScale(scale->x, scale->y, scale->z);

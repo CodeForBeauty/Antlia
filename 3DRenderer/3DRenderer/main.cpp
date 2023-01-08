@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Objects.h"
+#include "Scene.h"
 #include "Texture.h"
 #include "linmath.h"
 
@@ -33,16 +34,18 @@ int main(void)
 
     glewInit();
 
+    Scene* scene = new Scene();
 
-    Mesh* plane = new Cube();
-    Mesh* cube = new Cube();
-    //cube->SetPosition(pos);
+    Plane* plane = new Plane();
+    Cube* cube = new Cube();
+
+    scene->AddObject(plane);
+    scene->AddObject(cube);
+
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    Vector3D move = Vector3D(0.0, 0.0, 0.01);
 
     Vector3D* add = cube->GetPosition();
     Vector3D* add1 = plane->GetPosition();
@@ -63,26 +66,13 @@ int main(void)
     float far = 200;
     float near = 0.5;
 
-    float* rot3 = new float[16] {
-                            1, 0, 0, 0,
-                            0, 1, 0, 0,
-                            0, 0, 1, 0,
-                            0, 0, 1, 0
-    };
+    cube->Update(proj);
+    plane->Update(proj);
 
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
-    Vector3D* scale = cube->GetScale();
-    scale->x = 1;
-    scale->y = 1;
-    scale->z = 1;
-    cube->material->SetAlbedo(1, 0, 0, 1);
-    cube->Update(proj);
 
-    glUseProgram(plane->material->program);
-    plane->material->SetAlbedo(0, 0, 1, 1);
-    plane->Update(proj);
-    
+
     cube->material->LoadTexture("test1.jpg", 2);
     plane->material->LoadTexture("test.png", 1);
 
@@ -98,18 +88,18 @@ int main(void)
         //cube->Move(move);
         i.x += 1;
         i1.y += 1;
+
+        linmath::perspective(width, height, fov, far, near, proj);
         
         glUseProgram(cube->material->program);
 
         cube->SetRotation(i);
 
-        linmath::perspective(width, height, fov, far, near, proj);
+        //cube->material->SetProj(proj);
 
-        cube->material->SetProj(proj);
+        //glBindVertexArray(cube->vao);
 
-        glBindVertexArray(cube->vao);
-
-        glDrawElements(GL_TRIANGLES, cube->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
+        //glDrawElements(GL_TRIANGLES, cube->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
 
         glUseProgram(plane->material->program);
 
@@ -117,11 +107,13 @@ int main(void)
 
         plane->SetRotation(i1);
 
-        plane->material->SetProj(proj);
+        scene->Render(proj);
 
-        glBindVertexArray(plane->vao);
+        //plane->material->SetProj(proj);
 
-        glDrawElements(GL_TRIANGLES, plane->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
+        //glBindVertexArray(plane->vao);
+
+        //glDrawElements(GL_TRIANGLES, plane->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
 
         glfwSwapBuffers(window);
 
