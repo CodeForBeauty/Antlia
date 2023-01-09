@@ -77,7 +77,7 @@ Vector3D* Entity::GetScale() const
 }
 
 
-Geometry::Geometry(float* vertices, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
+Geometry::Geometry(Vertex* vertices, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	:verticies(vertices), indecies(indecies)
 	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) {}
 
@@ -87,7 +87,7 @@ Geometry::~Geometry()
 }
 
 
-Mesh::Mesh(float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
+Mesh::Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity()
 {
 	delete geometry;
@@ -95,7 +95,7 @@ Mesh::Mesh(float* verticies, unsigned int* indecies, unsigned int verticiesCount
 	createBuffers();
 }
 
-Mesh::Mesh(Vector3D* position, float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
+Mesh::Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity(position)
 {
 	delete geometry;
@@ -103,7 +103,7 @@ Mesh::Mesh(Vector3D* position, float* verticies, unsigned int* indecies, unsigne
 	createBuffers();
 }
 
-Mesh::Mesh(Vector3D* position, Vector3D* rotation, float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
+Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity(position, rotation)
 {
 	delete geometry;
@@ -111,7 +111,7 @@ Mesh::Mesh(Vector3D* position, Vector3D* rotation, float* verticies, unsigned in
 	createBuffers();
 }
 
-Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
+Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
 	: Entity(position, rotation, scale)
 {
 	delete geometry;
@@ -195,12 +195,12 @@ void Mesh::createBuffers()
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * geometry->verticiesCount, geometry->verticies, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * geometry->verticiesCount, geometry->verticies, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glEnableVertexAttribArray(1); 
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -217,12 +217,14 @@ void Plane::setGeometry()
 {
 	delete geometry;
 	geometry = new Geometry(
-		new float[20] {0.5,  0.5, 0, 1.0, 1.0,
-					  -0.5,  0.5, 0, 0.0, 1.0,
-					  -0.5, -0.5, 0, 0.0, 0.0,
-					   0.5, -0.5, 0, 1.0, 0.0},
+		new Vertex[4]{
+					 {{  0.5,  0.5, 0 }, { 1.0, 1.0 }},
+					 {{ -0.5,  0.5, 0 }, { 0.0, 1.0 }},
+					 {{ -0.5, -0.5, 0 }, { 0.0, 0.0 }},
+					 {{  0.5, -0.5, 0 }, { 1.0, 0.0 }}
+		},
 		new unsigned int[6] {0, 1, 2,
-							 2, 3, 0}, 20, 6);
+							 2, 3, 0}, 4, 6);
 }
 
 
@@ -235,17 +237,17 @@ void Cube::setGeometry()
 {
 	delete geometry;
 	geometry = new Geometry(
-		new float[40] {
-				 0.5,  0.5, -0.5, 1.0, 1.0,
-				-0.5,  0.5, -0.5, 0.0, 1.0,
-				-0.5, -0.5, -0.5, 0.0, 0.0,
-				 0.5, -0.5, -0.5, 1.0, 0.0,
+		new Vertex[8]{
+				{{  0.5,  0.5, -0.5 }, { 1.0, 1.0 }},
+				{{ -0.5,  0.5, -0.5 }, { 0.0, 1.0 }},
+				{{ -0.5, -0.5, -0.5 }, { 0.0, 0.0 }},
+				{{  0.5, -0.5, -0.5 }, { 1.0, 0.0 }},
 
-				 0.5, -0.5, 0.5, 1.0, 0.0,
-				 0.5,  0.5, 0.5, 1.0, 1.0,
+				{{  0.5, -0.5,  0.5 }, { 1.0, 0.0 }},
+				{{  0.5,  0.5,  0.5 }, { 1.0, 1.0 }},
 
-				-0.5,  0.5, 0.5, 0.0, 1.0,
-				-0.5, -0.5, 0.5, 0.0, 0.0
+				{{ -0.5,  0.5,  0.5 }, { 0.0, 1.0 }},
+				{{ -0.5, -0.5,  0.5 }, { 0.0, 0.0 }}
 		},
 		new unsigned int[36] {
 					2, 1, 0,
@@ -265,6 +267,6 @@ void Cube::setGeometry()
 
 					7, 6, 5,
 					5, 4, 7
-			}, 40, 36
+			}, 8, 36
 				);
 }

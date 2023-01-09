@@ -2,7 +2,15 @@
 
 #include "Metrics.h"
 #include "Material.h"
+#include "linmath.h"
 
+
+struct Vertex
+{
+	linmath::vec3 position;
+	linmath::vec3 uv;
+	linmath::vec4 color;
+};
 
 class Entity
 {
@@ -33,9 +41,9 @@ protected:
 class Geometry
 {
 public:
-	Geometry(float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
 	~Geometry();
-	const float* verticies;
+	const Vertex* verticies;
 	const unsigned int* indecies;
 	const unsigned int verticiesCount;
 	const unsigned int indeciesCount;
@@ -45,10 +53,10 @@ class Mesh : public Entity
 {
 public:
 	Mesh();
-	Mesh(float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position, float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position, Vector3D* rotation, float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, float* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
 	Mesh(Vector3D* position);
 	Mesh(Vector3D* position, Vector3D* rotation);
 	Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale);
@@ -65,11 +73,11 @@ public:
 	void Update(float* proj);
 
 	Geometry* geometry = new Geometry(
-		new float[15] {0.5, 0.5, 0, 1.0, 1.0,
-					 -0.5, 0.5, 0, 0.0, 1.0,
-					 -0.5, -0.5, 0, 0.0, 0.0},
+		new Vertex[3]{ { {  0.5,  0.5, 0 }, { 1.0, 1.0 }},
+					   { { -0.5,  0.5, 0 }, { 0.0, 1.0 }},
+					   { { -0.5, -0.5, 0 }, { 0.0, 0.0 }}},
 		new unsigned int[3] {0, 1, 2},
-		15, 3
+		3, 3
 	);
 	Material* material = new Material();
 	float* rotMetricies = new float[16] {

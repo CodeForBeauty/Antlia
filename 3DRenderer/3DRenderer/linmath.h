@@ -6,6 +6,10 @@
 
 namespace linmath
 {
+	struct vec2 { float x, y; };
+	struct vec3 { float x, y, z; };
+	struct vec4 { float x, y, z, w; };
+
 	void perspective(float width, float height, float fov, float far, float near, float* out);
 
 	float deg2radians(float degree);
