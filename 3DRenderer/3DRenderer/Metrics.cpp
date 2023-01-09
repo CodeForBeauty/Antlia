@@ -10,40 +10,66 @@ Vector3D Vector3D::operator+ (Vector3D& value)
 	return Vector3D(x + value.x, y + value.y, z + value.z);
 }
 
-Vector3D* Vector3D::operator- (Vector3D& value)
+Vector3D Vector3D::operator- (Vector3D& value)
 {
-	return new Vector3D(x - value.x, y - value.y, z - value.z);
+	return Vector3D(x - value.x, y - value.y, z - value.z);
 }
 
-Vector3D* Vector3D::operator* (Vector3D& value)
+Vector3D Vector3D::operator* (Vector3D& value)
 {
-	return new Vector3D(x * value.x, y * value.y, z * value.z);
+	return Vector3D(x * value.x, y * value.y, z * value.z);
 }
 
-Vector3D* Vector3D::operator/ (Vector3D& value)
+Vector3D Vector3D::operator/ (Vector3D& value)
 {
-	return new Vector3D(x / value.x, y / value.y, z / value.z);
+	return Vector3D(x / value.x, y / value.y, z / value.z);
 }
 
 
-Vector3D* Vector3D::operator+ (float& value)
+Vector3D Vector3D::operator+ (const Vector3D& value)
 {
-	return new Vector3D(x + value, y + value, z + value);
+	return Vector3D(x + value.x, y + value.y, z + value.z);
 }
 
-Vector3D* Vector3D::operator- (float& value)
+Vector3D Vector3D::operator- (const Vector3D& value)
 {
-	return new Vector3D(x - value, y - value, z - value);
+	return Vector3D(x - value.x, y - value.y, z - value.z);
 }
 
-Vector3D* Vector3D::operator* (float& value)
+Vector3D Vector3D::operator* (const Vector3D& value)
 {
-	return new Vector3D(x * value, y * value, z * value);
+	return Vector3D(x * value.x, y * value.y, z * value.z);
 }
 
-Vector3D* Vector3D::operator/ (float& value)
+Vector3D Vector3D::operator/ (const Vector3D& value)
 {
-	return new Vector3D(x / value, y / value, z / value);
+	return Vector3D(x / value.x, y / value.y, z / value.z);
+}
+
+Vector3D Vector3D::operator- ()
+{
+	return Vector3D(-x, -y, -z);
+}
+
+
+Vector3D Vector3D::operator+ (float& value)
+{
+	return Vector3D(x + value, y + value, z + value);
+}
+
+Vector3D Vector3D::operator- (float& value)
+{
+	return Vector3D(x - value, y - value, z - value);
+}
+
+Vector3D Vector3D::operator* (float& value)
+{
+	return Vector3D(x * value, y * value, z * value);
+}
+
+Vector3D Vector3D::operator/ (float& value)
+{
+	return Vector3D(x / value, y / value, z / value);
 }
 
 void Vector3D::operator+=(Vector3D& value)

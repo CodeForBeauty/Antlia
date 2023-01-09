@@ -85,3 +85,8 @@ void linmath::multiplyMetricies4x4(float* matrix1, float* matrix2, float* out)
         }
     }
 }
+
+linmath::vec3 linmath::addVector3dByVec3(const Vector3D vec1, linmath::vec3 vec2)
+{
+    return { vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z };
+}

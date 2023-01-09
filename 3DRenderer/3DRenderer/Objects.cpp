@@ -25,7 +25,7 @@ Entity::~Entity()
 	delete position, rotation, scale;
 }
 
-void Entity::SetPosition(Vector3D& pos) const
+void Entity::SetPosition(const Vector3D& pos) const
 {
 	position->x = pos.x;
 	position->y = pos.y;
@@ -61,24 +61,24 @@ void Entity::AddScale(Vector3D& offset) const
 	*scale += offset;
 }
 
-Vector3D* Entity::GetPosition() const
+Vector3D Entity::GetPosition() const
 {
-	return position;
+	return *position;
 }
 
-Vector3D* Entity::GetRotation() const
+Vector3D Entity::GetRotation() const
 {
-	return rotation;
+	return *rotation;
 }
 
-Vector3D* Entity::GetScale() const
+Vector3D Entity::GetScale() const
 {
-	return scale;
+	return *scale;
 }
 
-
-Geometry::Geometry(Vertex* vertices, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
-	:verticies(vertices), indecies(indecies)
+Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
+	:verticies(verticies), indecies(indecies)
+	,transformedVerticies(verticies), transformedIndecies(indecies)
 	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) {}
 
 Geometry::~Geometry()
@@ -125,12 +125,16 @@ Mesh::~Mesh()
 	delete geometry, rotMetricies;
 }
 
-void Mesh::SetPosition(Vector3D& pos) const
+void Mesh::SetPosition(const Vector3D& pos) const
 {
+	std::cout << geometry->verticiesCount;
+	for (int i = 0; i < geometry->verticiesCount; i++)
+	{
+		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(-(*position - pos), geometry->transformedVerticies[i].position);
+	}
 	position->x = pos.x;
 	position->y = pos.y;
 	position->z = pos.z;
-	
 }
 
 void Mesh::Move(Vector3D& offset) const

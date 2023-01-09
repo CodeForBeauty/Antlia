@@ -12,7 +12,7 @@ uniform mat4 u_Rot;
 
 void main()
 {
-	gl_Position = position;//u_Proj * (u_Rot * (position * u_Scale) + u_Pos);
+	gl_Position = u_Proj * position;//u_Proj * (u_Rot * (position * u_Scale) + u_Pos);
 	//gl_Position.x /= gl_Position.w;
 	//gl_Position.y /= gl_Position.w;
 	//gl_Position.z /= gl_Position.w;

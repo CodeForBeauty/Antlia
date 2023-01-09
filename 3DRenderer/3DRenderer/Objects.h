@@ -13,16 +13,16 @@ public:
 	Entity(Vector3D* position, Vector3D* rotation, Vector3D* scale);
 	~Entity();
 
-	virtual void SetPosition(Vector3D& position) const;
+	virtual void SetPosition(const Vector3D& position) const;
 	virtual void Move(Vector3D& offset) const;
 	virtual void SetRotation(Vector3D& rotation) const;
 	virtual void Rotate(Vector3D& offset) const;
 	virtual void SetScale(Vector3D& scale) const;
 	virtual void AddScale(Vector3D& offset) const;
 
-	Vector3D* GetPosition() const;
-	Vector3D* GetRotation() const;
-	Vector3D* GetScale() const;
+	Vector3D GetPosition() const;
+	Vector3D GetRotation() const;
+	Vector3D GetScale() const;
 
 protected:
 	Vector3D* position;
@@ -36,7 +36,9 @@ public:
 	Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
 	~Geometry();
 	const Vertex* verticies;
+	Vertex* transformedVerticies;
 	const unsigned int* indecies;
+	unsigned int* transformedIndecies;
 	const unsigned int verticiesCount;
 	const unsigned int indeciesCount;
 };
@@ -54,7 +56,7 @@ public:
 	Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale);
 	~Mesh();
 
-	void SetPosition(Vector3D& position) const override;
+	void SetPosition(const Vector3D& position) const override;
 	void Move(Vector3D& offset) const override;
 	void SetRotation(Vector3D& rotation) const override;
 	void Rotate(Vector3D& offset) const override;

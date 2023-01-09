@@ -47,16 +47,10 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-    Vector3D* add = cube->GetPosition();
-    Vector3D* add1 = plane->GetPosition();
-    add->z = 3;
-    add->x = -0.5;
-    add1->z = 3;
-    add1->x = 0.5;
     float* proj = new float[16] {
                                 1, 0, 0, 0,
                                 0, 1, 0, 0,
-                                0, 0, 1, 1,
+                                0, 0, 1, 0,
                                 0, 0, 1, 0
     };
     int width, height;
@@ -69,6 +63,8 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
+    cube->SetPosition(Vector3D(1, 0, 4));
+    plane->SetPosition(Vector3D(-0.5, 0, 3));
 
     //cube->material->LoadTexture("test1.jpg", 2);
     //plane->material->LoadTexture("test.png", 1);
