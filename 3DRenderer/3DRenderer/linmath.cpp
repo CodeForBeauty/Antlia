@@ -52,6 +52,13 @@ void linmath::rotateMetricies(Vector3D& degree, float* out)
     multiplyMetricies4x4(result, rot3, out);
 }
 
+void linmath::multiplyByMetricies4x4(float* metricies, vec3 position, vec3& out)
+{
+    out.x = position.x * metricies[0];
+    out.y = position.y * metricies[4];
+    out.z = position.z * metricies[8];
+}
+
 void linmath::perspective(float width, float height, float fov, float far, float near, float* out)
 {
     out[5] = 1 / std::tan(fov / 2);

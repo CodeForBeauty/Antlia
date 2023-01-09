@@ -15,4 +15,12 @@ namespace linmath
 	float deg2radians(float degree);
 	void multiplyMetricies4x4(float* metrix1, float* metrix2, float* out);
 	void rotateMetricies(Vector3D& degree, float* out);
+	void multiplyByMetricies4x4(float* metricies, vec3 position, vec3& out);
 }
+
+struct Vertex
+{
+	linmath::vec3 position;
+	linmath::vec3 uv;
+	linmath::vec4 color;
+};

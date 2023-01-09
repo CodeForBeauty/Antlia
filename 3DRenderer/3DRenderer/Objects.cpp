@@ -92,7 +92,6 @@ Mesh::Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCoun
 {
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
-	createBuffers();
 }
 
 Mesh::Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
@@ -100,7 +99,6 @@ Mesh::Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsign
 {
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
-	createBuffers();
 }
 
 Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
@@ -108,7 +106,6 @@ Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned i
 {
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
-	createBuffers();
 }
 
 Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
@@ -116,7 +113,6 @@ Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* vert
 {
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
-	createBuffers();
 }
 
 Mesh::Mesh() : Entity() {}
@@ -126,7 +122,7 @@ Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Entity(pos
 
 Mesh::~Mesh()
 {
-	delete geometry, rotMetricies, material;
+	delete geometry, rotMetricies;
 }
 
 void Mesh::SetPosition(Vector3D& pos) const
@@ -134,13 +130,13 @@ void Mesh::SetPosition(Vector3D& pos) const
 	position->x = pos.x;
 	position->y = pos.y;
 	position->z = pos.z;
-	material->SetPos(pos.x, pos.y, pos.z);
+	
 }
 
 void Mesh::Move(Vector3D& offset) const
 {
 	*position += offset;
-	material->SetPos(position->x, position->y, position->z);
+	
 }
 
 void Mesh::SetRotation(Vector3D& rot) const
@@ -149,14 +145,14 @@ void Mesh::SetRotation(Vector3D& rot) const
 	rotation->y = rot.y;
 	rotation->z = rot.z;
 	linmath::rotateMetricies(*rotation, rotMetricies);
-	material->SetRot(rotMetricies);
+	
 }
 
 void Mesh::Rotate(Vector3D& offset) const
 {
 	*rotation += offset;
 	linmath::rotateMetricies(*rotation, rotMetricies);
-	material->SetRot(rotMetricies);
+	
 }
 
 void Mesh::SetScale(Vector3D& value) const
@@ -164,54 +160,20 @@ void Mesh::SetScale(Vector3D& value) const
 	scale->x = value.x;
 	scale->y = value.y;
 	scale->z = value.z;
-	material->SetScale(scale->x, scale->y, scale->z);
+	
 }
 
 void Mesh::AddScale(Vector3D& offset) const
 {
 	*scale += offset;
-	material->SetScale(scale->x, scale->y, scale->z);
-}
-
-void Mesh::SetMaterial(Material* newMat)
-{
-	delete material;
-	material = newMat;
-}
-
-void Mesh::Update(float* proj)
-{
-	glUseProgram(material->program);
-	material->SetPos(position->x, position->y, position->z);
-	material->SetRot(rotMetricies);
-	material->SetScale(scale->x, scale->y, scale->z);
-	material->SetProj(proj);
-}
-
-void Mesh::createBuffers()
-{
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * geometry->verticiesCount, geometry->verticies, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-	glEnableVertexAttribArray(1); 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
-
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * geometry->indeciesCount, geometry->indecies, GL_STATIC_DRAW);
+	
 }
 
 
-Plane::Plane() : Mesh() { setGeometry(); createBuffers(); }
-Plane::Plane(Vector3D* position) : Mesh(position) { setGeometry(); createBuffers(); }
-Plane::Plane(Vector3D* position, Vector3D* rotation) : Mesh(position, rotation) { setGeometry(); createBuffers(); }
-Plane::Plane(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(position, rotation, scale) { setGeometry(); createBuffers(); }
+Plane::Plane() : Mesh() { setGeometry(); }
+Plane::Plane(Vector3D* position) : Mesh(position) { setGeometry(); }
+Plane::Plane(Vector3D* position, Vector3D* rotation) : Mesh(position, rotation) { setGeometry(); }
+Plane::Plane(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(position, rotation, scale) { setGeometry(); }
 
 void Plane::setGeometry()
 {
@@ -228,10 +190,10 @@ void Plane::setGeometry()
 }
 
 
-Cube::Cube() : Mesh() { setGeometry(); createBuffers(); }
-Cube::Cube(Vector3D* position) : Mesh(position) { setGeometry(); createBuffers(); }
-Cube::Cube(Vector3D* position, Vector3D* rotation) : Mesh(position, rotation) { setGeometry(); createBuffers(); }
-Cube::Cube(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(position, rotation, scale) { setGeometry(); createBuffers(); }
+Cube::Cube() : Mesh() { setGeometry(); }
+Cube::Cube(Vector3D* position) : Mesh(position) { setGeometry(); }
+Cube::Cube(Vector3D* position, Vector3D* rotation) : Mesh(position, rotation) { setGeometry(); }
+Cube::Cube(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(position, rotation, scale) { setGeometry(); }
 
 void Cube::setGeometry()
 {

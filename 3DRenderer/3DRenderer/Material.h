@@ -29,6 +29,7 @@ public:
 	void SetScale(float x, float y, float z);
 	void SetProj(float* value);
 	unsigned int program;
+	unsigned int sceneSlot;
 private:
 	void CompileShaders();
 	Shader* vs;

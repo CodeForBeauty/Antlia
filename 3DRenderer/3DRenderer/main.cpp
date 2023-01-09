@@ -66,15 +66,12 @@ int main(void)
     float far = 200;
     float near = 0.5;
 
-    cube->Update(proj);
-    plane->Update(proj);
-
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
 
-    cube->material->LoadTexture("test1.jpg", 2);
-    plane->material->LoadTexture("test.png", 1);
+    //cube->material->LoadTexture("test1.jpg", 2);
+    //plane->material->LoadTexture("test.png", 1);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -90,8 +87,6 @@ int main(void)
         i1.y += 1;
 
         linmath::perspective(width, height, fov, far, near, proj);
-        
-        glUseProgram(cube->material->program);
 
         cube->SetRotation(i);
 
@@ -100,8 +95,6 @@ int main(void)
         //glBindVertexArray(cube->vao);
 
         //glDrawElements(GL_TRIANGLES, cube->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
-
-        glUseProgram(plane->material->program);
 
         //plane->Move(move);
 
@@ -119,6 +112,6 @@ int main(void)
 
         glfwPollEvents();
     }
-    delete plane, cube;
+    delete scene;
     return 0;
 }

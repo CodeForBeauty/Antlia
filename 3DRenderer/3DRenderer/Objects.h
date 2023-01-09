@@ -4,14 +4,6 @@
 #include "Material.h"
 #include "linmath.h"
 
-
-struct Vertex
-{
-	linmath::vec3 position;
-	linmath::vec3 uv;
-	linmath::vec4 color;
-};
-
 class Entity
 {
 public:
@@ -69,9 +61,6 @@ public:
 	void SetScale(Vector3D& scale) const override;
 	void AddScale(Vector3D& offset) const override;
 
-	void SetMaterial(Material* newMat);
-	void Update(float* proj);
-
 	Geometry* geometry = new Geometry(
 		new Vertex[3]{ { {  0.5,  0.5, 0 }, { 1.0, 1.0 }},
 					   { { -0.5,  0.5, 0 }, { 0.0, 1.0 }},
@@ -79,18 +68,13 @@ public:
 		new unsigned int[3] {0, 1, 2},
 		3, 3
 	);
-	Material* material = new Material();
+	Material* material;
 	float* rotMetricies = new float[16] {
 											1, 0, 0, 0,
 											0, 1, 0, 0,
 											0, 0, 1, 0,
 											0, 0, 1, 0
 										};
-	unsigned int vao = 0;
-	unsigned int ibo = 0;
-	unsigned int vbo = 0;
-protected:
-	void createBuffers();
 };
 
 class Plane : public Mesh
