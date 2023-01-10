@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Objects.h"
+#include "Camera.h"
 
 class Scene
 {
@@ -19,6 +20,9 @@ public:
 	unsigned int vao;
 	unsigned int vbo;
 	unsigned int ibo;
+
+	Camera* preview = new Camera(45, 0.5, 200);
+	Camera* renderCamera;
 
 private:
 	std::vector <Mesh*> objects;

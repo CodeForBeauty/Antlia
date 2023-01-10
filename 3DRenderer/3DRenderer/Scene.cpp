@@ -33,6 +33,9 @@ Scene::~Scene()
 		delete entities[i];
 	for (int i = 0; i < materials.size(); i++)
 		delete materials[i];
+	delete preview;
+	if (renderCamera)
+		delete renderCamera;
 }
 
 void Scene::AddObject(Mesh* object)
@@ -64,6 +67,10 @@ void Scene::AddMaterial(Material* material)
 	materials.push_back(material);
 	materialGroup.push_back({});
 	material->sceneSlot = materialGroup.size()-1;
+	glUseProgram(material->program);
+	Vector3D camPos = preview->GetPosition();
+	material->SetCamPos(camPos.x, camPos.y, camPos.z);
+	material->SetView(preview->rotMetricies);
 }
 
 void Scene::SetObjectMaterial(Mesh* object, Material* material)
@@ -91,11 +98,17 @@ void Scene::SetObjectMaterial(Mesh* object, Material* material)
 
 void Scene::Render(float* proj)
 {
-	glBindVertexArray(vao);
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
 		glUseProgram(materials[i]->program);
 		materials[i]->SetProj(proj);
+
+		if (preview->update)
+		{
+			Vector3D camPos = preview->GetPosition();
+			materials[i]->SetCamPos(camPos.x, camPos.y, camPos.z);
+			materials[i]->SetView(preview->rotMetricies);
+		}
 
 		std::vector <Vertex> batchVerticies;
 		std::vector <unsigned int> batchIndecies;
@@ -118,5 +131,6 @@ void Scene::Render(float* proj)
 
 		glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 	}
+	preview->update = false;
 }
 

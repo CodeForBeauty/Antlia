@@ -24,9 +24,8 @@ public:
 
 	void LoadTexture(const char* path, int slot = 0);
 
-	void SetPos(float x, float y, float z);
-	void SetRot(float* value);
-	void SetScale(float x, float y, float z);
+	void SetCamPos(float x, float y, float z);
+	void SetView(float* value);
 	void SetProj(float* value);
 	unsigned int program;
 	unsigned int sceneSlot;
@@ -39,11 +38,9 @@ private:
 	float metalic = 0.0;
 	float roughness = 0.5;
 	float specular = 0.5;
-	bool useTexture = true;
 
-	unsigned int pos;
-	unsigned int rot;
-	unsigned int scale;
-	unsigned int proj;
-	unsigned int color;
+	int camPos;
+	int view;
+	int proj;
+	int color;
 };

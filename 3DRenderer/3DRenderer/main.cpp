@@ -42,23 +42,20 @@ int main(void)
     Material* mat1 = new Material();
     Material* mat2 = new Material();
 
+    glUseProgram(mat1->program);
+    mat1->SetAlbedo(0, 0, 1, 1);
+
     scene->AddObject(plane);
     scene->AddObject(cube);
 
     mat1->LoadTexture("test.png", 1);
-    mat2->LoadTexture("test1.jpg", 2);
+    //mat2->LoadTexture("test1.jpg", 2);
 
     scene->AddMaterial(mat1);
     scene->AddMaterial(mat2);
 
     scene->SetObjectMaterial(cube, mat1);
     scene->SetObjectMaterial(plane, mat2);
-
-
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     float* proj = new float[16] {
                                 1, 0, 0, 0,
@@ -76,15 +73,11 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    cube->SetPosition(Vector3D(0, 0, 4));
+    cube->SetPosition(Vector3D(1, 0, 3));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
 
-    cube->SetRotation(Vector3D(0, 0, 45));
-
-    cube->SetScale(Vector3D(1, 1, 2));
-
-    //cube->material->LoadTexture("test1.jpg", 2);
-    //plane->material->LoadTexture("test.png", 1);
+    scene->preview->SetPosition(Vector3D(0.2, 0, 0));
+    scene->preview->SetRotation(Vector3D(0, 0, 0));
 
     glEnable(GL_DEPTH_TEST);
 
@@ -95,31 +88,18 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //cube->Move(move);
-        i.x += 1;
+        i.y -= 1;
         i1.y += 1;
+
+        scene->preview->SetRotation(i);
 
         linmath::perspective(width, height, fov, far, near, proj);
 
-        cube->SetRotation(i);
+        //cube->SetRotation(i);
 
-        //cube->material->SetProj(proj);
-
-        //glBindVertexArray(cube->vao);
-
-        //glDrawElements(GL_TRIANGLES, cube->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
-
-        //plane->Move(move);
-
-        plane->SetRotation(i1);
+        //plane->SetRotation(i1);
 
         scene->Render(proj);
-
-        //plane->material->SetProj(proj);
-
-        //glBindVertexArray(plane->vao);
-
-        //glDrawElements(GL_TRIANGLES, plane->geometry->indeciesCount, GL_UNSIGNED_INT, nullptr);
 
         glfwSwapBuffers(window);
 

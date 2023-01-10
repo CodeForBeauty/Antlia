@@ -6,6 +6,7 @@
 
 Texture::Texture(const char* path)
 {
+	stbi_set_flip_vertically_on_load(false);
 	bytes = stbi_load(path, &width, &height, &channels, 4);
 
 	glGenTextures(1, &texture);

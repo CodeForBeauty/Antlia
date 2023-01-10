@@ -5,14 +5,13 @@ layout(location = 1) in vec2 texCoord;
 
 out vec2 v_TexCoord;
 
-uniform vec4 u_Pos;
-uniform vec4 u_Scale;
 uniform mat4 u_Proj;
-uniform mat4 u_Rot;
+uniform vec4 u_CamPos;
+uniform mat4 u_View;
 
 void main()
 {
-	gl_Position = u_Proj * (position);//u_Proj * (u_Rot * (position * u_Scale) + u_Pos);
+	gl_Position = u_Proj * (u_View * position + u_CamPos);
 	//gl_Position.x /= gl_Position.w;
 	//gl_Position.y /= gl_Position.w;
 	//gl_Position.z /= gl_Position.w;

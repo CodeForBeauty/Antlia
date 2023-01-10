@@ -196,7 +196,8 @@ void Mesh::AddScale(const Vector3D& offset) const
 {
 	for (int i = 0; i < geometry->verticiesCount; i++)
 	{
-		geometry->transformedVerticies[i].position = linmath::mulVector3dByVec3(*scale / (*scale + offset), linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position));
+		geometry->transformedVerticies[i].position = linmath::mulVector3dByVec3(*scale / (*scale + offset), 
+			linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position));
 		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
 	}
 	*scale += offset;
@@ -238,15 +239,15 @@ void Cube::setGeometry()
 				{{ -0.5, -0.5, -0.5 }, { 0.0, 0.0 }},
 				{{  0.5, -0.5, -0.5 }, { 1.0, 0.0 }},
 
-				{{  0.5, -0.5,  0.5 }, { 1.0, 0.0 }},
-				{{  0.5,  0.5,  0.5 }, { 1.0, 1.0 }},
+				{{  0.5, -0.5,  0.5 }, { 0.0, 1.0 }},
+				{{  0.5,  0.5,  0.5 }, { 0.0, 0.0 }},
 
-				{{ -0.5,  0.5,  0.5 }, { 0.0, 1.0 }},
-				{{ -0.5, -0.5,  0.5 }, { 0.0, 0.0 }}
+				{{ -0.5,  0.5,  0.5 }, { 1.0, 0.0 }},
+				{{ -0.5, -0.5,  0.5 }, { 1.0, 1.0 }}
 		},
 		new unsigned int[36] {
-					2, 1, 0,
-					0, 3, 2,
+					0, 1, 2,
+					2, 3, 0,
 
 					0, 3, 4,
 					4, 5, 0,

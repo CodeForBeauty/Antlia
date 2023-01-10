@@ -6,7 +6,6 @@ Material::Material()
 	fs = new Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
 	albedo = new float[4] {1, 1, 1, 1};
 	CompileShaders();
-	LoadTexture("test.png");
 }
 
 Material::Material(Shader* vs, Shader* fs) : vs(vs), fs(fs) { CompileShaders(); albedo = new float[4] {1, 1, 1, 1}; }
@@ -26,7 +25,9 @@ Material::~Material()
 {
 	glDeleteProgram(program);
 	glUseProgram(0);
-	delete vs, fs, texture, albedo;
+	delete vs, fs, albedo;
+	if (texture)
+		delete texture;
 }
 
 void Material::CompileShaders()
@@ -38,27 +39,21 @@ void Material::CompileShaders()
 	glValidateProgram(program);
 	glUseProgram(program);
 
-	pos = glGetUniformLocation(program, "u_Pos");
+	camPos = glGetUniformLocation(program, "u_CamPos");
+	view = glGetUniformLocation(program, "u_View");
 	proj = glGetUniformLocation(program, "u_Proj");
-	rot = glGetUniformLocation(program, "u_Rot");
-	scale = glGetUniformLocation(program, "u_Scale");
 	color = glGetUniformLocation(program, "u_Color");
 
 	glUniform4f(color, albedo[0], albedo[1], albedo[2], albedo[3]);
-
 }
 
-void Material::SetPos(float x, float y, float z)
+void Material::SetCamPos(float x, float y, float z)
 {
-	glUniform4f(pos, x, y, z, 1);
+	glUniform4f(camPos, -x, -y, -z, 1);
 }
-void Material::SetRot(float* value)
+void Material::SetView(float* value)
 {
-	glUniformMatrix4fv(rot, 1, GL_TRUE, value);
-}
-void Material::SetScale(float x, float y, float z)
-{
-	glUniform4f(scale, x, y, z, 1);
+	glUniformMatrix4fv(view, 1, GL_TRUE, value);
 }
 void Material::SetProj(float* value)
 {
@@ -113,4 +108,5 @@ void Material::LoadTexture(const char* path, int slot)
 	texture = new Texture(path);
 	texture->Bind(slot);
 	glUniform1i(glGetUniformLocation(program, "u_Texture"), slot);
+	glUniform1i(glGetUniformLocation(program, "u_UseTex"), 1);
 }
