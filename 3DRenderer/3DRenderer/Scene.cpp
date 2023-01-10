@@ -68,15 +68,30 @@ void Scene::AddMaterial(Material* material)
 
 void Scene::SetObjectMaterial(Mesh* object, Material* material)
 {
+	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
+		materialGroup[object->material->sceneSlot].end(),
+		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
+	
 	materialGroup[material->sceneSlot].push_back(object);
 	object->material = material;
+
+	int offset = 0;
+	for (int i = 0; i < materialGroup[material->sceneSlot].size() - 1; i++)
+	{
+		offset += materialGroup[material->sceneSlot][i]->geometry->verticiesCount;
+	}
+	for (int i = 0; i < object->geometry->indeciesCount; i++)
+	{
+		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
+	}
+
+	
 }
 
 
 void Scene::Render(float* proj)
 {
 	glBindVertexArray(vao);
-	//std::cout << materialGroup[0].size() << std::endl;
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
 		glUseProgram(materials[i]->program);
@@ -89,16 +104,17 @@ void Scene::Render(float* proj)
 		{
 			batchVerticies.insert(batchVerticies.end(), materialGroup[i][j]->geometry->transformedVerticies, 
 				materialGroup[i][j]->geometry->transformedVerticies + materialGroup[i][j]->geometry->verticiesCount);
+
 			batchIndecies.insert(batchIndecies.end(), materialGroup[i][j]->geometry->transformedIndecies,
 				materialGroup[i][j]->geometry->transformedIndecies + materialGroup[i][j]->geometry->indeciesCount);
 		}
 
+		glBindVertexArray(vao);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, batchVerticies.size() * sizeof(Vertex), batchVerticies.data());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
-		glBindVertexArray(vao);
 
 		glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 	}

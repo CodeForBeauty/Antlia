@@ -14,11 +14,11 @@ public:
 	~Entity();
 
 	virtual void SetPosition(const Vector3D& position) const;
-	virtual void Move(Vector3D& offset) const;
-	virtual void SetRotation(Vector3D& rotation) const;
-	virtual void Rotate(Vector3D& offset) const;
-	virtual void SetScale(Vector3D& scale) const;
-	virtual void AddScale(Vector3D& offset) const;
+	virtual void Move(const Vector3D& offset) const;
+	virtual void SetRotation(const Vector3D& rotation) const;
+	virtual void Rotate(const Vector3D& offset) const;
+	virtual void SetScale(const Vector3D& scale) const;
+	virtual void AddScale(const Vector3D& offset) const;
 
 	Vector3D GetPosition() const;
 	Vector3D GetRotation() const;
@@ -57,11 +57,11 @@ public:
 	~Mesh();
 
 	void SetPosition(const Vector3D& position) const override;
-	void Move(Vector3D& offset) const override;
-	void SetRotation(Vector3D& rotation) const override;
-	void Rotate(Vector3D& offset) const override;
-	void SetScale(Vector3D& scale) const override;
-	void AddScale(Vector3D& offset) const override;
+	void Move(const Vector3D& offset) const override;
+	void SetRotation(const Vector3D& rotation) const override;
+	void Rotate(const Vector3D& offset) const override;
+	void SetScale(const Vector3D& scale) const override;
+	void AddScale(const Vector3D& offset) const override;
 
 	Geometry* geometry = new Geometry(
 		new Vertex[3]{ { {  0.5,  0.5, 0 }, { 1.0, 1.0 }},

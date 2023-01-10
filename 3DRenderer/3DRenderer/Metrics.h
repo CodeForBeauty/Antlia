@@ -32,4 +32,6 @@ public:
 
 	void operator+= (Vector3D& value);
 	void operator+= (float& value);
+
+	void operator+= (const Vector3D& value);
 };

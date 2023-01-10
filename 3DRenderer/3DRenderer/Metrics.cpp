@@ -85,3 +85,10 @@ void Vector3D::operator+=(float& value)
 	y += value;
 	z += value;
 }
+
+void Vector3D::operator+=(const Vector3D& value)
+{
+	x += value.x;
+	y += value.y;
+	z += value.z;
+}

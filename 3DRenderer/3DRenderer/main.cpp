@@ -39,8 +39,21 @@ int main(void)
     Plane* plane = new Plane();
     Cube* cube = new Cube();
 
+    Material* mat1 = new Material();
+    Material* mat2 = new Material();
+
     scene->AddObject(plane);
     scene->AddObject(cube);
+
+    mat1->LoadTexture("test.png", 1);
+    mat2->LoadTexture("test1.jpg", 2);
+
+    scene->AddMaterial(mat1);
+    scene->AddMaterial(mat2);
+
+    scene->SetObjectMaterial(cube, mat1);
+    scene->SetObjectMaterial(plane, mat2);
+
 
 
     glBindVertexArray(0);
@@ -63,8 +76,12 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    cube->SetPosition(Vector3D(1, 0, 4));
+    cube->SetPosition(Vector3D(0, 0, 4));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
+
+    cube->SetRotation(Vector3D(0, 0, 45));
+
+    cube->SetScale(Vector3D(1, 1, 2));
 
     //cube->material->LoadTexture("test1.jpg", 2);
     //plane->material->LoadTexture("test.png", 1);

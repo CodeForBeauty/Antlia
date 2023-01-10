@@ -14,7 +14,6 @@ public:
 	void AddMaterial(Material* material);
 	void SetObjectMaterial(Mesh* object, Material* material);
 
-	void SetProj(float* proj);
 	void Render(float* proj);
 
 	unsigned int vao;

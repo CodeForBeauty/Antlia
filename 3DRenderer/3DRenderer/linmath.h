@@ -15,9 +15,11 @@ namespace linmath
 	float deg2radians(float degree);
 	void multiplyMetricies4x4(float* metrix1, float* metrix2, float* out);
 	void rotateMetricies(Vector3D& degree, float* out);
-	void multiplyByMetricies4x4(float* metricies, vec3 position, vec3& out);
+	vec3 multiplyByMetricies4x4(float* metricies, vec3 position);
 
 	vec3 addVector3dByVec3(const Vector3D vec1, vec3 vec2);
+	vec3 subVector3dByVec3(Vector3D vec1, vec3 vec2);
+	vec3 mulVector3dByVec3(Vector3D vec1, vec3 vec2);
 }
 
 struct Vertex

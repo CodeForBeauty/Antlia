@@ -32,31 +32,31 @@ void Entity::SetPosition(const Vector3D& pos) const
 	position->z = pos.z;
 }
 
-void Entity::Move(Vector3D& offset) const
+void Entity::Move(const Vector3D& offset) const
 {
 	*position += offset;
 }
 
-void Entity::SetRotation(Vector3D& rot) const
+void Entity::SetRotation(const Vector3D& rot) const
 {
 	rotation->x = rot.x;
 	rotation->y = rot.y;
 	rotation->z = rot.z;
 }
 
-void Entity::Rotate(Vector3D& offset) const
+void Entity::Rotate(const Vector3D& offset) const
 {
 	*rotation += offset;
 }
 
-void Entity::SetScale(Vector3D& value) const
+void Entity::SetScale(const Vector3D& value) const
 {
 	scale->x = value.x;
 	scale->y = value.y;
 	scale->z = value.z;
 }
 
-void Entity::AddScale(Vector3D& offset) const
+void Entity::AddScale(const Vector3D& offset) const
 {
 	*scale += offset;
 }
@@ -78,8 +78,13 @@ Vector3D Entity::GetScale() const
 
 Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
 	:verticies(verticies), indecies(indecies)
-	,transformedVerticies(verticies), transformedIndecies(indecies)
-	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) {}
+	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) 
+{
+	transformedVerticies = (Vertex*)malloc(sizeof(Vertex) * verticiesCount);
+	memcpy(transformedVerticies, verticies, sizeof(Vertex) * verticiesCount);
+	transformedIndecies = (unsigned int*)malloc(sizeof(unsigned int) * indeciesCount);
+	memcpy(transformedIndecies, indecies, sizeof(unsigned int) * indeciesCount);
+}
 
 Geometry::~Geometry()
 {
@@ -127,7 +132,6 @@ Mesh::~Mesh()
 
 void Mesh::SetPosition(const Vector3D& pos) const
 {
-	std::cout << geometry->verticiesCount;
 	for (int i = 0; i < geometry->verticiesCount; i++)
 	{
 		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(-(*position - pos), geometry->transformedVerticies[i].position);
@@ -137,40 +141,65 @@ void Mesh::SetPosition(const Vector3D& pos) const
 	position->z = pos.z;
 }
 
-void Mesh::Move(Vector3D& offset) const
+void Mesh::Move(const Vector3D& offset) const
 {
+	for (int i = 0; i < geometry->verticiesCount; i++)
+	{
+		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(offset, geometry->transformedVerticies[i].position);
+	}
 	*position += offset;
 	
 }
 
-void Mesh::SetRotation(Vector3D& rot) const
+void Mesh::SetRotation(const Vector3D& rot) const
 {
+	Vector3D rotOffset = -(*rotation - rot);
+	linmath::rotateMetricies(rotOffset, rotMetricies);
 	rotation->x = rot.x;
 	rotation->y = rot.y;
 	rotation->z = rot.z;
-	linmath::rotateMetricies(*rotation, rotMetricies);
+	for (int i = 0; i < geometry->verticiesCount; i++)
+	{
+		geometry->transformedVerticies[i].position = linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position);
+		geometry->transformedVerticies[i].position = linmath::multiplyByMetricies4x4(rotMetricies, geometry->transformedVerticies[i].position);
+		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
+	}
 	
 }
 
-void Mesh::Rotate(Vector3D& offset) const
+void Mesh::Rotate(const Vector3D& offset) const
 {
 	*rotation += offset;
 	linmath::rotateMetricies(*rotation, rotMetricies);
-	
+	for (int i = 0; i < geometry->verticiesCount; i++)
+	{
+		geometry->transformedVerticies[i].position = linmath::multiplyByMetricies4x4(rotMetricies, geometry->verticies[i].position);
+		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
+	}
 }
 
-void Mesh::SetScale(Vector3D& value) const
+void Mesh::SetScale(const Vector3D& value) const
 {
+	for (int i = 0; i < geometry->verticiesCount; i++)
+	{
+		geometry->transformedVerticies[i].position = linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position);
+		geometry->transformedVerticies[i].position = linmath::mulVector3dByVec3(Vector3D(value.x / scale->x, value.y / scale->y, value.z / scale->z),
+			geometry->transformedVerticies[i].position);
+		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
+	}
 	scale->x = value.x;
 	scale->y = value.y;
 	scale->z = value.z;
-	
 }
 
-void Mesh::AddScale(Vector3D& offset) const
+void Mesh::AddScale(const Vector3D& offset) const
 {
+	for (int i = 0; i < geometry->verticiesCount; i++)
+	{
+		geometry->transformedVerticies[i].position = linmath::mulVector3dByVec3(*scale / (*scale + offset), linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position));
+		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
+	}
 	*scale += offset;
-	
 }
 
 
