@@ -51,6 +51,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Lighting.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -75,6 +78,9 @@
       <Filter>header</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="Lighting.h">
       <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>

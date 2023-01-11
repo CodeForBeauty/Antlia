@@ -5,6 +5,7 @@
 #include "Shader.h"
 #include "Objects.h"
 #include "Scene.h"
+#include "Lighting.h"
 #include "Texture.h"
 #include "linmath.h"
 
