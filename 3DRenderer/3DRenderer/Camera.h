@@ -17,6 +17,7 @@ public:
 	Vector3D GetPosition() const;
 	Vector3D GetRotation() const;
 
+
 	float fov;
 	float near;
 	float far;

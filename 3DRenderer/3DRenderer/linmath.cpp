@@ -45,7 +45,7 @@ void linmath::rotateMetricies(Vector3D& degree, float* out)
                         1, 0, 0, 0,
                         0, 1, 0, 0,
                         0, 0, 1, 0,
-                        0, 0, 1, 0
+                        0, 0, 0, 0
     };
 
     multiplyMetricies4x4(rot1, rot2, result);

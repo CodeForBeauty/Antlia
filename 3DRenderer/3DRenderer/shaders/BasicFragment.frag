@@ -75,5 +75,5 @@ float spotLight(vec3 pos, float innerCone = 0.95f, float outerCone = 0.90f)
 
 void main()
 {
-	color = ((texture(u_Texture, v_TexCoord) * u_UseTex) + (u_Color * (1 - u_UseTex))) * spotLight(vec3(2, 0.5, 3));
+	color = ((texture(u_Texture, v_TexCoord) * u_UseTex) + (u_Color * (1 - u_UseTex))) * directLight(vec3(0, -0.5, 0.5));
 }

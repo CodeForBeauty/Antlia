@@ -21,7 +21,7 @@ public:
 	unsigned int vbo;
 	unsigned int ibo;
 
-	Camera* preview = new Camera(45, 0.5, 200);
+	Camera* preview = new Camera(90, 0.5, 1);
 	Camera* renderCamera;
 
 private:

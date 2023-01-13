@@ -49,7 +49,7 @@ void Material::CompileShaders()
 
 void Material::SetCamPos(float x, float y, float z)
 {
-	glUniform4f(camPos, -x, -y, -z, 1);
+	glUniform3f(camPos, -x, -y, -z);
 }
 void Material::SetView(float* value)
 {

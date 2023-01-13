@@ -37,7 +37,7 @@ int main(void)
 
     Scene* scene = new Scene();
 
-    Plane* plane = new Plane();
+    Cube* plane = new Cube();
     Cube* cube = new Cube();
 
     Material* mat1 = new Material();
@@ -68,8 +68,8 @@ int main(void)
 
 
     float fov = linmath::deg2radians(45);
-    float far = 200;
-    float near = 0.5;
+    float far = 10;
+    float near = 0.1;
 
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
@@ -77,21 +77,45 @@ int main(void)
     cube->SetPosition(Vector3D(1, -1.2, 3));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
 
-    cube->SetScale(Vector3D(2, 2, 2));
+    //cube->SetScale(Vector3D(2, 2, 2));
 
-    scene->preview->SetPosition(Vector3D(0.2, 0, 0));
-    scene->preview->SetRotation(Vector3D(0, 0, 0));
+    scene->preview->SetPosition(Vector3D(0, 0, 0));
+    scene->preview->SetRotation(Vector3D(360, 360, 360));
 
     glEnable(GL_DEPTH_TEST);
 
     while (!glfwWindowShouldClose(window))
     {
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            scene->preview->Move(Vector3D(0, 0, 0.05));
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            scene->preview->Move(Vector3D(0, 0, -0.05));
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            scene->preview->Move(Vector3D(-0.05, 0, 0));
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            scene->preview->Move(Vector3D(0.05, 0, 0));
+        }
+        if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        {
+            scene->preview->Move(Vector3D(0, 0.05, 0));
+        }
+        if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        {
+            scene->preview->Move(Vector3D(0, -0.05, 0));
+        }
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        i.x -= 1;
+        i.z -= 1;
         i1.y += 1;
 
         //scene->preview->SetRotation(i);
