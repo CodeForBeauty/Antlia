@@ -64,9 +64,9 @@ public:
 	void AddScale(const Vector3D& offset) const override;
 
 	Geometry* geometry = new Geometry(
-		new Vertex[3]{ { {  0.5,  0.5, 0 }, { 1.0, 1.0 }},
-					   { { -0.5,  0.5, 0 }, { 0.0, 1.0 }},
-					   { { -0.5, -0.5, 0 }, { 0.0, 0.0 }}},
+		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
+					   { { -0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 1.0}},
+					   { { -0.5, -0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 0.0}} },
 		new unsigned int[3] {0, 1, 2},
 		3, 3
 	);

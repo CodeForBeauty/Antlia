@@ -25,6 +25,7 @@ namespace linmath
 struct Vertex
 {
 	linmath::vec3 position;
+	linmath::vec3 normal;
 	linmath::vec3 uv;
 	linmath::vec4 color;
 };

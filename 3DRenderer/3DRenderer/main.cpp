@@ -50,7 +50,7 @@ int main(void)
     scene->AddObject(cube);
 
     mat1->LoadTexture("test.png", 1);
-    //mat2->LoadTexture("test1.jpg", 2);
+    mat2->LoadTexture("test1.jpg", 2);
 
     scene->AddMaterial(mat1);
     scene->AddMaterial(mat2);
@@ -74,8 +74,10 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    cube->SetPosition(Vector3D(1, 0, 3));
+    cube->SetPosition(Vector3D(1, -1.2, 3));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
+
+    cube->SetScale(Vector3D(2, 2, 2));
 
     scene->preview->SetPosition(Vector3D(0.2, 0, 0));
     scene->preview->SetRotation(Vector3D(0, 0, 0));
@@ -89,16 +91,16 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        i.y -= 1;
+        i.x -= 1;
         i1.y += 1;
 
-        scene->preview->SetRotation(i);
+        //scene->preview->SetRotation(i);
 
         linmath::perspective(width, height, fov, far, near, proj);
 
         //cube->SetRotation(i);
 
-        //plane->SetRotation(i1);
+        plane->SetRotation(i1);
 
         scene->Render(proj);
 

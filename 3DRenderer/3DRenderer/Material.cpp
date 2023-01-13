@@ -103,6 +103,7 @@ void Material::LoadTexture(const char* path, int slot)
 	glUseProgram(program);
 	if (texture)
 	{
+		std::cout << "delete";
 		delete texture;
 	}
 	texture = new Texture(path);

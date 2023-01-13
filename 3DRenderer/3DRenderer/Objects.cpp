@@ -162,6 +162,7 @@ void Mesh::SetRotation(const Vector3D& rot) const
 	{
 		geometry->transformedVerticies[i].position = linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position);
 		geometry->transformedVerticies[i].position = linmath::multiplyByMetricies4x4(rotMetricies, geometry->transformedVerticies[i].position);
+		geometry->transformedVerticies[i].normal = linmath::multiplyByMetricies4x4(rotMetricies, geometry->transformedVerticies[i].normal);
 		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
 	}
 	
@@ -174,6 +175,7 @@ void Mesh::Rotate(const Vector3D& offset) const
 	for (int i = 0; i < geometry->verticiesCount; i++)
 	{
 		geometry->transformedVerticies[i].position = linmath::multiplyByMetricies4x4(rotMetricies, geometry->verticies[i].position);
+		geometry->transformedVerticies[i].normal = linmath::multiplyByMetricies4x4(rotMetricies, geometry->verticies[i].normal);
 		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
 	}
 }
@@ -214,10 +216,10 @@ void Plane::setGeometry()
 	delete geometry;
 	geometry = new Geometry(
 		new Vertex[4]{
-					 {{  0.5,  0.5, 0 }, { 1.0, 1.0 }},
-					 {{ -0.5,  0.5, 0 }, { 0.0, 1.0 }},
-					 {{ -0.5, -0.5, 0 }, { 0.0, 0.0 }},
-					 {{  0.5, -0.5, 0 }, { 1.0, 0.0 }}
+					 {{  0.5,  0.5, 0 }, {0.0, 0.0, -1.0}, {1.0, 1.0}},
+					 {{ -0.5,  0.5, 0 }, {0.0, 0.0, -1.0}, {0.0, 1.0}},
+					 {{ -0.5, -0.5, 0 }, {0.0, 0.0, -1.0}, {0.0, 0.0}},
+					 {{  0.5, -0.5, 0 }, {0.0, 0.0, -1.0}, {1.0, 0.0}}
 		},
 		new unsigned int[6] {0, 1, 2,
 							 2, 3, 0}, 4, 6);
@@ -232,18 +234,19 @@ Cube::Cube(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(posit
 void Cube::setGeometry()
 {
 	delete geometry;
+	/*
 	geometry = new Geometry(
 		new Vertex[8]{
-				{{  0.5,  0.5, -0.5 }, { 1.0, 1.0 }},
-				{{ -0.5,  0.5, -0.5 }, { 0.0, 1.0 }},
-				{{ -0.5, -0.5, -0.5 }, { 0.0, 0.0 }},
-				{{  0.5, -0.5, -0.5 }, { 1.0, 0.0 }},
+				{{  0.5,  0.5, -0.5 }, { 0.33,  0.33, -0.34}, {1.0, 1.0}},
+				{{ -0.5,  0.5, -0.5 }, {-0.33,  0.33, -0.34}, {0.0, 1.0}},
+				{{ -0.5, -0.5, -0.5 }, {-0.33, -0.33, -0.34}, {0.0, 0.0}},
+				{{  0.5, -0.5, -0.5 }, { 0.33, -0.33, -0.34}, {1.0, 0.0}},
 
-				{{  0.5, -0.5,  0.5 }, { 0.0, 1.0 }},
-				{{  0.5,  0.5,  0.5 }, { 0.0, 0.0 }},
+				{{  0.5, -0.5,  0.5 }, { 0.33, -0.33, 0.34}, { 0.0, 1.0 }},
+				{{  0.5,  0.5,  0.5 }, { 0.33,  0.33, 0.34}, { 0.0, 0.0 }},
 
-				{{ -0.5,  0.5,  0.5 }, { 1.0, 0.0 }},
-				{{ -0.5, -0.5,  0.5 }, { 1.0, 1.0 }}
+				{{ -0.5,  0.5,  0.5 }, { 0.33,  0.33, 0.34}, { 1.0, 0.0 }},
+				{{ -0.5, -0.5,  0.5 }, {-0.33, -0.33, 0.34}, { 1.0, 1.0 }}
 		},
 		new unsigned int[36] {
 					0, 1, 2,
@@ -265,4 +268,57 @@ void Cube::setGeometry()
 					5, 4, 7
 			}, 8, 36
 				);
+	*/
+	geometry = new Geometry(
+		new Vertex[24]{
+				{{  0.5,  0.5, -0.5 }, { 0.0,  0.0, -1.0 }, { 1.0, 1.0 }},
+				{{ -0.5,  0.5, -0.5 }, { 0.0,  0.0, -1.0 }, { 0.0, 1.0 }},
+				{{ -0.5, -0.5, -0.5 }, { 0.0,  0.0, -1.0 }, { 0.0, 0.0 }},
+				{{  0.5, -0.5, -0.5 }, { 0.0,  0.0, -1.0 }, { 1.0, 0.0 }},
+
+				{{  0.5, -0.5,  0.5 }, { 0.0,  0.0,  1.0 }, { 1.0, 0.0 }},
+				{{  0.5,  0.5,  0.5 }, { 0.0,  0.0,  1.0 }, { 1.0, 1.0 }},
+				{{ -0.5,  0.5,  0.5 }, { 0.0,  0.0,  1.0 }, { 0.0, 1.0 }},
+				{{ -0.5, -0.5,  0.5 }, { 0.0,  0.0,  1.0 }, { 0.0, 0.0 }},
+
+				{{  0.5,  0.5,  0.5 }, { 1.0,  0.0,  0.0 }, { 1.0, 1.0 }},
+				{{  0.5, -0.5,  0.5 }, { 1.0,  0.0,  0.0 }, { 0.0, 1.0 }},
+				{{  0.5, -0.5, -0.5 }, { 1.0,  0.0,  0.0 }, { 0.0, 0.0 }},
+				{{  0.5,  0.5, -0.5 }, { 1.0,  0.0,  0.0 }, { 1.0, 0.0 }},
+
+				{{ -0.5, -0.5,  0.5 }, {-1.0,  0.0,  0.0 }, { 0.0, 1.0 }},
+				{{ -0.5,  0.5,  0.5 }, {-1.0,  0.0,  0.0 }, { 1.0, 1.0 }},
+				{{ -0.5,  0.5, -0.5 }, {-1.0,  0.0,  0.0 }, { 1.0, 0.0 }},
+				{{ -0.5, -0.5, -0.5 }, {-1.0,  0.0,  0.0 }, { 0.0, 0.0 }},
+
+				{{ -0.5,  0.5,  0.5 }, { 0.0,  1.0,  0.0 }, { 0.0, 1.0 }},
+				{{  0.5,  0.5,  0.5 }, { 0.0,  1.0,  0.0 }, { 1.0, 1.0 }},
+				{{  0.5,  0.5, -0.5 }, { 0.0,  1.0,  0.0 }, { 1.0, 0.0 }},
+				{{ -0.5,  0.5, -0.5 }, { 0.0,  1.0,  0.0 }, { 0.0, 0.0 }},
+
+				{{ -0.5, -0.5,  0.5 }, { 0.0, -1.0,  0.0 }, { 0.0, 1.0 }},
+				{{  0.5, -0.5,  0.5 }, { 0.0, -1.0,  0.0 }, { 1.0, 1.0 }},
+				{{  0.5, -0.5, -0.5 }, { 0.0, -1.0,  0.0 }, { 1.0, 0.0 }},
+				{{ -0.5, -0.5, -0.5 }, { 0.0, -1.0,  0.0 }, { 0.0, 0.0 }},
+		},
+		new unsigned int[36] {
+								0, 1, 2,
+								2, 3, 0,
+
+								4, 5, 6,
+								6, 7, 4,
+
+								8, 9, 10,
+								10, 11, 8,
+
+								12, 13, 14,
+								14, 15, 12,
+
+								16, 17, 18,
+								18, 19, 16,
+
+								20, 21, 22,
+								22, 23, 20
+		}, 24, 36
+	);
 }
