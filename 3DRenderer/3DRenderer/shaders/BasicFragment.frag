@@ -9,37 +9,43 @@ uniform vec4 u_Color;
 uniform sampler2D u_Texture;
 uniform int u_UseTex;
 
+uniform vec4 u_PointLightColor[8];
+uniform vec4 u_PointLightPos[8];
+
+uniform vec4 u_DirectLightColor[4];
+uniform vec3 u_DirectLightDir[4];
+
+uniform vec4 u_SpotLightColor[8];
+uniform vec4 u_SpotLightPos[8];
+uniform vec3 u_SpotLightDir[8];
+uniform vec2 u_SpotLightAngle[8];
+
 out vec4 color;
 
-float pointLight(vec3 pos)
+
+vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance)
 {
-	vec3 lightVec = pos - v_Pos;
 	float dist = length(lightVec);
-	float a = 0.05f;
-	float b = 0.01f;
-	float intens = 1.0f / (a * dist * dist + b * dist + 1.0f);
+	float a = 0.1 / distance;
+	float b = 0.1;
+	float intens = intensity / (a * (dist * dist) + b * dist + 1.0f);
 
-	float ambient = 0.3f;
-
-	vec3 normal = normalize(v_Normal);
 	vec3 lightDir = normalize(lightVec);
-	float diffuse = max(dot(v_Normal, lightDir), 0.0f);
+	vec3 normal = normalize(v_Normal);
+	float diffuse = max(dot(normal, lightDir), 0.0);
 
 	float specularLight = 0.5f;
 	vec3 camPos = normalize(v_CamPos - v_Pos);
 	vec3 reflectionDir = reflect(-lightDir, v_Normal);
-	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 8);
-	float specular = specularLight * specAmount;
+	float specAmount = max(pow(dot(camPos, reflectionDir), 8), 0.0);
 
-	return (diffuse * intens + ambient + specular);
+	return (diffuse + specAmount * specularLight) * intens * lightColor;
 }
 
-float directLight(vec3 dir)
+vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity)
 {
-	float ambient = 0.2f;
-
 	vec3 normal = normalize(v_Normal);
-	vec3 lightDir = normalize(dir);
+	vec3 lightDir = normalize(lightVec);
 	float diffuse = max(dot(v_Normal, -lightDir), 0.0f);
 
 	float specularLight = 0.5f;
@@ -48,14 +54,14 @@ float directLight(vec3 dir)
 	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 8);
 	float specular = specularLight * specAmount;
 
-	return (diffuse + ambient + specular);
+	return (diffuse + specular) * intensity * lightColor;
 }
 
-float spotLight(vec3 pos, float innerCone = 0.95f, float outerCone = 0.90f)
+vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float intensity, float innerCone, float outerCone)
 {
-	vec3 lightVec = pos - v_Pos;
-
-	float ambient = 0.1f;
+	float dist = length(lightVec);
+	float a = 0.1 / distance;
+	float intens = intensity / (a * (dist * dist) + 1.0f);
 
 	vec3 normal = normalize(v_Normal);
 	vec3 lightDir = normalize(lightVec);
@@ -67,13 +73,44 @@ float spotLight(vec3 pos, float innerCone = 0.95f, float outerCone = 0.90f)
 	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 8);
 	float specular = specularLight * specAmount;
 
-	float angle = dot(vec3(0.0f, -1.0f, 0.0f), -lightDir);
-	float intens = clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
+	float angle = dot(dir, -lightDir);
+	float cone = clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
+	//float cone = clamp((1 - angle) / (1 - (innerCone - outerCone)), 0.0f, 1.0f);
 
-	return (diffuse * angle + ambient + specular * angle);
+	return (diffuse + specular) * cone * lightColor;
 }
 
 void main()
 {
-	color = ((texture(u_Texture, v_TexCoord) * u_UseTex) + (u_Color * (1 - u_UseTex))) * directLight(vec3(0, -0.5, 0.5));
+	int lightCount = 1;
+	vec3 totalLight = vec3(0, 0, 0);
+	for (int i = 0; i < 8; i++)
+	{
+		if (u_PointLightPos[i].w > 0)
+		{
+			vec3 lightVec = vec3(u_PointLightPos[i]) - v_Pos;
+			totalLight += pointLight(vec3(u_PointLightColor[i]), lightVec, u_PointLightColor[i].w, u_PointLightPos[i].w);
+			lightCount++;
+		}
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		if (u_DirectLightColor[i].w > 0)
+		{
+			totalLight += directLight(vec3(u_DirectLightColor[i]), u_DirectLightDir[i], u_DirectLightColor[i].w);
+			lightCount++;
+		}
+	}
+	for (int i = 0; i < 8; i++)
+	{
+		if (u_SpotLightColor[i].w > 0)
+		{
+			vec3 lightVec = vec3(u_SpotLightPos[i]) - v_Pos;
+			totalLight += spotLight(vec3(u_SpotLightColor[i]), lightVec, u_SpotLightDir[i], u_SpotLightPos[i].w, 
+									u_SpotLightColor[i].w, u_SpotLightAngle[i].x, u_SpotLightAngle[i].y);
+			lightCount++;
+		}
+	}
+	vec3 lightVec = vec3(0, 2, 2) - v_Pos;
+	color = ((texture(u_Texture, v_TexCoord) * u_UseTex) + (u_Color * (1 - u_UseTex))) * vec4(totalLight / lightCount + 0.2, 1);//spotLight(vec3(1, 0, 0), lightVec, vec3(0, -1, 0), 5, 1);
 }

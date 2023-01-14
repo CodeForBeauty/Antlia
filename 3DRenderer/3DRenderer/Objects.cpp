@@ -76,6 +76,15 @@ Vector3D Entity::GetScale() const
 	return *scale;
 }
 
+void Entity::SetName(std::string newName)
+{
+	name = newName;
+}
+std::string Entity::GetName() const
+{
+	return name;
+}
+
 Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
 	:verticies(verticies), indecies(indecies)
 	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) 
@@ -95,6 +104,7 @@ Geometry::~Geometry()
 Mesh::Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity()
 {
+	name = "mesh";
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
@@ -102,6 +112,7 @@ Mesh::Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCoun
 Mesh::Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity(position)
 {
+	name = "mesh";
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
@@ -109,6 +120,7 @@ Mesh::Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsign
 Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity(position, rotation)
 {
+	name = "mesh";
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
@@ -116,14 +128,15 @@ Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned i
 Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
 	: Entity(position, rotation, scale)
 {
+	name = "mesh";
 	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
 
-Mesh::Mesh() : Entity() {}
-Mesh::Mesh(Vector3D* position) : Entity(position) {}
-Mesh::Mesh(Vector3D* position, Vector3D* rotation) : Entity(position, rotation) {}
-Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Entity(position, rotation, scale) {}
+Mesh::Mesh() : Entity() { name = "mesh"; }
+Mesh::Mesh(Vector3D* position) : Entity(position) { name = "mesh"; }
+Mesh::Mesh(Vector3D* position, Vector3D* rotation) : Entity(position, rotation) { name = "mesh"; }
+Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Entity(position, rotation, scale) { name = "mesh"; }
 
 Mesh::~Mesh()
 {
@@ -213,6 +226,7 @@ Plane::Plane(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(pos
 
 void Plane::setGeometry()
 {
+	name = "plane";
 	delete geometry;
 	geometry = new Geometry(
 		new Vertex[4]{
@@ -233,6 +247,7 @@ Cube::Cube(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(posit
 
 void Cube::setGeometry()
 {
+	name = "cube";
 	delete geometry;
 	/*
 	geometry = new Geometry(

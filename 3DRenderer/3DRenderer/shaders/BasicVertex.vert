@@ -23,5 +23,5 @@ void main()
 	gl_Position.z /= -gl_Position.w;
 	v_TexCoord = texCoord;
 	v_Normal = normal;
-	v_CamPos = vec3(u_CamPos);
+	v_CamPos = u_CamPos;
 }

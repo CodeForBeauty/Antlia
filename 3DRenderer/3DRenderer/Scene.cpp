@@ -1,5 +1,7 @@
 #include "Scene.h"
 #include <array>
+#include <iostream>
+#include <string>
 
 Scene::Scene()
 {
@@ -33,6 +35,8 @@ Scene::~Scene()
 		delete objects[i];
 	for (int i = 0; i < entities.size(); i++)
 		delete entities[i];
+	for (int i = 0; i < lights.size(); i++)
+		delete lights[i];
 	for (int i = 0; i < materials.size(); i++)
 		delete materials[i];
 	delete preview;
@@ -62,6 +66,12 @@ void Scene::AddObject(Mesh* object)
 void Scene::AddEntity(Entity* entity)
 {
 	entities.push_back(entity);
+}
+
+void Scene::AddLight(Light* light)
+{
+	lights.push_back(light);
+	updateLight = true;
 }
 
 void Scene::AddMaterial(Material* material)
@@ -112,6 +122,56 @@ void Scene::Render(float* proj)
 			materials[i]->SetView(preview->rotMetricies);
 		}
 
+		if (updateLight)
+		{
+			for (int j = 0; j < lights.size(); j++)
+			{
+				int type = lights[j]->GetType();
+				if (type == 1)
+				{
+					DirectLight* light = static_cast<DirectLight*>(lights[j]);
+					std::string buff = "u_DirectLightColor[" + std::to_string(j) + "]";
+					linmath::vec3 color = light->GetColor();
+					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
+					buff = "u_DirectLightDir[" + std::to_string(j) + "]";
+					linmath::vec3 dir = light->GetVector();
+					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
+				}
+				if (type == 2)
+				{
+					PointLight* light = static_cast<PointLight*>(lights[j]);
+					std::string buff = "u_PointLightColor[" + std::to_string(j) + "]";
+					linmath::vec3 color = light->GetColor();
+					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
+					buff = "u_PointLightPos[" + std::to_string(j) + "]";
+					Vector3D posiion = light->GetPosition();
+					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), posiion.x, posiion.y, posiion.z, light->GetDistance());
+				}
+				if (type == 3)
+				{
+					SpotLight* light = static_cast<SpotLight*>(lights[j]);
+					std::string buff = "u_SpotLightColor[" + std::to_string(j) + "]";
+					linmath::vec3 color = light->GetColor();
+					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
+
+					buff = "u_SpotLightPos[" + std::to_string(j) + "]";
+					Vector3D posiion = light->GetPosition();
+					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), posiion.x, posiion.y, posiion.z, light->GetDistance());
+
+					buff = "u_SpotLightDir[" + std::to_string(j) + "]";
+					linmath::vec3 dir = light->GetVector();
+					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
+
+					buff = "u_SpotLightAngle[" + std::to_string(j) + "]";
+					float angle = light->GetAngle();
+					//std::cout << linmath::deg2radians(angle) << linmath::deg2radians(angle + 1) << std::endl;
+					//std::cout << std::cos((angle - 5)) << " " << std::cos(angle) << std::endl;
+					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(linmath::deg2radians(angle-5)),
+						std::cos(linmath::deg2radians(angle)));
+				}
+			}
+		}
+
 		std::vector <Vertex> batchVerticies;
 		std::vector <unsigned int> batchIndecies;
 
@@ -134,5 +194,6 @@ void Scene::Render(float* proj)
 		glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 	}
 	preview->update = false;
+	updateLight = true;
 }
 

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Objects.h"
+#include "Lighting.h"
 #include "Camera.h"
 
 class Scene
@@ -11,6 +12,7 @@ public:
 	~Scene();
 
 	void AddObject(Mesh* object);
+	void AddLight(Light* light);
 	void AddEntity(Entity* entity);
 	void AddMaterial(Material* material);
 	void SetObjectMaterial(Mesh* object, Material* material);
@@ -26,7 +28,10 @@ public:
 
 private:
 	std::vector <Mesh*> objects;
+	std::vector <Light*> lights;
 	std::vector <Entity*> entities;
 	std::vector <Material*> materials;
 	std::vector <std::vector <Mesh*>> materialGroup;
+
+	bool updateLight = false;
 };

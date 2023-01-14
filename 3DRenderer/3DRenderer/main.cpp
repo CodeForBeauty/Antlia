@@ -43,6 +43,20 @@ int main(void)
     Material* mat1 = new Material();
     Material* mat2 = new Material();
 
+    PointLight* light1 = new PointLight({ 0, 0, 1 }, 20);
+    PointLight* light2 = new PointLight({ 1, 0, 0 }, 20);
+    PointLight* light3 = new PointLight({ 0, 1, 0 }, 20);
+    DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
+    SpotLight* spotLight = new SpotLight({ 1, 0, 0 }, 3, 25);
+    spotLight->SetPosition(Vector3D(-0.5,1, 2));
+    spotLight->SetRotation(Vector3D(180, 0, 0));
+    std::cout << spotLight->GetVector().y << std::endl;
+    dirLight->SetRotation(Vector3D(25, 0, 0));
+    //light1->intensity = 0.5;
+    light1->SetPosition(Vector3D(-2, 1, 2));
+    light2->SetPosition(Vector3D(1, 1, 3));
+    light3->SetPosition(Vector3D(0, -1, 2));
+
     glUseProgram(mat1->program);
     mat1->SetAlbedo(0, 0, 1, 1);
 
@@ -57,6 +71,11 @@ int main(void)
 
     scene->SetObjectMaterial(cube, mat1);
     scene->SetObjectMaterial(plane, mat2);
+
+    scene->AddLight(light1);
+    scene->AddLight(spotLight);
+    //scene->AddLight(light3);
+    scene->AddLight(dirLight);
 
     float* proj = new float[16] {
                                 1, 0, 0, 0,
@@ -74,13 +93,13 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    cube->SetPosition(Vector3D(1, -1.2, 3));
+    cube->SetPosition(Vector3D(1, -1, 3));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
 
     //cube->SetScale(Vector3D(2, 2, 2));
 
     scene->preview->SetPosition(Vector3D(0, 0, 0));
-    scene->preview->SetRotation(Vector3D(360, 360, 360));
+    //scene->preview->SetRotation(Vector3D(360, 360, 360));
 
     glEnable(GL_DEPTH_TEST);
 
@@ -115,8 +134,14 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        i.z -= 1;
+        i.x += 1;
         i1.y += 1;
+
+        //light1->Move(Vector3D(0.05, 0, 0));
+        dirLight->Rotate(Vector3D(1, 0, 0));
+        //spotLight->Move(Vector3D(0, -0.1, 0));
+        //spotLight->SetAngle(spotLight->GetAngle() + 0.1);
+        //std::cout << light1->GetPosition().x << std::endl;
 
         //scene->preview->SetRotation(i);
 

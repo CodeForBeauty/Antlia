@@ -10,9 +10,22 @@ public:
 
 	void SetColor(linmath::vec3 color);
 	void SetColor(float r, float g, float b);
+	linmath::vec3 GetColor() const;
+
+	void SetName(std::string newName);
+	std::string GetName() const;
+
+	int GetType();
+
+	float intensity = 1;
+
+protected:
+	void SetType(int type);
 
 private:
+	int type;
 	linmath::vec4 color;
+	std::string name = "light";
 };
 
 
@@ -24,6 +37,7 @@ public:
 	~DirectLight();
 
 	Vector3D GetRotation();
+	linmath::vec3 GetVector();
 
 	void SetRotation(const Vector3D rotation);
 	void Rotate(const Vector3D offset);
@@ -58,7 +72,7 @@ protected:
 	float distance;
 };
 
-class SpotLight : public DirectLight, public PointLight
+class SpotLight : public DirectLight
 {
 public:
 	SpotLight(linmath::vec3 color, float distance = 5, float angle = 25);
@@ -66,9 +80,18 @@ public:
 	SpotLight(linmath::vec3 color, Vector3D* position, Vector3D* rotation, float distance = 5, float angle = 25);
 
 	float GetAngle();
-
 	void SetAngle(float angle);
+
+	float GetDistance();
+	void SetDistance(float distance);
+
+	Vector3D GetPosition();
+
+	void SetPosition(const Vector3D position);
+	void Move(const Vector3D offset);
 private:
 	float angle;
+	Vector3D* position;
+	float distance;
 };
 

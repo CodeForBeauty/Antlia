@@ -24,10 +24,14 @@ public:
 	Vector3D GetRotation() const;
 	Vector3D GetScale() const;
 
+	void SetName(std::string newName);
+	std::string GetName() const;
+
 protected:
 	Vector3D* position;
 	Vector3D* rotation;
 	Vector3D* scale;
+	std::string name = "entity";
 };
 
 class Geometry
