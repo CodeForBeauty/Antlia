@@ -17,6 +17,10 @@ public:
 	void AddMaterial(Material* material);
 	void SetObjectMaterial(Mesh* object, Material* material);
 
+	void DeleteMaterial(Material* material);
+	void DeleteLight(Light* light);
+	void DeleteObject(Mesh* object);
+
 	void Render(float* proj);
 
 	unsigned int vao;

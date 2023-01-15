@@ -87,6 +87,14 @@ void Scene::AddMaterial(Material* material)
 
 void Scene::SetObjectMaterial(Mesh* object, Material* material)
 {
+	bool start = false;
+	for (Mesh* i : materialGroup[object->material->sceneSlot])
+	{
+		if (i == object) start = true;
+		if (start)
+			for (int j = 0; j < i->geometry->indeciesCount; j++)
+				i->geometry->transformedIndecies[j] = i->geometry->indecies[j] - object->geometry->indeciesCount;
+	}
 	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
 		materialGroup[object->material->sceneSlot].end(),
 		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
@@ -96,15 +104,50 @@ void Scene::SetObjectMaterial(Mesh* object, Material* material)
 
 	int offset = 0;
 	for (int i = 0; i < materialGroup[material->sceneSlot].size() - 1; i++)
-	{
 		offset += materialGroup[material->sceneSlot][i]->geometry->verticiesCount;
-	}
-	for (int i = 0; i < object->geometry->indeciesCount; i++)
-	{
-		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
-	}
 
-	
+	for (int i = 0; i < object->geometry->indeciesCount; i++)
+		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
+}
+
+void Scene::DeleteMaterial(Material* material)
+{
+	int offset = 0;
+	for (Mesh* i : materialGroup[0])
+		offset += i->geometry->indeciesCount;
+
+	for (Mesh* i : materialGroup[material->sceneSlot])
+	{
+		materialGroup[0].push_back(i);
+		for (int j = 0; j < i->geometry->indeciesCount; j++)
+			i->geometry->transformedIndecies[j] = i->geometry->indecies[j] + offset;
+		offset += i->geometry->indeciesCount;
+	}
+	materials.erase(materials.begin() + material->sceneSlot);
+	materialGroup.erase(materialGroup.begin() + material->sceneSlot);
+	delete material;
+}
+
+void Scene::DeleteLight(Light* light)
+{
+	lights.erase(std::remove_if(lights.begin(), lights.end(), [&](Light* i) { return i == light; }), lights.end());
+	delete light;
+}
+
+void Scene::DeleteObject(Mesh* object)
+{
+	bool start = false;
+	for (Mesh* i : materialGroup[object->material->sceneSlot])
+	{
+		if (i == object) start = true;
+		if (start)
+			for (int j = 0; j < i->geometry->indeciesCount; j++)
+				i->geometry->transformedIndecies[j] = i->geometry->indecies[j] - object->geometry->indeciesCount;
+	}
+	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
+		materialGroup[object->material->sceneSlot].end(),
+		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
+	delete object;
 }
 
 

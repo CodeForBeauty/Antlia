@@ -77,6 +77,8 @@ int main(void)
     //scene->AddLight(light3);
     scene->AddLight(dirLight);
 
+    scene->DeleteMaterial(mat2);
+
     float* proj = new float[16] {
                                 1, 0, 0, 0,
                                 0, 1, 0, 0,
@@ -95,6 +97,9 @@ int main(void)
 
     cube->SetPosition(Vector3D(1, -1, 3));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
+
+    scene->DeleteObject(cube);
+    scene->DeleteLight(spotLight);
 
     //cube->SetScale(Vector3D(2, 2, 2));
 
