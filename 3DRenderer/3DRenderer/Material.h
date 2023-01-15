@@ -3,6 +3,12 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#define TEXTURE_ALBEDO 1
+#define TEXTURE_METALIC 2
+#define TEXTURE_SPECULAR 3
+#define TEXTURE_ROUGHNESS 4
+#define TEXTURE_NORMAL 5
+
 class Material
 {
 public:
@@ -23,6 +29,10 @@ public:
 	float GetSpecular();
 
 	void LoadTexture(const char* path, int slot = 0);
+	void DeleteTexture(int slot);
+
+	void Use();
+	void Bind();
 
 	void SetCamPos(float x, float y, float z);
 	void SetView(float* value);
@@ -34,6 +44,10 @@ private:
 	Shader* vs;
 	Shader* fs;
 	Texture* texture;
+	Texture* specTex;
+	Texture* metalTex;
+	Texture* roughTex;
+	Texture* normal;
 	float* albedo = new float[4] {1, 1, 1, 1};
 	float metalic = 0.0;
 	float roughness = 0.5;

@@ -55,7 +55,6 @@ void DirectLight::SetRotation(const Vector3D rot)
 	rotation->z = rot.z;
 	linmath::rotateMetricies(*rotation, rotMetricies);
 	pointing = linmath::multiplyByMetricies4x4(rotMetricies, {0, 1, 0});
-	std::cout << pointing.x << " " << pointing.y << " " << pointing.z << std::endl;
 }
 void DirectLight::Rotate(const Vector3D offset)
 {

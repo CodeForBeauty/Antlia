@@ -9,6 +9,22 @@ uniform vec4 u_Color;
 uniform sampler2D u_Texture;
 uniform int u_UseTex;
 
+uniform float u_Specular;
+uniform sampler2D u_SpecularTexture;
+uniform int u_UseSpecTex;
+
+uniform float u_Metalic;
+uniform sampler2D u_MetalicTexture;
+uniform int u_UseMetalTex;
+
+uniform float u_Roughness;
+uniform sampler2D u_RoughnessTexture;
+uniform int u_UseRoughTex;
+
+uniform sampler2D u_NormalTexture;
+uniform int u_UseNormTex;
+
+
 uniform vec4 u_PointLightColor[8];
 uniform vec4 u_PointLightPos[8];
 
@@ -34,12 +50,11 @@ vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance)
 	vec3 normal = normalize(v_Normal);
 	float diffuse = max(dot(normal, lightDir), 0.0);
 
-	float specularLight = 0.5f;
 	vec3 camPos = normalize(v_CamPos - v_Pos);
 	vec3 reflectionDir = reflect(-lightDir, v_Normal);
-	float specAmount = max(pow(dot(camPos, reflectionDir), 8), 0.0);
-
-	return (diffuse + specAmount * specularLight) * intens * lightColor;
+	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0), 16);
+	
+	return (diffuse + specAmount * u_Specular * (texture(u_SpecularTexture, v_TexCoord).r * u_UseSpecTex)) * intens * lightColor;
 }
 
 vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity)
@@ -48,13 +63,12 @@ vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity)
 	vec3 lightDir = normalize(lightVec);
 	float diffuse = max(dot(v_Normal, -lightDir), 0.0f);
 
-	float specularLight = 0.5f;
 	vec3 camPos = normalize(v_CamPos - v_Pos);
 	vec3 reflectionDir = reflect(lightDir, v_Normal);
-	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 8);
-	float specular = specularLight * specAmount;
+	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 16);
+	float specular = u_Specular * specAmount;
 
-	return (diffuse + specular) * intensity * lightColor;
+	return (diffuse + specular * texture(u_SpecularTexture, v_TexCoord).r * u_UseSpecTex) * intensity * lightColor;
 }
 
 vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float intensity, float innerCone, float outerCone)
@@ -67,17 +81,16 @@ vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float i
 	vec3 lightDir = normalize(lightVec);
 	float diffuse = max(dot(v_Normal, lightDir), 0.0f);
 
-	float specularLight = 0.5f;
 	vec3 camPos = normalize(v_CamPos - v_Pos);
 	vec3 reflectionDir = reflect(-lightDir, v_Normal);
-	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 8);
-	float specular = specularLight * specAmount;
+	float specAmount = pow(max(dot(camPos, reflectionDir), 0.0f), 16);
+	float specular = u_Specular * specAmount;
 
 	float angle = dot(dir, -lightDir);
 	float cone = clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
 	//float cone = clamp((1 - angle) / (1 - (innerCone - outerCone)), 0.0f, 1.0f);
 
-	return (diffuse + specular) * cone * lightColor;
+	return (diffuse + specular * texture(u_SpecularTexture, v_TexCoord).r * u_UseSpecTex) * cone * lightColor;
 }
 
 void main()
@@ -111,6 +124,6 @@ void main()
 			lightCount++;
 		}
 	}
-	vec3 lightVec = vec3(0, 2, 2) - v_Pos;
+	
 	color = ((texture(u_Texture, v_TexCoord) * u_UseTex) + (u_Color * (1 - u_UseTex))) * vec4(totalLight / lightCount + 0.2, 1);//spotLight(vec3(1, 0, 0), lightVec, vec3(0, -1, 0), 5, 1);
 }

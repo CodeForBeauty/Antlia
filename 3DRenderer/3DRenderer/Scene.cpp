@@ -6,6 +6,8 @@
 Scene::Scene()
 {
 	materials.push_back(new Material());
+	//materials[0]->SetAlbedo
+	materials[0]->sceneSlot = 0;
 	materialGroup.push_back({});
 
 	glGenVertexArrays(1, &vao);
@@ -46,21 +48,19 @@ Scene::~Scene()
 
 void Scene::AddObject(Mesh* object)
 {
-	objects.push_back(object);
-	if (!object->material)
-	{
-		materialGroup[0].push_back(object);
-		object->material = materials[0];
-	}
 	int offset = 0;
-	for (int i = 0; i < materialGroup[object->material->sceneSlot].size()-1; i++)
+	for (int i = 0; i < materialGroup[0].size(); i++)
 	{
-		offset += materialGroup[object->material->sceneSlot][i]->geometry->verticiesCount;
+		offset += materialGroup[0][i]->geometry->verticiesCount;
 	}
+	
 	for (int i = 0; i < object->geometry->indeciesCount; i++)
 	{
 		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
 	}
+	objects.push_back(object);
+	materialGroup[0].push_back(object);
+	object->material = materials[0];
 }
 
 void Scene::AddEntity(Entity* entity)
@@ -90,10 +90,10 @@ void Scene::SetObjectMaterial(Mesh* object, Material* material)
 	bool start = false;
 	for (Mesh* i : materialGroup[object->material->sceneSlot])
 	{
-		if (i == object) start = true;
 		if (start)
 			for (int j = 0; j < i->geometry->indeciesCount; j++)
-				i->geometry->transformedIndecies[j] = i->geometry->indecies[j] - object->geometry->indeciesCount;
+				i->geometry->transformedIndecies[j] -=  object->geometry->verticiesCount;
+		if (i == object) start = true;
 	}
 	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
 		materialGroup[object->material->sceneSlot].end(),
@@ -105,7 +105,7 @@ void Scene::SetObjectMaterial(Mesh* object, Material* material)
 	int offset = 0;
 	for (int i = 0; i < materialGroup[material->sceneSlot].size() - 1; i++)
 		offset += materialGroup[material->sceneSlot][i]->geometry->verticiesCount;
-
+	
 	for (int i = 0; i < object->geometry->indeciesCount; i++)
 		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
 }
@@ -114,8 +114,7 @@ void Scene::DeleteMaterial(Material* material)
 {
 	int offset = 0;
 	for (Mesh* i : materialGroup[0])
-		offset += i->geometry->indeciesCount;
-
+		offset += i->geometry->verticiesCount;
 	for (Mesh* i : materialGroup[material->sceneSlot])
 	{
 		materialGroup[0].push_back(i);
@@ -123,6 +122,7 @@ void Scene::DeleteMaterial(Material* material)
 			i->geometry->transformedIndecies[j] = i->geometry->indecies[j] + offset;
 		offset += i->geometry->indeciesCount;
 	}
+	
 	materials.erase(materials.begin() + material->sceneSlot);
 	materialGroup.erase(materialGroup.begin() + material->sceneSlot);
 	delete material;
@@ -155,7 +155,7 @@ void Scene::Render(float* proj)
 {
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
-		glUseProgram(materials[i]->program);
+		materials[i]->Bind();
 		materials[i]->SetProj(proj);
 
 		if (preview->update)
@@ -207,8 +207,6 @@ void Scene::Render(float* proj)
 
 					buff = "u_SpotLightAngle[" + std::to_string(j) + "]";
 					float angle = light->GetAngle();
-					//std::cout << linmath::deg2radians(angle) << linmath::deg2radians(angle + 1) << std::endl;
-					//std::cout << std::cos((angle - 5)) << " " << std::cos(angle) << std::endl;
 					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(linmath::deg2radians(angle-5)),
 						std::cos(linmath::deg2radians(angle)));
 				}
