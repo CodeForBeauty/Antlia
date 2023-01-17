@@ -38,6 +38,31 @@ uniform vec2 u_SpotLightAngle[8];
 
 out vec4 color;
 
+const float Pi = 3.14159265359;
+
+
+float distributionGGX(float nDotH, float roughness)
+{
+	float a = roughness * roughness;
+	float a2 = a * a;
+	float denom = nDotH * nDotH * (a2 - 1.0) + 1.0;
+	denom = Pi * denom * denom;
+	return a2 * max(denom, 0.000001);
+}
+
+float geometrySmith(float nDotV, float nDotL, float roughness)
+{
+	float r = roughness + 1.0;
+	float k = (r * r) / 8.0;
+	float ggx1 = nDotV / (nDotV * (1.0 - k) + k);
+	float ggx2 = nDotL / (nDotL * (1.0 - k) + k);
+	return ggx1 * ggx2;
+}
+
+vec3 freshnelSchlick(float hDotV, vec3 baseReflectivity)
+{
+	return baseReflectivity + (1.0 - baseReflectivity) * pow(1.0 - hDotV, 5.0);
+}
 
 vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance)
 {
