@@ -45,8 +45,11 @@ void Material::CompileShaders()
 	color = glGetUniformLocation(program, "u_Color");
 
 	glUniform4f(color, albedo[0], albedo[1], albedo[2], albedo[3]);
-	glUniform1i(glGetUniformLocation(program, "u_Texture"), 0);
-	glUniform1i(glGetUniformLocation(program, "u_UseTex"), 0);
+	//glUniform1i(glGetUniformLocation(program, "u_Texture"), 0);
+
+	glUniform1i(glGetUniformLocation(program, "u_Metalic"), metalic);
+	glUniform1i(glGetUniformLocation(program, "u_Roughness"), roughness);
+	glUniform1i(glGetUniformLocation(program, "u_Specular"), specular);
 }
 
 void Material::SetCamPos(float x, float y, float z)

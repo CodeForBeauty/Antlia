@@ -37,22 +37,28 @@ int main(void)
 
     Scene* scene = new Scene();
 
-    Mesh* plane = new Plane();
+    Mesh* plane = new Cube();
     Cube* cube = new Cube();
     Cube* cube1 = new Cube();
     Cube* cube2 = new Cube();
 
     Material* mat1 = new Material();
+    mat1->SetMetalic(0.0f);
+    mat1->SetRoughness(1.0f);
+    mat1->SetSpecular(0.5f);
     Material* mat2 = new Material();
+    mat2->SetMetalic(1.0f);
+    mat2->SetRoughness(0.0f);
+    mat2->SetSpecular(0.5f);
 
     PointLight* light1 = new PointLight({ 0, 0, 1 }, 20);
     PointLight* light2 = new PointLight({ 1, 0, 0 }, 20);
     PointLight* light3 = new PointLight({ 0, 1, 0 }, 20);
     DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
-    SpotLight* spotLight = new SpotLight({ 1, 0, 0 }, 3, 25);
-    spotLight->SetPosition(Vector3D(-0.5,1, 2));
-    spotLight->SetRotation(Vector3D(180, 0, 0));
-    dirLight->SetRotation(Vector3D(25, 0, 0));
+    //SpotLight* spotLight = new SpotLight({ 1, 0, 0 }, 3, 25);
+    //spotLight->SetPosition(Vector3D(-0.5,1, 2));
+    //spotLight->SetRotation(Vector3D(180, 0, 0));
+    //dirLight->SetRotation(Vector3D(25, 0, 0));
     //light1->intensity = 0.5;
     light1->SetPosition(Vector3D(-2, 1, 2));
     light2->SetPosition(Vector3D(1, 1, 3));
@@ -69,8 +75,7 @@ int main(void)
     scene->AddObject(cube2);
 
     mat1->LoadTexture("test.png", 1);
-    mat1->SetSpecular(1);
-    mat2->LoadTexture("test1.jpg", 1);
+    //mat2->LoadTexture("test1.jpg", 1);
 
     scene->AddMaterial(mat1);
     scene->AddMaterial(mat2);
@@ -80,7 +85,7 @@ int main(void)
     scene->SetObjectMaterial(cube, mat2);
 
     scene->AddLight(light1);
-    scene->AddLight(spotLight);
+    //scene->AddLight(spotLight);
     //scene->AddLight(light3);
     scene->AddLight(dirLight);
 
