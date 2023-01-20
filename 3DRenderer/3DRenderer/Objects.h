@@ -104,3 +104,14 @@ public:
 private:
 	void setGeometry();
 };
+
+class Sphere : public Mesh
+{
+public:
+	Sphere(int resolution = 10);
+	Sphere(Vector3D* position, int resolution = 10);
+	Sphere(Vector3D* position, Vector3D* rotation, int resolution = 10);
+	Sphere(Vector3D* position, Vector3D* rotation, Vector3D* scale, int resolution = 10);
+private:
+	void setGeometry(int resolution);
+};

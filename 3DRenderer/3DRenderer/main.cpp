@@ -40,7 +40,8 @@ int main(void)
     Mesh* plane = new Cube();
     Cube* cube = new Cube();
     Cube* cube1 = new Cube();
-    Cube* cube2 = new Cube();
+    Mesh* cube2 = new Sphere(15);
+    
 
     Material* mat1 = new Material();
     mat1->SetMetalic(0.0f);
@@ -109,7 +110,7 @@ int main(void)
 
     cube->SetPosition(Vector3D(1, -1, 3));
     cube1->SetPosition(Vector3D(-2, 0, 2));
-    cube2->SetPosition(Vector3D(2, 1, 2));
+    cube2->SetPosition(Vector3D(0, 0, 2));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
 
     //scene->DeleteObject(cube);

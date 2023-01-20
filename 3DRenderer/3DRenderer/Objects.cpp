@@ -89,6 +89,7 @@ Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verti
 	:verticies(verticies), indecies(indecies)
 	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) 
 {
+	//delete transformedVerticies;
 	transformedVerticies = (Vertex*)malloc(sizeof(Vertex) * verticiesCount);
 	memcpy(transformedVerticies, verticies, sizeof(Vertex) * verticiesCount);
 	transformedIndecies = (unsigned int*)malloc(sizeof(unsigned int) * indeciesCount);
@@ -97,7 +98,7 @@ Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verti
 
 Geometry::~Geometry()
 {
-	delete verticies, indecies;
+	delete verticies, indecies, transformedVerticies, transformedIndecies;
 }
 
 
@@ -335,5 +336,109 @@ void Cube::setGeometry()
 								20, 21, 22,
 								22, 23, 20
 		}, 24, 36
+	);
+}
+
+
+Sphere::Sphere(int resolution) : Mesh() { setGeometry(resolution); }
+Sphere::Sphere(Vector3D* position, int resolution) : Mesh(position) { setGeometry(resolution); }
+Sphere::Sphere(Vector3D* position, Vector3D* rotation, int resolution) : Mesh(position, rotation) { setGeometry(resolution); }
+Sphere::Sphere(Vector3D* position, Vector3D* rotation, Vector3D* scale, int resolution) : Mesh(position, rotation, scale) { setGeometry(resolution); }
+
+void Sphere::setGeometry(int resolution)
+{
+	name = "sphere";
+	delete geometry;
+	Vertex* verticies = new Vertex[(resolution) * (resolution) * 2];
+	unsigned int* indecies = new unsigned int[(resolution) * (resolution) * 2 * 6];
+
+	float half = ((float)resolution-1) / 2.0;
+
+	for (int z = 0; z < resolution; z++)
+	{
+		for (int x = 0; x < resolution; x++)
+		{
+			float i = ((float)x / half) - 1;
+			
+			float k = ((float)z / half) - 1;
+			float j = std::sqrt(1 - (i * i + k * k));
+			if (isnan(j)) j = 0;
+			
+			if (i > 0)
+				i = ( std::sqrt(1 - (j * j + k * k)));
+			else
+				i = (-std::sqrt(1 - (j * j + k * k)));
+			
+			
+			if (k >= 0)
+				k = std::sqrt(1 - (i * i + j * j));
+			else
+				k = -std::sqrt(1 - (i * i + j * j));
+			
+
+			verticies[(z * resolution + x)].position = { i, j, k };
+			
+			verticies[(z * resolution + x)].normal = { i, j, k };
+		}
+	}
+	for (int z = 0; z < resolution; z++)
+	{
+		for (int x = 0; x < resolution; x++)
+		{
+			float i = ((float)x / half) - 1;
+
+			float k = ((float)z / half) - 1;
+			float j = -std::sqrt(1 - (i * i + k * k));
+			if (isnan(j)) j = 0;
+
+			if (i >= 0)
+				i = (std::sqrt(1 - (k * k + j * j)));
+			else
+				i = (-std::sqrt(1 - (k * k + j * j)));
+			if (k >= 0)
+				k = std::sqrt(1 - (i * i + j * j));
+			else
+				k = -std::sqrt(1 - (i * i + j * j));
+
+			verticies[(z * resolution + x) + (resolution * resolution)].position = {i, j, k};
+			
+			verticies[(z * resolution + x) + (resolution * resolution)].normal = { i, j, k };
+		}
+	}
+
+	for (int i = 0; i < (resolution-1); i++)
+	{
+		for (int j = 0; j < (resolution-1); j++)
+		{
+			int index = (i * resolution + j);
+			int vertIndex = (i * (resolution) + j);
+			indecies[index * 6] = vertIndex;
+			indecies[index * 6 + 1] = vertIndex + 1;
+			indecies[index * 6 + 2] = vertIndex + resolution;
+
+			indecies[index * 6 + 3] = vertIndex + resolution;
+			indecies[index * 6 + 4] = vertIndex + resolution + 1;
+			indecies[index * 6 + 5] = vertIndex + 1;
+		}
+	}
+	for (int i = 0; i < (resolution - 1); i++)
+	{
+		for (int j = 0; j < (resolution - 1); j++)
+		{
+			int index = (i * resolution + j)+(resolution)*(resolution);
+			int vertIndex = (i * (resolution)+j) + (resolution) * (resolution);
+			indecies[index * 6] = vertIndex;
+			indecies[index * 6 + 1] = vertIndex + 1;
+			indecies[index * 6 + 2] = vertIndex + resolution;
+
+			indecies[index * 6 + 3] = vertIndex + resolution;
+			indecies[index * 6 + 4] = vertIndex + resolution + 1;
+			indecies[index * 6 + 5] = vertIndex + 1;
+		}
+	}
+
+	geometry = new Geometry(
+		verticies,
+		indecies, resolution * resolution * 2, (resolution) * (resolution) * 2 * 6
 	);
 }
