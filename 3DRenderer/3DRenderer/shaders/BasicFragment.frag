@@ -43,11 +43,11 @@ const float Pi = 3.14159265359;
 
 float distributionGGX(float nDotH, float roughness)
 {
-	float a = roughness * roughness;
+	float a = max(roughness * roughness, 0.001);
 	float a2 = a * a;
 	float denom = nDotH * nDotH * (a2 - 1.0) + 1.0;
 	denom = Pi * denom * denom;
-	return a2 * max(denom, 0.000001);
+	return a2 / max(denom, 0.000001);
 }
 
 float geometrySmith(float nDotV, float nDotL, float roughness)
@@ -85,14 +85,16 @@ vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance,
 
 	float distrib = distributionGGX(NdotH, roughness);
 	float geometry = geometrySmith(reflectDir, lightReflect, roughness);
-	vec3 freshnel = freshnelSchlick(lightReflect, reflectivity);
+	vec3 freshnel = freshnelSchlick(HdotV, reflectivity);
 
 	vec3 spec = distrib * geometry * freshnel;
 	spec /= 4.0 * reflectDir * lightReflect;
+	spec *= specular;
 
 	vec3 KD = vec3(1.0) - freshnel;
 	KD *= 1.0 - metalic;
 
+	//return vec3(distrib);
 	return (KD * albedo / Pi + spec) * radiance * lightReflect;
 }
 
@@ -110,14 +112,16 @@ vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity,
 
 	float distrib = distributionGGX(NdotH, roughness);
 	float geometry = geometrySmith(reflectDir, lightReflect, roughness);
-	vec3 freshnel = freshnelSchlick(lightReflect, reflectivity);
+	vec3 freshnel = freshnelSchlick(HdotV, reflectivity);
 
 	vec3 spec = distrib * geometry * freshnel;
 	spec /= 4.0 * reflectDir * lightReflect;
+	spec *= specular;
 
 	vec3 KD = vec3(1.0) - freshnel;
 	KD *= 1.0 - metalic;
 
+	//return spec;
 	return (KD * albedo / Pi + spec) * (intensity * lightColor) * lightReflect;
 }
 
@@ -140,7 +144,7 @@ vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float i
 
 	float distrib = distributionGGX(NdotH, roughness);
 	float geometry = geometrySmith(reflectDir, lightReflect, roughness);
-	vec3 freshnel = freshnelSchlick(lightReflect, reflectivity);
+	vec3 freshnel = freshnelSchlick(HdotV, reflectivity);
 
 	vec3 spec = distrib * geometry * freshnel;
 	spec /= 4.0 * reflectDir * lightReflect;
@@ -157,13 +161,17 @@ vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float i
 void main()
 {
 	vec4 albedo = (texture(u_Texture, v_TexCoord) * u_UseTex) + (u_Color * (1 - u_UseTex));
-	float specular = (texture(u_SpecularTexture, v_TexCoord).r * u_UseSpecTex) + (u_Specular * (1 - u_UseSpecTex));
-	float metalic = (texture(u_MetalicTexture, v_TexCoord).r * u_UseMetalTex) + (u_Metalic * (1 - u_UseMetalTex));
-	float roughness = (texture(u_RoughnessTexture, v_TexCoord).r * u_UseRoughTex) + (u_Roughness * (1 - u_UseRoughTex));
+	//float specular = (texture(u_SpecularTexture, v_TexCoord).r * u_UseSpecTex) + (u_Specular * (1 - u_UseSpecTex));
+	//float metalic = (texture(u_MetalicTexture, v_TexCoord).r * u_UseMetalTex) + (u_Metalic * (1 - u_UseMetalTex));
+	//float roughness = (texture(u_RoughnessTexture, v_TexCoord).r * u_UseRoughTex) + (u_Roughness * (1 - u_UseRoughTex));
 	//float normal = (texture(u_NormalTexture, v_TexCoord) * u_UseSpecTex) + (u_Specular * (1 - u_UseSpecTex))
 
+	float specular = u_Specular;
+	float metalic = u_Metalic;
+	float roughness = u_Roughness;
+
 	vec3 normal = normalize(v_Normal);
-	vec3 vector = normalize(v_CamPos - v_Pos);
+	vec3 vector = normalize(v_Pos - v_CamPos);
 
 	vec3 reflectivity = mix(vec3(0.04), vec3(albedo), metalic);
 
@@ -183,7 +191,7 @@ void main()
 	{
 		if (u_DirectLightColor[i].w > 0)
 		{
-			totalLight += directLight(vec3(u_DirectLightColor[i]), u_DirectLightDir[i], u_DirectLightColor[i].w,
+			totalLight += directLight(vec3(u_DirectLightColor[i]), -u_DirectLightDir[i], u_DirectLightColor[i].w,
 									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity);
 			lightCount++;
 		}
@@ -203,5 +211,6 @@ void main()
 	vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0) * albedo;
 	
 	color = ambient + vec4(totalLight, 1.0);
-	//color = albedo * vec4(totalLight / lightCount + 0.2, 1);//spotLight(vec3(1, 0, 0), lightVec, vec3(0, -1, 0), 5, 1);
+	//color = vec4(u_Roughness, 0.0, 0.0, 1.0);
+	//color = albedo * vec4(totalLight + 0.2, 1);//spotLight(vec3(1, 0, 0), lightVec, vec3(0, -1, 0), 5, 1);
 }

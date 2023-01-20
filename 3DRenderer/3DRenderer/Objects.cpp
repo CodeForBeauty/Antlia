@@ -361,23 +361,25 @@ void Sphere::setGeometry(int resolution)
 			float i = ((float)x / half) - 1;
 			
 			float k = ((float)z / half) - 1;
+			verticies[(z * resolution + x)].uv = { i, k };
 			float j = std::sqrt(1 - (i * i + k * k));
 			if (isnan(j)) j = 0;
 			
-			if (i > 0)
-				i = ( std::sqrt(1 - (j * j + k * k)));
+			if (i >= 0)
+				i = ( std::sqrt(1.01 - (j * j + k * k)));
 			else
-				i = (-std::sqrt(1 - (j * j + k * k)));
+				i = (-std::sqrt(1.01 - (j * j + k * k)));
 			
+			j = std::sqrt(1 - (i * i + k * k));
+			if (isnan(j)) j = 0;
 			
 			if (k >= 0)
 				k = std::sqrt(1 - (i * i + j * j));
 			else
 				k = -std::sqrt(1 - (i * i + j * j));
 			
-
-			verticies[(z * resolution + x)].position = { i, j, k };
 			
+			verticies[(z * resolution + x)].position = { i, j, k };
 			verticies[(z * resolution + x)].normal = { i, j, k };
 		}
 	}
@@ -388,20 +390,24 @@ void Sphere::setGeometry(int resolution)
 			float i = ((float)x / half) - 1;
 
 			float k = ((float)z / half) - 1;
-			float j = -std::sqrt(1 - (i * i + k * k));
+			verticies[(z * resolution + x) + (resolution * resolution)].uv = {i, k};
+			float j = std::sqrt(1 - (i * i + k * k));
 			if (isnan(j)) j = 0;
 
 			if (i >= 0)
-				i = (std::sqrt(1 - (k * k + j * j)));
+				i = (std::sqrt(1.01 - (j * j + k * k)));
 			else
-				i = (-std::sqrt(1 - (k * k + j * j)));
+				i = (-std::sqrt(1.01 - (j * j + k * k)));
+
+			j = -std::sqrt(1 - (i * i + k * k));
+			if (isnan(j)) j = 0;
+
 			if (k >= 0)
 				k = std::sqrt(1 - (i * i + j * j));
 			else
 				k = -std::sqrt(1 - (i * i + j * j));
 
 			verticies[(z * resolution + x) + (resolution * resolution)].position = {i, j, k};
-			
 			verticies[(z * resolution + x) + (resolution * resolution)].normal = { i, j, k };
 		}
 	}

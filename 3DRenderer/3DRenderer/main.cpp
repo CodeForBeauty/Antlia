@@ -45,28 +45,22 @@ int main(void)
 
     Material* mat1 = new Material();
     mat1->SetMetalic(0.0f);
-    mat1->SetRoughness(1.0f);
+    mat1->SetRoughness(0.0f);
     mat1->SetSpecular(0.5f);
     Material* mat2 = new Material();
-    mat2->SetMetalic(1.0f);
-    mat2->SetRoughness(0.0f);
+    mat2->SetMetalic(0.0f);
+    mat2->SetRoughness(0.6f);
     mat2->SetSpecular(0.5f);
+    mat2->SetAlbedo(0.8, 0.2, 0.2, 1.0);
 
-    PointLight* light1 = new PointLight({ 0, 0, 1 }, 20);
+    PointLight* light1 = new PointLight({ 1, 1, 1 }, 40);
     PointLight* light2 = new PointLight({ 1, 0, 0 }, 20);
     PointLight* light3 = new PointLight({ 0, 1, 0 }, 20);
     DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
-    //SpotLight* spotLight = new SpotLight({ 1, 0, 0 }, 3, 25);
-    //spotLight->SetPosition(Vector3D(-0.5,1, 2));
-    //spotLight->SetRotation(Vector3D(180, 0, 0));
-    //dirLight->SetRotation(Vector3D(25, 0, 0));
-    //light1->intensity = 0.5;
-    light1->SetPosition(Vector3D(-2, 1, 2));
+
+    light1->SetPosition(Vector3D(0, 1, 0));
     light2->SetPosition(Vector3D(1, 1, 3));
     light3->SetPosition(Vector3D(0, -1, 2));
-
-    glUseProgram(mat1->program);
-    mat1->SetAlbedo(1, 0, 0, 1);
 
     cube1->SetName("test");
 
@@ -82,7 +76,7 @@ int main(void)
     scene->AddMaterial(mat2);
 
     scene->SetObjectMaterial(plane, mat1);
-    //scene->SetObjectMaterial(cube1, mat1);
+    scene->SetObjectMaterial(cube2, mat2);
     scene->SetObjectMaterial(cube, mat2);
 
     scene->AddLight(light1);
@@ -90,7 +84,6 @@ int main(void)
     //scene->AddLight(light3);
     scene->AddLight(dirLight);
 
-    //scene->DeleteMaterial(mat2);
 
     float* proj = new float[16] {
                                 1, 0, 0, 0,
@@ -112,14 +105,6 @@ int main(void)
     cube1->SetPosition(Vector3D(-2, 0, 2));
     cube2->SetPosition(Vector3D(0, 0, 2));
     plane->SetPosition(Vector3D(-0.5, 0, 3));
-
-    //scene->DeleteObject(cube);
-    //scene->DeleteLight(spotLight);
-
-    //cube->SetScale(Vector3D(2, 2, 2));
-
-    //scene->DeleteMaterial(mat2);
-
 
     glEnable(GL_DEPTH_TEST);
 
@@ -157,11 +142,7 @@ int main(void)
         i.x += 1;
         i1.y += 1;
 
-        //light1->Move(Vector3D(0.05, 0, 0));
         dirLight->Rotate(Vector3D(1, 0, 0));
-        //spotLight->Move(Vector3D(0, -0.1, 0));
-        //spotLight->SetAngle(spotLight->GetAngle() + 0.1);
-        //std::cout << light1->GetPosition().x << std::endl;
 
         //scene->preview->SetRotation(i);
 

@@ -47,9 +47,13 @@ void Material::CompileShaders()
 	glUniform4f(color, albedo[0], albedo[1], albedo[2], albedo[3]);
 	//glUniform1i(glGetUniformLocation(program, "u_Texture"), 0);
 
-	glUniform1i(glGetUniformLocation(program, "u_Metalic"), metalic);
-	glUniform1i(glGetUniformLocation(program, "u_Roughness"), roughness);
-	glUniform1i(glGetUniformLocation(program, "u_Specular"), specular);
+	glUniform1f(glGetUniformLocation(program, "u_Metalic"), metalic);
+	glUniform1f(glGetUniformLocation(program, "u_Roughness"), roughness);
+	glUniform1f(glGetUniformLocation(program, "u_Specular"), specular);
+
+	glUniform1i(glGetUniformLocation(program, "u_UseSpecTex"), 0);
+	glUniform1i(glGetUniformLocation(program, "u_UseRoughTex"), 0);
+	glUniform1i(glGetUniformLocation(program, "u_UseMetalTex"), 0);
 }
 
 void Material::SetCamPos(float x, float y, float z)
@@ -81,7 +85,8 @@ float* Material::GetAlbedo()
 void Material::SetMetalic(float value)
 {
 	metalic = value;
-	glUniform1i(glGetUniformLocation(program, "u_Metalic"), value);
+	std::cout << glGetUniformLocation(program, "u_Metalic") << " " << value << std::endl;
+	glUniform1f(glGetUniformLocation(program, "u_Metalic"), value);
 }
 float Material::GetMetalic()
 {
@@ -90,7 +95,8 @@ float Material::GetMetalic()
 void Material::SetRoughness(float value)
 {
 	roughness = value;
-	glUniform1i(glGetUniformLocation(program, "u_Roughness"), value);
+	std::cout << glGetUniformLocation(program, "u_Roughness") << " roughness " << value << std::endl;
+	glUniform1f(glGetUniformLocation(program, "u_Roughness"), value);
 }
 float Material::GetRoughness()
 {
@@ -99,7 +105,7 @@ float Material::GetRoughness()
 void Material::SetSpecular(float value) 
 {
 	specular = value;
-	glUniform1i(glGetUniformLocation(program, "u_Specular"), value);
+	glUniform1f(glGetUniformLocation(program, "u_Specular"), value);
 }
 float Material::GetSpecular()
 {
