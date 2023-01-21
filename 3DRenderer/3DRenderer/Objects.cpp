@@ -250,41 +250,6 @@ void Cube::setGeometry()
 {
 	name = "cube";
 	delete geometry;
-	/*
-	geometry = new Geometry(
-		new Vertex[8]{
-				{{  0.5,  0.5, -0.5 }, { 0.33,  0.33, -0.34}, {1.0, 1.0}},
-				{{ -0.5,  0.5, -0.5 }, {-0.33,  0.33, -0.34}, {0.0, 1.0}},
-				{{ -0.5, -0.5, -0.5 }, {-0.33, -0.33, -0.34}, {0.0, 0.0}},
-				{{  0.5, -0.5, -0.5 }, { 0.33, -0.33, -0.34}, {1.0, 0.0}},
-
-				{{  0.5, -0.5,  0.5 }, { 0.33, -0.33, 0.34}, { 0.0, 1.0 }},
-				{{  0.5,  0.5,  0.5 }, { 0.33,  0.33, 0.34}, { 0.0, 0.0 }},
-
-				{{ -0.5,  0.5,  0.5 }, { 0.33,  0.33, 0.34}, { 1.0, 0.0 }},
-				{{ -0.5, -0.5,  0.5 }, {-0.33, -0.33, 0.34}, { 1.0, 1.0 }}
-		},
-		new unsigned int[36] {
-					0, 1, 2,
-					2, 3, 0,
-
-					0, 3, 4,
-					4, 5, 0,
-
-					1, 6, 7,
-					7, 2, 1,
-
-					0, 1, 6,
-					6, 5, 0,
-
-					3, 2, 7,
-					7, 4, 3,
-
-					7, 6, 5,
-					5, 4, 7
-			}, 8, 36
-				);
-	*/
 	geometry = new Geometry(
 		new Vertex[24]{
 				{{  0.5,  0.5, -0.5 }, { 0.0,  0.0, -1.0 }, { 1.0, 1.0 }},
@@ -321,17 +286,17 @@ void Cube::setGeometry()
 								0, 1, 2,
 								2, 3, 0,
 
-								4, 5, 6,
-								6, 7, 4,
+								6, 5, 4,
+								4, 7, 6,
 
-								8, 9, 10,
-								10, 11, 8,
+								10, 9, 8,
+								8, 11, 10,
 
-								12, 13, 14,
-								14, 15, 12,
+								14, 13, 12,
+								12, 15, 14,
 
-								16, 17, 18,
-								18, 19, 16,
+								18, 17, 16,
+								16, 19, 18,
 
 								20, 21, 22,
 								22, 23, 20
@@ -373,12 +338,6 @@ void Sphere::setGeometry(int resolution)
 			j = std::sqrt(1 - (i * i + k * k));
 			if (isnan(j)) j = 0;
 			
-			if (k >= 0)
-				k = std::sqrt(1 - (i * i + j * j));
-			else
-				k = -std::sqrt(1 - (i * i + j * j));
-			
-			
 			verticies[(z * resolution + x)].position = { i, j, k };
 			verticies[(z * resolution + x)].normal = { i, j, k };
 		}
@@ -402,11 +361,6 @@ void Sphere::setGeometry(int resolution)
 			j = -std::sqrt(1 - (i * i + k * k));
 			if (isnan(j)) j = 0;
 
-			if (k >= 0)
-				k = std::sqrt(1 - (i * i + j * j));
-			else
-				k = -std::sqrt(1 - (i * i + j * j));
-
 			verticies[(z * resolution + x) + (resolution * resolution)].position = {i, j, k};
 			verticies[(z * resolution + x) + (resolution * resolution)].normal = { i, j, k };
 		}
@@ -422,9 +376,9 @@ void Sphere::setGeometry(int resolution)
 			indecies[index * 6 + 1] = vertIndex + 1;
 			indecies[index * 6 + 2] = vertIndex + resolution;
 
-			indecies[index * 6 + 3] = vertIndex + resolution;
+			indecies[index * 6 + 5] = vertIndex + resolution;
 			indecies[index * 6 + 4] = vertIndex + resolution + 1;
-			indecies[index * 6 + 5] = vertIndex + 1;
+			indecies[index * 6 + 3] = vertIndex + 1;
 		}
 	}
 	for (int i = 0; i < (resolution - 1); i++)
@@ -433,9 +387,9 @@ void Sphere::setGeometry(int resolution)
 		{
 			int index = (i * resolution + j)+(resolution)*(resolution);
 			int vertIndex = (i * (resolution)+j) + (resolution) * (resolution);
-			indecies[index * 6] = vertIndex;
+			indecies[index * 6 + 2] = vertIndex;
 			indecies[index * 6 + 1] = vertIndex + 1;
-			indecies[index * 6 + 2] = vertIndex + resolution;
+			indecies[index * 6] = vertIndex + resolution;
 
 			indecies[index * 6 + 3] = vertIndex + resolution;
 			indecies[index * 6 + 4] = vertIndex + resolution + 1;

@@ -142,7 +142,7 @@ void Scene::DeleteObject(Mesh* object)
 		if (i == object) start = true;
 		if (start)
 			for (int j = 0; j < i->geometry->indeciesCount; j++)
-				i->geometry->transformedIndecies[j] = i->geometry->indecies[j] - object->geometry->indeciesCount;
+				i->geometry->transformedIndecies[j] = i->geometry->transformedIndecies[j] - object->geometry->verticiesCount;
 	}
 	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
 		materialGroup[object->material->sceneSlot].end(),

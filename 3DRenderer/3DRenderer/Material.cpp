@@ -4,20 +4,22 @@ Material::Material()
 {
 	vs = new Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER);
 	fs = new Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
+	gs = new Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER);
 	albedo = new float[4] {1, 1, 1, 1};
 	CompileShaders();
 }
 
-Material::Material(Shader* vs, Shader* fs) : vs(vs), fs(fs) { CompileShaders(); albedo = new float[4] {1, 1, 1, 1}; }
+Material::Material(Shader* vs, Shader* fs, Shader* gs) : vs(vs), fs(fs) { CompileShaders(); albedo = new float[4] {1, 1, 1, 1}; }
 
-Material::Material(Shader* vs, Shader* fs, float* albedo) : vs(vs), fs(fs), albedo(albedo) { CompileShaders(); }
+Material::Material(Shader* vs, Shader* fs, Shader* gs, float* albedo) : vs(vs), fs(fs), albedo(albedo) { CompileShaders(); }
 
-Material::Material(Shader* vs, Shader* fs, float* albedo, float metalic) : vs(vs), fs(fs), albedo(albedo), metalic(metalic) { CompileShaders(); }
+Material::Material(Shader* vs, Shader* fs, Shader* gs, float* albedo, float metalic) : vs(vs), fs(fs), albedo(albedo), metalic(metalic) { CompileShaders(); }
 
 Material::Material(float* albedo) : albedo(albedo) 
 {
 	vs = new Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER);
 	fs = new Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
+	gs = new Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER);
 	CompileShaders();
 }
 
@@ -35,6 +37,7 @@ void Material::CompileShaders()
 	program = glCreateProgram();
 	glAttachShader(program, vs->compileShader());
 	glAttachShader(program, fs->compileShader());
+	glAttachShader(program, gs->compileShader());
 	glLinkProgram(program);
 	glValidateProgram(program);
 	glUseProgram(program);

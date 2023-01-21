@@ -13,9 +13,9 @@ class Material
 {
 public:
 	Material();
-	Material(Shader* vs, Shader* fs);
-	Material(Shader* vs, Shader* fs, float* albedo);
-	Material(Shader* vs, Shader* fs, float* albedo, float metalic);
+	Material(Shader* vs, Shader* fs, Shader* gs);
+	Material(Shader* vs, Shader* fs, Shader* gs, float* albedo);
+	Material(Shader* vs, Shader* fs, Shader* gs, float* albedo, float metalic);
 	Material(float* albedo);
 	~Material();
 
@@ -43,6 +43,7 @@ private:
 	void CompileShaders();
 	Shader* vs;
 	Shader* fs;
+	Shader* gs;
 	Texture* texture;
 	Texture* specTex;
 	Texture* metalTex;
