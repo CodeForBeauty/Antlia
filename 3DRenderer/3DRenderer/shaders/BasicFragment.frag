@@ -4,6 +4,7 @@ in vec2 v_TexCoord;
 in vec3 v_Normal;
 in vec3 v_CamPos;
 in vec3 v_Pos;
+in mat3 v_TBN;
 
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
@@ -166,12 +167,15 @@ void main()
 	float metalic = (texture(u_MetalicTexture, v_TexCoord).r * u_UseMetalTex) + (u_Metalic * (1 - u_UseMetalTex));
 	float roughness = (texture(u_RoughnessTexture, v_TexCoord).r * u_UseRoughTex) + (u_Roughness * (1 - u_UseRoughTex));
 	//float normal = (texture(u_NormalTexture, v_TexCoord) * u_UseSpecTex) + (u_Specular * (1 - u_UseSpecTex))
+	vec3 normal;
+	if (u_UseNormTex == 1)
+	{
+		normal = vec3(texture(u_NormalTexture, v_TexCoord) * 2 - 1);
+		normal = v_TBN * normal;
+	}
+	else
+		normal = normalize(v_Normal);
 
-	//float specular = u_Specular;
-	//float metalic = u_Metalic;
-	//float roughness = u_Roughness;
-
-	vec3 normal = normalize(v_Normal);
 	vec3 vector = normalize(v_Pos - v_CamPos);
 
 	vec3 reflectivity = mix(vec3(0.04), vec3(albedo), metalic);
@@ -212,6 +216,4 @@ void main()
 	vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0) * albedo;
 	
 	color = ambient + vec4(totalLight, 1.0);
-	//color = vec4(u_Roughness, 0.0, 0.0, 1.0);
-	//color = albedo * vec4(totalLight + 0.2, 1);//spotLight(vec3(1, 0, 0), lightVec, vec3(0, -1, 0), 5, 1);
 }

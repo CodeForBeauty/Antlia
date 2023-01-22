@@ -7,6 +7,7 @@ out vec2 v_TexCoord;
 out vec3 v_Normal;
 out vec3 v_CamPos;
 out vec3 v_Pos;
+out mat3 v_TBN;
 
 
 in DATA
@@ -43,7 +44,8 @@ void main()
 		vec3 T = normalize(cross(bitangent, data_in[i].normal));
 		vec3 B = normalize(cross(tangent, data_in[i].normal));
 		mat3 TBN = mat3(T, B, data_in[i].normal);
-		v_Normal = TBN * vec3(0, 0, 1);//data_in[i].normal;
+		v_Normal = data_in[i].normal;
+		v_TBN = TBN;
 		v_CamPos = data_in[i].camPos;
 		v_Pos = data_in[i].pos;
 		EmitVertex();
