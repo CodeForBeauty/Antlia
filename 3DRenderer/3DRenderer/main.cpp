@@ -69,15 +69,16 @@ int main(void)
     scene->AddObject(cube1);
     scene->AddObject(cube2);
 
-    mat1->LoadTexture("test.png", 1);
+    mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
+    mat1->LoadTexture("waterNormal.jpg", TEXTURE_NORMAL);
     //mat2->LoadTexture("test1.jpg", 1);
 
     scene->AddMaterial(mat1);
     scene->AddMaterial(mat2);
 
     scene->SetObjectMaterial(plane, mat1);
-    scene->SetObjectMaterial(cube2, mat2);
-    scene->SetObjectMaterial(cube, mat2);
+    scene->SetObjectMaterial(cube2, mat1);
+    scene->SetObjectMaterial(cube, mat1);
 
     scene->AddLight(light1);
     scene->AddLight(spotLight);

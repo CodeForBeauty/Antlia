@@ -40,6 +40,7 @@ uniform vec2 u_SpotLightAngle[8];
 out vec4 color;
 
 const float Pi = 3.14159265359;
+const float gamma = 2.2f;
 
 
 float distributionGGX(float nDotH, float roughness)
@@ -216,4 +217,5 @@ void main()
 	vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0) * albedo;
 	
 	color = ambient + vec4(totalLight, 1.0);
+	color.rgb = pow(color.rgb, vec3(1 / gamma));
 }
