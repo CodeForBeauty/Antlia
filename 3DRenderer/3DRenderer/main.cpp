@@ -9,6 +9,8 @@
 #include "Texture.h"
 #include "linmath.h"
 
+#include"FileLoad.h"
+
 
 int main(void)
 {
@@ -36,11 +38,6 @@ int main(void)
     glewInit();
 
     Scene* scene = new Scene();
-
-    Mesh* plane = new Cube();
-    Cube* cube = new Cube();
-    Cube* cube1 = new Cube();
-    Mesh* cube2 = new Sphere(15);
     
 
     Material* mat1 = new Material();
@@ -62,23 +59,12 @@ int main(void)
     spotLight->SetPosition(Vector3D(0, 1, 1.3));
     light3->SetPosition(Vector3D(0, -1, 2));
 
-    cube1->SetName("test");
-
-    scene->AddObject(plane);
-    scene->AddObject(cube);
-    scene->AddObject(cube1);
-    scene->AddObject(cube2);
-
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
     mat1->LoadTexture("waterNormal.jpg", TEXTURE_NORMAL);
     //mat2->LoadTexture("test1.jpg", 1);
 
     scene->AddMaterial(mat1);
     scene->AddMaterial(mat2);
-
-    scene->SetObjectMaterial(plane, mat1);
-    scene->SetObjectMaterial(cube2, mat1);
-    scene->SetObjectMaterial(cube, mat1);
 
     scene->AddLight(light1);
     scene->AddLight(spotLight);
@@ -102,10 +88,12 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    cube->SetPosition(Vector3D(1, -1, 3));
-    cube1->SetPosition(Vector3D(-2, 0, 2));
-    cube2->SetPosition(Vector3D(0, 0, 2));
-    plane->SetPosition(Vector3D(-0.5, 0, 3));
+    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/suzane.obj", scene);
+    Mesh* suzanne = objs[0];
+    std::cout << suzanne->GetName() << objs.size();
+
+    suzanne->SetRotation(Vector3D(0, 180, 0));
+    suzanne->SetPosition(Vector3D(0, 0, 3));
 
     //scene->DeleteObject(cube2);
 
@@ -113,7 +101,7 @@ int main(void)
 
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
-    glFrontFace(GL_CW);
+    glFrontFace(GL_CCW);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -146,11 +134,13 @@ int main(void)
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        i.x += 1;
+        i.y += 1;
         i1.y += 1;
 
+        suzanne->SetRotation(i);
+        //suzanne->Move(i);
+
         spotLight->Rotate(Vector3D(1, 0, 0));
-        cube2->Rotate(Vector3D(0, 1, 0));
 
         //scene->preview->SetRotation(i);
 
@@ -158,7 +148,6 @@ int main(void)
 
         //cube->SetRotation(i);
 
-        plane->SetRotation(i1);
 
         scene->Render(proj);
 
