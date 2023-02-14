@@ -110,19 +110,19 @@ int main(void)
         glfwGetCursorPos(window, &xpos, &ypos);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
-            scene->preview->Move(Vector3D(0, 0, 0.05));
+            scene->preview->Move(scene->preview->forward * 0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
-            scene->preview->Move(Vector3D(0, 0, -0.05));
+            scene->preview->Move(scene->preview->forward * -0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            scene->preview->Move(Vector3D(-0.05, 0, 0));
+            scene->preview->Move(scene->preview->right * -0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
-            scene->preview->Move(Vector3D(0.05, 0, 0));
+            scene->preview->Move(scene->preview->right * 0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         {

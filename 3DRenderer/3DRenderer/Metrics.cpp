@@ -92,3 +92,8 @@ void Vector3D::operator+=(const Vector3D& value)
 	y += value.y;
 	z += value.z;
 }
+
+Vector3D Vector3D::operator* (float value)
+{
+	return Vector3D(x * value, y * value, z * value);
+}

@@ -36,6 +36,10 @@ void Camera::SetRotation(const Vector3D& rot)
 	rotation->z = rot.z;
 	update = true;
 	linmath::rotateMetricies(*rotation, rotMetricies);
+	linmath::vec3 forw = linmath::multiplyByMetricies4x4(rotMetricies, { 0, 0, 1 });
+	linmath::vec3 righ = linmath::multiplyByMetricies4x4(rotMetricies, { -1, 0, 0 });
+	forward = Vector3D(-forw.x, -forw.y, forw.z);
+	right = Vector3D(-righ.x, -righ.y, righ.z);
 }
 void Camera::Rotate(const Vector3D& offset)
 {
@@ -44,6 +48,10 @@ void Camera::Rotate(const Vector3D& offset)
 	rotation->z += offset.z;
 	update = true;
 	linmath::rotateMetricies(*rotation, rotMetricies);
+	linmath::vec3 forw = linmath::multiplyByMetricies4x4(rotMetricies, { 0, 0, 1 });
+	linmath::vec3 righ = linmath::multiplyByMetricies4x4(rotMetricies, { -1, 0, 0 });
+	forward = Vector3D(-forw.x, -forw.y, forw.z);
+	right = Vector3D(-righ.x, -righ.y, righ.z);
 }
 
 Vector3D Camera::GetPosition() const

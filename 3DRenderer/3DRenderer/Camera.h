@@ -30,6 +30,9 @@ public:
 											0, 0, 1, 0,
 											0, 0, 1, 0
 										};
+
+	Vector3D forward = Vector3D(0, 0, 1);
+	Vector3D right = Vector3D(1, 0, 0);
 private:
 	Vector3D* position;
 	Vector3D* rotation;

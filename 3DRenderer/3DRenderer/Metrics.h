@@ -28,6 +28,8 @@ public:
 	Vector3D operator* (float& value);
 	Vector3D operator/ (float& value);
 
+	Vector3D operator* (float value);
+
 	void operator+= (Vector3D& value);
 	void operator+= (float& value);
 
