@@ -22,7 +22,7 @@ public:
 	float near;
 	float far;
 
-	bool update = false;
+	bool update = true;
 	
 	float* rotMetricies = new float[16] {
 											1, 0, 0, 0,

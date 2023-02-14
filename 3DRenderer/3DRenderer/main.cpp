@@ -88,14 +88,12 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/suzane.obj", scene);
+    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/icosphere.obj", scene);
     Mesh* suzanne = objs[0];
     std::cout << suzanne->GetName() << objs.size();
 
     suzanne->SetRotation(Vector3D(0, 180, 0));
     suzanne->SetPosition(Vector3D(0, 0, 3));
-
-    //scene->DeleteObject(cube2);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -103,8 +101,13 @@ int main(void)
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
 
+    double xpos, ypos;
+    double lastxpos, lastypos;
+    glfwGetCursorPos(window, &lastxpos, &lastypos);
+
     while (!glfwWindowShouldClose(window))
     {
+        glfwGetCursorPos(window, &xpos, &ypos);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
             scene->preview->Move(Vector3D(0, 0, 0.05));
@@ -129,6 +132,12 @@ int main(void)
         {
             scene->preview->Move(Vector3D(0, -0.05, 0));
         }
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && (xpos != lastxpos || ypos != lastypos))
+        {
+            scene->preview->Rotate(Vector3D((lastypos - ypos) * 0.2, (xpos - lastxpos) * 0.2, 0));
+        }
+        lastxpos = xpos;
+        lastypos = ypos;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
 

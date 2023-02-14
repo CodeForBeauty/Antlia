@@ -48,8 +48,8 @@ void linmath::rotateMetricies(Vector3D& degree, float* out)
                         0, 0, 0, 0
     };
 
-    multiplyMetricies4x4(rot1, rot2, result);
-    multiplyMetricies4x4(result, rot3, out);
+    multiplyMetricies4x4(rot3, rot2, result);
+    multiplyMetricies4x4(result, rot1, out);
 }
 
 linmath::vec3 linmath::multiplyByMetricies4x4(float* metricies, vec3 position)
