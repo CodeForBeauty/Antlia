@@ -105,8 +105,15 @@ int main(void)
     double lastxpos, lastypos;
     glfwGetCursorPos(window, &lastxpos, &lastypos);
 
+    double lastTime = glfwGetTime();
+    double time, deltaTime;
+
     while (!glfwWindowShouldClose(window))
     {
+        time = glfwGetTime();
+        deltaTime = time - lastTime;
+        lastTime = time;
+
         glfwGetCursorPos(window, &xpos, &ypos);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
@@ -134,7 +141,7 @@ int main(void)
         }
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && (xpos != lastxpos || ypos != lastypos))
         {
-            scene->preview->Rotate(Vector3D((lastypos - ypos) * 0.2, (xpos - lastxpos) * 0.2, 0));
+            scene->preview->Rotate(Vector3D((lastypos - ypos) * 10 * deltaTime, (xpos - lastxpos) * 10 * deltaTime, 0));
         }
         lastxpos = xpos;
         lastypos = ypos;
