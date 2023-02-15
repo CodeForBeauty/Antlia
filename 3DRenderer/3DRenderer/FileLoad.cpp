@@ -14,6 +14,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	std::vector<unsigned int*> indecies;
 	std::vector<unsigned int> verticiesCount;
 	std::vector<unsigned int> indeciesCount;
+	std::vector<bool> isSmooth;
 
 	std::vector<Vertex> crntVert;
 	std::vector<unsigned int> crntInd;
@@ -24,6 +25,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	std::string word;
 
 	int objCount = 0;
+	bool crntSmooth = true;
 
 	int lastPosCount = 0;
 	int lastNorCount = 0;
@@ -53,7 +55,9 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 					indecies.push_back(crntInd.data());
 					verticiesCount.push_back(crntVert.size());
 					indeciesCount.push_back(crntInd.size());
+					isSmooth.push_back(crntSmooth);
 				}
+				crntSmooth = true;
 				crntVert.clear();
 				crntInd.clear();
 			}
@@ -105,6 +109,11 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 					crntVert[crnt-1].uv = uv;
 				}
 			}
+			else if (word == "s")
+			{
+				ss >> word;
+				crntSmooth = word == "1";
+			}
 			else if (word == "vt")
 			{
 				linmath::vec2 uv{};
@@ -147,6 +156,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	indecies.push_back(crntInd.data());
 	verticiesCount.push_back(crntVert.size());
 	indeciesCount.push_back(crntInd.size());
+	isSmooth.push_back(crntSmooth);
 
 	std::vector<Mesh*> meshes;
 
@@ -154,6 +164,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	{
 		Mesh* temp = new Mesh(verticies[i], indecies[i], verticiesCount[i], indeciesCount[i]);
 		temp->SetName(names[i]);
+		temp->isSmooth = isSmooth[i];
 		std::cout << verticiesCount[i];
 		scene->AddObject(temp);
 		meshes.push_back(temp);

@@ -18,6 +18,7 @@ in DATA
 	vec3 camPos;
 	mat4 projection;
 	mat4 view;
+	bool isSmooth;
 } data_in[];
 
 void main()
@@ -44,7 +45,10 @@ void main()
 		vec3 T = normalize(cross(bitangent, data_in[i].normal));
 		vec3 B = normalize(cross(tangent, data_in[i].normal));
 		mat3 TBN = mat3(T, B, data_in[i].normal);
-		v_Normal = data_in[i].normal;
+		if (data_in[i].isSmooth)
+		{
+			v_Normal = data_in[i].normal;
+		} else v_Normal = surfaceNormal;
 		v_TBN = TBN;
 		v_CamPos = data_in[i].camPos;
 		v_Pos = data_in[i].pos;

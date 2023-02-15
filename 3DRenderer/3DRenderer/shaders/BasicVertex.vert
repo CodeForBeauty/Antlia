@@ -8,6 +8,7 @@ layout(location = 3) in vec3 normal;
 uniform vec3 u_CamPos;
 uniform mat4 u_Proj;
 uniform mat4 u_View;
+uniform bool isSmooth;
 
 out DATA
 {
@@ -17,6 +18,7 @@ out DATA
 	vec3 camPos;
 	mat4 projection;
 	mat4 view;
+	bool isSmooth;
 } data_out;
 
 void main()
@@ -29,6 +31,7 @@ void main()
 	data_out.camPos = u_CamPos;
 	data_out.projection = u_Proj;
 	data_out.view = u_View;
+	data_out.isSmooth = isSmooth;
 	//v_Pos = position;
 	//gl_Position.x /= gl_Position.w;
 	//gl_Position.y /= gl_Position.w;

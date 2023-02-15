@@ -7,6 +7,9 @@ Scene::Scene()
 {
 	materials.push_back(new Material());
 	//materials[0]->SetAlbedo
+	materials[0]->SetMetalic(0.0f);
+	materials[0]->SetRoughness(0.5f);
+	materials[0]->SetSpecular(0.5f);
 	materials[0]->sceneSlot = 0;
 	materialGroup.push_back({});
 

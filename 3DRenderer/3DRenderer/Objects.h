@@ -75,6 +75,7 @@ public:
 		3, 3
 	);
 	Material* material;
+	bool isSmooth = true;
 	float* rotMetricies = new float[16] {
 											1, 0, 0, 0,
 											0, 1, 0, 0,
