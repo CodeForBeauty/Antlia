@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "Texture.h"
+#include <string>
 
 #define TEXTURE_ALBEDO 1
 #define TEXTURE_METALIC 2
@@ -27,6 +28,9 @@ public:
 	float GetRoughness();
 	void SetSpecular(float value);
 	float GetSpecular();
+
+	void SetName(std::string name);
+	std::string GetName();
 
 	void LoadTexture(const char* path, int slot = 0);
 	void DeleteTexture(int slot);
@@ -58,4 +62,6 @@ private:
 	int view;
 	int proj;
 	int color;
+
+	std::string name = "Material";
 };

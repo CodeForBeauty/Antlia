@@ -115,6 +115,15 @@ float Material::GetSpecular()
 	return specular;
 }
 
+void Material::SetName(std::string na)
+{
+	name = na;
+}
+std::string Material::GetName()
+{
+	return name;
+}
+
 void Material::LoadTexture(const char* path, int slot)
 {
 	Use();
