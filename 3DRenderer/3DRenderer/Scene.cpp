@@ -18,7 +18,7 @@ Scene::Scene()
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 1000, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 100000, nullptr, GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -31,13 +31,14 @@ Scene::Scene()
 
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 4000, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 400000, nullptr, GL_DYNAMIC_DRAW);
 }
 
 Scene::~Scene()
 {
 	for (int i = 0; i < objects.size(); i++)
 		delete objects[i];
+	std::cout << "object" << std::endl;
 	for (int i = 0; i < entities.size(); i++)
 		delete entities[i];
 	for (int i = 0; i < lights.size(); i++)

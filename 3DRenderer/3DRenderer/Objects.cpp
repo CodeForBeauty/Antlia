@@ -98,7 +98,7 @@ Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verti
 
 Geometry::~Geometry()
 {
-	delete verticies, indecies, transformedVerticies, transformedIndecies;
+	delete indecies, verticies, transformedVerticies, transformedIndecies;
 }
 
 

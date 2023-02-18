@@ -89,7 +89,6 @@ int main(void)
     Vector3D i1 = Vector3D();
 
     std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", scene);
-    std::cout << objs.size();
     Mesh* suzanne = objs[0];
 
 

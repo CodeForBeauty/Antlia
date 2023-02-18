@@ -262,8 +262,12 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	}
 	file.close();
 
-	verticies.push_back(crntVert.data());
-	indecies.push_back(crntInd.data());
+	Vertex* data = new Vertex[crntVert.size()];
+	copy(crntVert.begin(), crntVert.end(), data);
+	unsigned int* dataInd = new unsigned int[crntInd.size()];
+	copy(crntInd.begin(), crntInd.end(), dataInd);
+	verticies.push_back(data);
+	indecies.push_back(dataInd);
 	verticiesCount.push_back(crntVert.size());
 	indeciesCount.push_back(crntInd.size());
 	isSmooth.push_back(crntSmooth);
