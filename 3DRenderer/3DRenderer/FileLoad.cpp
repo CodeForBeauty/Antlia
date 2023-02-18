@@ -19,7 +19,9 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	std::vector<bool> isSmooth;
 
 	std::vector<Vertex> crntVert;
+	std::vector<Vertex> crntMatVert;
 	std::vector<unsigned int> crntInd;
+	std::string crntName;
 
 	std::string line;
 	std::ifstream file(filepath);
@@ -43,7 +45,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	int lastUVCount = 0;
 
 	std::vector<Material*> materials;
-	Material* crntMat = new Material();
+	Material* crntMat = nullptr;
 
 	std::vector<std::string> materialNames;
 
@@ -57,7 +59,6 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			if (word == "mtllib")
 			{
 				ss >> word;
-				std::cout << path + word << std::endl;
 				std::ifstream mtl(path + word);
 				while (getline(mtl, line))
 				{
@@ -118,6 +119,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 				objCount++;
 				ss >> word;
 				names.push_back(word);
+				crntName = word;
 				lastPosCount += verPos.size();
 				lastNorCount += verNor.size();
 				lastUVCount += verUV.size();
@@ -126,8 +128,12 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 				verUV.clear();
 				if (!crntVert.empty())
 				{
-					verticies.push_back(crntVert.data());
-					indecies.push_back(crntInd.data());
+					Vertex* data = new Vertex[crntVert.size()];
+					copy(crntVert.begin(), crntVert.end(), data);
+					unsigned int* dataInd = new unsigned int[crntInd.size()];
+					copy(crntInd.begin(), crntInd.end(), dataInd);
+					verticies.push_back(data);
+					indecies.push_back(dataInd);
 					verticiesCount.push_back(crntVert.size());
 					indeciesCount.push_back(crntInd.size());
 					isSmooth.push_back(crntSmooth);
@@ -140,8 +146,25 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			{
 				ss >> word;
 				auto it = std::find(materialNames.begin(), materialNames.end(), word);
-				std::cout << it - materialNames.begin() << std::endl;
 				materialIdx.push_back(it - materialNames.begin());
+				
+				if (!crntInd.empty())
+				{
+					objCount++;
+					names.push_back(crntName + word);
+
+					Vertex* data = new Vertex[crntVert.size()];
+					copy(crntVert.begin(), crntVert.end(), data);
+					unsigned int* dataInd = new unsigned int[crntInd.size()];
+					copy(crntInd.begin(), crntInd.end(), dataInd);
+
+					verticies.push_back(data);
+					indecies.push_back(dataInd);
+					verticiesCount.push_back(crntVert.size());
+					indeciesCount.push_back(crntInd.size());
+					isSmooth.push_back(crntSmooth);
+					crntInd.clear();
+				}
 			}
 			else if (word == "f")
 			{
@@ -190,10 +213,10 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 						uv = { 0, 0 };
 						normal = { 0, 0, 0 };
 					}
-					crntInd.push_back(crnt-1);
-					crntVert[crnt-1].position = position;
-					crntVert[crnt-1].normal = normal;
-					crntVert[crnt-1].uv = uv;
+					crntInd.push_back(crnt - 1);
+					crntVert[crnt - 1].position = position;
+					crntVert[crnt - 1].normal = normal;
+					crntVert[crnt - 1].uv = uv;
 				}
 			}
 			else if (word == "s")
@@ -256,7 +279,6 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 		meshes.push_back(temp);
 		if (materialIdx.size() > i)
 		{
-			std::cout << materialIdx[i] << std::endl;
 			scene->SetObjectMaterial(temp, materials[materialIdx[i]]);
 		}
 	}

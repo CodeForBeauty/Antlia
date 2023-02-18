@@ -89,11 +89,9 @@ int main(void)
     Vector3D i1 = Vector3D();
 
     std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", scene);
+    std::cout << objs.size();
     Mesh* suzanne = objs[0];
-    std::cout << suzanne->GetName() << objs.size();
 
-    suzanne->SetRotation(Vector3D(0, 180, 0));
-    suzanne->SetPosition(Vector3D(0, 0, 3));
 
     glEnable(GL_DEPTH_TEST);
 

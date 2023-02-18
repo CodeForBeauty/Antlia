@@ -88,7 +88,6 @@ float* Material::GetAlbedo()
 void Material::SetMetalic(float value)
 {
 	metalic = value;
-	std::cout << glGetUniformLocation(program, "u_Metalic") << " " << value << std::endl;
 	glUniform1f(glGetUniformLocation(program, "u_Metalic"), value);
 }
 float Material::GetMetalic()
@@ -98,7 +97,6 @@ float Material::GetMetalic()
 void Material::SetRoughness(float value)
 {
 	roughness = value;
-	std::cout << glGetUniformLocation(program, "u_Roughness") << " roughness " << value << std::endl;
 	glUniform1f(glGetUniformLocation(program, "u_Roughness"), value);
 }
 float Material::GetRoughness()
