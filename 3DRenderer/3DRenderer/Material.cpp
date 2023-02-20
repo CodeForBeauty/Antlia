@@ -125,8 +125,6 @@ std::string Material::GetName()
 void Material::LoadTexture(const char* path, int slot)
 {
 	Use();
-	if (texture)
-		delete texture;
 	switch (slot)
 	{
 	case TEXTURE_ALBEDO: if (texture) delete texture; texture = new Texture(path); break;

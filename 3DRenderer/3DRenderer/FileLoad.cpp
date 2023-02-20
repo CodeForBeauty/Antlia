@@ -1,8 +1,12 @@
+#include <filesystem>
 #include <sstream>
 #include <fstream>
 #include <cmath>
 #include "FileLoad.h"
 #include "linmath.h"
+
+namespace fs = std::filesystem;
+
 
 std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 {
@@ -48,7 +52,6 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	Material* crntMat = nullptr;
 
 	std::vector<std::string> materialNames;
-
 
 	while (getline(file, line))
 	{
@@ -110,6 +113,58 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 							{
 								crntMat->SetMetalic(0.0f);
 							}
+						}
+						else if (word == "map_Kd")
+						{
+							ss >> word;
+							fs::path tex(word);
+							if (tex.is_relative())
+							{
+								word = path + word;
+							}
+							crntMat->LoadTexture(word.c_str(), TEXTURE_ALBEDO);
+						}
+						else if (word == "map_Ks")
+						{
+							ss >> word;
+							fs::path tex(word);
+							if (tex.is_relative())
+							{
+								word = path + word;
+							}
+							crntMat->LoadTexture(word.c_str(), TEXTURE_SPECULAR);
+						}
+						else if (word == "map_Ns")
+						{
+							ss >> word;
+							fs::path tex(word);
+							if (tex.is_relative())
+							{
+								word = path + word;
+							}
+							crntMat->LoadTexture(word.c_str(), TEXTURE_ROUGHNESS);
+						}
+						else if (word == "map_refl")
+						{
+							ss >> word;
+							fs::path tex(word);
+							if (tex.is_relative())
+							{
+								word = path + word;
+							}
+							crntMat->LoadTexture(word.c_str(), TEXTURE_METALIC);
+						}
+						else if (word == "map_Bump")
+						{
+							ss >> word;
+							if (word == "-bm")
+								ss >> word; ss >> word;
+							fs::path tex(word);
+							if (tex.is_relative())
+							{
+								word = path + word;
+							}
+							crntMat->LoadTexture(word.c_str(), TEXTURE_NORMAL);
 						}
 					}
 				}
