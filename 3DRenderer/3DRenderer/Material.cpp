@@ -13,8 +13,6 @@ Material::Material(Shader* vs, Shader* fs, Shader* gs) : vs(vs), fs(fs) { Compil
 
 Material::Material(Shader* vs, Shader* fs, Shader* gs, float* albedo) : vs(vs), fs(fs), albedo(albedo) { CompileShaders(); }
 
-Material::Material(Shader* vs, Shader* fs, Shader* gs, float* albedo, float metalic) : vs(vs), fs(fs), albedo(albedo), metalic(metalic) { CompileShaders(); }
-
 Material::Material(float* albedo) : albedo(albedo) 
 {
 	vs = new Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER);

@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-Texture::Texture(const char* path)
+Texture::Texture(const char* path) : path(path)
 {
 	stbi_set_flip_vertically_on_load(true);
 	bytes = stbi_load(path, &width, &height, &channels, 4);

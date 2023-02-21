@@ -46,8 +46,7 @@ Scene::~Scene()
 	for (int i = 0; i < materials.size(); i++)
 		delete materials[i];
 	delete preview;
-	if (renderCamera)
-		delete renderCamera;
+	delete renderCamera;
 }
 
 void Scene::AddObject(Mesh* object)

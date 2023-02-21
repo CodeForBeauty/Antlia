@@ -105,6 +105,8 @@ int main(void)
     double lastTime = glfwGetTime();
     double time, deltaTime;
 
+    load::SaveScene("test.scene", scene);
+
     while (!glfwWindowShouldClose(window))
     {
         time = glfwGetTime();

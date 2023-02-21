@@ -27,15 +27,17 @@ public:
 	unsigned int vbo;
 	unsigned int ibo;
 
-	Camera* preview = new Camera(90, 0.5, 1);
-	Camera* renderCamera;
+	Camera* preview = new Camera(90, 0.5, 100);
+	Camera* renderCamera = new Camera(90, 0.1, 100);
 
-private:
+	std::string savePath = "";
+
 	std::vector <Mesh*> objects;
 	std::vector <Light*> lights;
 	std::vector <Entity*> entities;
 	std::vector <Material*> materials;
+private:
 	std::vector <std::vector <Mesh*>> materialGroup;
 
-	bool updateLight = false;
+	bool updateLight = true;
 };

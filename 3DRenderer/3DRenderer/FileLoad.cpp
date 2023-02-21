@@ -343,3 +343,102 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	}
 	return meshes;
 }
+
+bool load::SaveScene(std::string filepath, Scene* scene)
+{
+	std::ofstream file;
+	file.open(filepath);
+
+	std::string line;
+	line = std::to_string(scene->preview->fov) + " " + std::to_string(scene->preview->near) + " " + std::to_string(scene->preview->far) + "\n";
+	file << line;
+	Vector3D pos = scene->preview->GetPosition();
+	Vector3D rot = scene->preview->GetRotation();
+	line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
+	file << line;
+	line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
+	file << line;
+
+	line = std::to_string(scene->renderCamera->fov) + " " + std::to_string(scene->renderCamera->near) + " " + std::to_string(scene->renderCamera->far) + "\n";
+	file << line;
+	pos = scene->renderCamera->GetPosition();
+	rot = scene->renderCamera->GetRotation();
+	line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
+	file << line;
+	line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
+	file << line;
+
+	linmath::vec3 color;
+	for (Light* light : scene->lights)
+	{
+		int type = light->GetType();
+		line = std::to_string(type) + " ";
+		color = light->GetColor();
+		line += std::to_string(color.x) + " " + std::to_string(color.y) + " " + std::to_string(color.z) + " ";
+		line += light->GetName() + "\n";
+		file << line;
+		if (type == 1)
+		{
+			DirectLight* dirLight = reinterpret_cast<DirectLight*>(light);
+			rot = dirLight->GetRotation();
+			line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
+			file << line;
+		}
+		else if (type == 2)
+		{
+			PointLight* point = reinterpret_cast<PointLight*>(light);
+			pos = point->GetPosition();
+			line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + " " + std::to_string(point->GetDistance()) + "\n";
+			file << line;
+		}
+		else if (type == 3)
+		{
+			SpotLight* spot = reinterpret_cast<SpotLight*>(light);
+			pos = spot->GetPosition();
+			rot = spot->GetRotation();
+			line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + " " + std::to_string(spot->GetDistance()) + "\n";
+			file << line;
+			line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + " " + std::to_string(spot->GetAngle()) + "\n";
+			file << line;
+		}
+	}
+	file << "mat\n";
+
+	for (Material* mat : scene->materials)
+	{
+		float* albedo = mat->GetAlbedo();
+		line = std::to_string(albedo[0]) + " " + std::to_string(albedo[1]) + " " + std::to_string(albedo[2]) + " " + std::to_string(albedo[3]) + "\n";
+		file << line;
+		file << mat->GetMetalic() << " " << mat->GetRoughness() << " " << mat->GetSpecular() << " " << mat->GetName() << "\n";
+		std::string textures;
+		int count = 0;
+		if (mat->texture)
+			textures += "1 " + mat->texture->path + "\n"; count++;
+		if (mat->metalTex)
+			textures += "2 " + mat->metalTex->path + "\n"; count++;
+		if (mat->specTex)
+			textures += "3 " + mat->specTex->path + "\n"; count++;
+		if (mat->roughTex)
+			textures += "4 " + mat->roughTex->path + "\n"; count++;
+		if (mat->normal)
+			textures += "5 " + mat->normal->path + "\n"; count++;
+		file << count << "\n" << textures;
+	}
+	file << "entity\n";
+
+	Vector3D scale;
+	for (Entity* entity : scene->entities)
+	{
+		pos = entity->GetPosition();
+		rot = entity->GetRotation();
+		scale = entity->GetScale();
+
+		file << pos.x << " " << pos.y << " " << pos.z << "\n";
+		file << rot.x << " " << rot.y << " " << rot.z << "\n";
+		file << scale.x << " " << scale.y << " " << scale.z << "\n";
+		file << entity->GetName() << "\n";
+	}
+
+
+	return true;
+}

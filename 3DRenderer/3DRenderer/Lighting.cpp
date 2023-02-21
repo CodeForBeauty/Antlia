@@ -42,8 +42,8 @@ std::string Light::GetName() const
 }
 
 
-DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vector3D()) { SetName("direct light"); SetType(1); }
-DirectLight::DirectLight(Vector3D* rotation, linmath::vec3 color) : Light(color), rotation(rotation) { SetName("direct light"); SetType(1); }
+DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vector3D()) { SetName("directLight"); SetType(1); }
+DirectLight::DirectLight(Vector3D* rotation, linmath::vec3 color) : Light(color), rotation(rotation) { SetName("directLight"); SetType(1); }
 DirectLight::~DirectLight(){ delete rotation, rotMetricies; }
 
 Vector3D DirectLight::GetRotation() { return *rotation; }
@@ -66,8 +66,8 @@ void DirectLight::Rotate(const Vector3D offset)
 }
 
 
-PointLight::PointLight(linmath::vec3 color, float distance) : Light(color), distance(distance), position(new Vector3D()) { SetName("point light"); SetType(2); }
-PointLight::PointLight(Vector3D* position, linmath::vec3 color, float distance) : Light(color), distance(distance), position(position) { SetName("point light"); SetType(2); }
+PointLight::PointLight(linmath::vec3 color, float distance) : Light(color), distance(distance), position(new Vector3D()) { SetName("pointLight"); SetType(2); }
+PointLight::PointLight(Vector3D* position, linmath::vec3 color, float distance) : Light(color), distance(distance), position(position) { SetName("pointLight"); SetType(2); }
 PointLight::~PointLight() { delete position; }
 
 float PointLight::GetDistance()
@@ -101,11 +101,11 @@ void PointLight::Move(const Vector3D offset)
 
 
 SpotLight::SpotLight(linmath::vec3 color, float distance, float angle) : DirectLight(color), angle(angle), distance(distance), position(new Vector3D()) 
-	{ SetName("spot light"); SetType(3); }
+	{ SetName("spotLight"); SetType(3); }
 SpotLight::SpotLight(linmath::vec3 color, Vector3D* position, float distance, float angle) 
-	: DirectLight(color), angle(angle), distance(distance), position(position) { SetName("spot light"); SetType(3); }
+	: DirectLight(color), angle(angle), distance(distance), position(position) { SetName("spotLight"); SetType(3); }
 SpotLight::SpotLight(linmath::vec3 color, Vector3D* position, Vector3D* rotation, float distance, float angle) 
-	: DirectLight(rotation, color), angle(angle), distance(distance), position(position) { SetName("spot light"); SetType(3); }
+	: DirectLight(rotation, color), angle(angle), distance(distance), position(position) { SetName("spotLight"); SetType(3); }
 
 float SpotLight::GetAngle()
 {

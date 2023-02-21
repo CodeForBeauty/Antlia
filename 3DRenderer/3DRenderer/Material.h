@@ -16,7 +16,6 @@ public:
 	Material();
 	Material(Shader* vs, Shader* fs, Shader* gs);
 	Material(Shader* vs, Shader* fs, Shader* gs, float* albedo);
-	Material(Shader* vs, Shader* fs, Shader* gs, float* albedo, float metalic);
 	Material(float* albedo);
 	~Material();
 
@@ -43,16 +42,16 @@ public:
 	void SetProj(float* value);
 	unsigned int program;
 	unsigned int sceneSlot;
-private:
-	void CompileShaders();
-	Shader* vs;
-	Shader* fs;
-	Shader* gs;
 	Texture* texture;
 	Texture* specTex;
 	Texture* metalTex;
 	Texture* roughTex;
 	Texture* normal;
+private:
+	void CompileShaders();
+	Shader* vs;
+	Shader* fs;
+	Shader* gs;
 	float* albedo = new float[4] {1, 1, 1, 1};
 	float metalic = 0.0;
 	float roughness = 0.5;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 class Texture
 {
 public:
@@ -13,6 +15,8 @@ public:
 	int GetHeight();
 	int GetChannels();
 	unsigned int GetTexture();
+
+	std::string path;
 
 private:
 	unsigned int slot = 0;
