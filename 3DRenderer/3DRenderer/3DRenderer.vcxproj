@@ -180,6 +180,7 @@
     <None Include="shaders\BasicFragment.frag" />
     <None Include="shaders\BasicGeometry.geom" />
     <None Include="shaders\BasicVertex.vert" />
+    <None Include="test.scene" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png" />

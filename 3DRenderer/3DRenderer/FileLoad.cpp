@@ -439,6 +439,33 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 		file << entity->GetName() << "\n";
 	}
 
+	file << "mesh\n";
+
+	for (Mesh* mesh : scene->objects)
+	{
+		pos = mesh->GetPosition();
+		rot = mesh->GetRotation();
+		scale = mesh->GetScale();
+
+		file << pos.x << " " << pos.y << " " << pos.z << "\n";
+		file << rot.x << " " << rot.y << " " << rot.z << "\n";
+		file << scale.x << " " << scale.y << " " << scale.z << "\n";
+		file << mesh->GetName() << "\n";
+
+		file << mesh->geometry->verticiesCount << "\n";
+		for (int i = 0; i < mesh->geometry->verticiesCount; i++)
+		{
+			Vertex vert = mesh->geometry->verticies[i];
+			file << vert.position.x << " " << vert.position.y << " " << vert.position.z << "\n";
+			file << vert.normal.x << " " << vert.normal.y << " " << vert.normal.z << "\n";
+			file << vert.uv.x << " " << vert.uv.y << "\n";
+		}
+		file << mesh->geometry->indeciesCount << "\n";
+		for (int i = 0; i < mesh->geometry->indeciesCount; i++)
+		{
+			file << mesh->geometry->indecies[i] << "\n";
+		}
+	}
 
 	return true;
 }

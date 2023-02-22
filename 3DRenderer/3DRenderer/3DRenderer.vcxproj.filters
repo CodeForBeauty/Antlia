@@ -100,6 +100,9 @@
     <None Include="shaders\BasicGeometry.geom">
       <Filter>res\shaders</Filter>
     </None>
+    <None Include="test.scene">
+      <Filter>res</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png">
