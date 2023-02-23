@@ -450,7 +450,7 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 		file << pos.x << " " << pos.y << " " << pos.z << "\n";
 		file << rot.x << " " << rot.y << " " << rot.z << "\n";
 		file << scale.x << " " << scale.y << " " << scale.z << "\n";
-		file << mesh->GetName() << "\n";
+		file << mesh->GetName() << " " << mesh->material->sceneSlot << "\n";
 
 		file << mesh->geometry->verticiesCount << "\n";
 		for (int i = 0; i < mesh->geometry->verticiesCount; i++)
@@ -467,5 +467,241 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 		}
 	}
 
+	return true;
+}
+
+bool load::LoadScene(std::string filepath, Scene* scene)
+{
+	std::string line;
+	std::ifstream file(filepath);
+
+	std::stringstream ss(filepath);
+	std::string path;
+	while (true)
+	{
+		getline(ss, line, '/');
+		if (ss.eof()) break;
+		path += line + "/";
+	}
+
+	file >> line;
+
+
+	std::string word;
+	ss = std::stringstream(line);
+	ss >> word;
+	float fov, near, far;
+	fov = std::stof(word);
+	ss >> word;
+	near = std::stof(word);
+	ss >> word;
+	far = std::stof(word);
+	delete scene->preview;
+	scene->preview = new Camera(fov, near, far);
+
+	file >> line;
+	Vector3D pos;
+	ss = std::stringstream(line);
+	ss >> word;
+	pos.x = std::stof(word);
+	ss >> word;
+	pos.y = std::stof(word);
+	ss >> word;
+	pos.z = std::stof(word);
+	scene->preview->SetPosition(pos);
+
+	file >> line;
+	Vector3D rot;
+	ss = std::stringstream(line);
+	ss >> word;
+	rot.x = std::stof(word);
+	ss >> word;
+	rot.y = std::stof(word);
+	ss >> word;
+	rot.z = std::stof(word);
+	scene->preview->SetRotation(rot);
+
+
+	ss = std::stringstream(line);
+	ss >> word;
+	fov = std::stof(word);
+	ss >> word;
+	near = std::stof(word);
+	ss >> word;
+	far = std::stof(word);
+	delete scene->renderCamera;
+	scene->renderCamera = new Camera(fov, near, far);
+
+	file >> line;
+	ss = std::stringstream(line);
+	ss >> word;
+	pos.x = std::stof(word);
+	ss >> word;
+	pos.y = std::stof(word);
+	ss >> word;
+	pos.z = std::stof(word);
+	scene->renderCamera->SetPosition(pos);
+
+	file >> line;
+	ss = std::stringstream(line);
+	ss >> word;
+	rot.x = std::stof(word);
+	ss >> word;
+	rot.y = std::stof(word);
+	ss >> word;
+	rot.z = std::stof(word);
+	scene->renderCamera->SetRotation(rot);
+
+
+	linmath::vec3 color;
+	while (true)
+	{
+		file >> line;
+		if (line == "mat") break;
+		ss = std::stringstream(line);
+		ss >> word;
+		int type = std::stoi(word);
+		ss >> word;
+		color.x = std::stof(word);
+		ss >> word;
+		color.y = std::stof(word);
+		ss >> word;
+		color.z = std::stof(word);
+		std::string name;
+		ss >> name;
+		if (type == 1)
+		{
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> word;
+			rot.x = std::stof(word);
+			ss >> word;
+			rot.y = std::stof(word);
+			ss >> word;
+			rot.z = std::stof(word);
+			DirectLight* dirLight = new DirectLight(&rot, color);
+			dirLight->SetName(name);
+			scene->AddLight(dirLight);
+		}
+		else if (type == 2)
+		{
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> word;
+			pos.x = std::stof(word);
+			ss >> word;
+			pos.y = std::stof(word);
+			ss >> word;
+			pos.z = std::stof(word);
+			ss >> word;
+			PointLight* point = new PointLight(&pos, color, std::stof(word));
+			point->SetName(name);
+			scene->AddLight(point);
+		}
+		else if (type == 3)
+		{
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> word;
+			pos.x = std::stof(word);
+			ss >> word;
+			pos.y = std::stof(word);
+			ss >> word;
+			pos.z = std::stof(word);
+			ss >> word;
+			float distance = std::stof(word);
+
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> word;
+			rot.x = std::stof(word);
+			ss >> word;
+			rot.y = std::stof(word);
+			ss >> word;
+			rot.z = std::stof(word);
+			ss >> word;
+
+			SpotLight* spot = new SpotLight(color, &pos, &rot, distance, std::stof(word));
+			spot->SetName(name);
+			scene->AddLight(spot);
+		}
+	}
+	while (true)
+	{
+		linmath::vec4 albedo;
+		file >> line;
+		if (line == "entity") break;
+		ss = std::stringstream(line);
+		ss >> word;
+		albedo.x = std::stof(word);
+		ss >> word;
+		albedo.y = std::stof(word);
+		ss >> word;
+		albedo.z = std::stof(word);
+		ss >> word;
+		albedo.w = std::stof(word);
+
+		Material* mat = new Material();
+		mat->SetAlbedo(albedo.x, albedo.y, albedo.z, albedo.w);
+		file >> line;
+		ss = std::stringstream(line);
+		ss >> word;
+		mat->SetMetalic(std::stof(word));
+		ss >> word;
+		mat->SetRoughness(std::stof(word));
+		ss >> word;
+		mat->SetSpecular(std::stof(word));
+		ss >> word;
+		mat->SetName(word);
+
+		file >> line;
+		for (int i = 0; i < std::stoi(line); i++)
+		{
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> word;
+			int slot = std::stoi(word);
+			ss >> word;
+			mat->LoadTexture(word.c_str(), slot);
+		}
+
+		scene->AddMaterial(mat);
+	}
+	Vector3D scale;
+	while (true)
+	{
+		file >> line;
+		if (line == "mesh") break;
+
+		ss = std::stringstream(line);
+		ss >> word;
+		pos.x = std::stof(word);
+		ss >> word;
+		pos.y = std::stof(word);
+		ss >> word;
+		pos.z = std::stof(word);
+		
+		file >> line;
+		ss = std::stringstream(line);
+		ss >> word;
+		rot.x = std::stof(word);
+		ss >> word;
+		rot.y = std::stof(word);
+		ss >> word;
+		rot.z = std::stof(word);
+
+		file >> line;
+		ss = std::stringstream(line);
+		ss >> word;
+		scale.x = std::stof(word);
+		ss >> word;
+		scale.y = std::stof(word);
+		ss >> word;
+		scale.z = std::stof(word);
+
+		file >> line;
+		Entity* entity = new Entity(&pos, &rot, &scale);
+		entity->SetName(line);
+	}
 	return true;
 }

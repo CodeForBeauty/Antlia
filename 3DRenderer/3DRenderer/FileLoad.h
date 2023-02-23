@@ -9,4 +9,5 @@ namespace load
 {
 	std::vector<Mesh*> loadObj(std::string filepath, Scene* scene);
 	bool SaveScene(std::string filepath, Scene* scene);
+	bool LoadScene(std::string filepath, Scene* scene);
 }
