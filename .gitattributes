@@ -3,7 +3,12 @@
 ###############################################################################
 * text=auto
 * linguist-vendored
-* glfw3.h linguist-vendored=false
+* 3DRenderer/Dependencies/include/stb/stb_image.h linguist-vendored=false
+* 3DRenderer/Dependencies/include/GL/glew.h linguist-vendored=false
+* 3DRenderer/Dependencies/include/GL/glxew.h linguist-vendored=false
+* 3DRenderer/Dependencies/include/GL/eglew.h linguist-vendored=false
+* 3DRenderer/Dependencies/include/GLFW/glfw3.h linguist-vendored=false
+* 3DRenderer/Dependencies/include/GL/wglew.h linguist-vendored=false
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
