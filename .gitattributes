@@ -8,6 +8,7 @@
 3DRenderer/Dependencies/include/GL/eglew.h linguist-detectable=false
 3DRenderer/Dependencies/include/GLFW/glfw3.h linguist-detectable=false
 3DRenderer/Dependencies/include/GL/wglew.h linguist-detectable=false
+3DRenderer/Dependencies/include/GLFW/glfw3native.h linguist-detectable=false
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
