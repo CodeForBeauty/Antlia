@@ -458,6 +458,7 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 			Vertex vert = mesh->geometry->verticies[i];
 			file << vert.position.x << " " << vert.position.y << " " << vert.position.z << "\n";
 			file << vert.normal.x << " " << vert.normal.y << " " << vert.normal.z << "\n";
+			file << vert.color.x << " " << vert.color.y << " " << vert.color.z << " " << vert.color.w << "\n";
 			file << vert.uv.x << " " << vert.uv.y << "\n";
 		}
 		file << mesh->geometry->indeciesCount << "\n";
@@ -702,6 +703,85 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 		file >> line;
 		Entity* entity = new Entity(&pos, &rot, &scale);
 		entity->SetName(line);
+	}
+	while (true)
+	{
+		if (file.eof()) break;
+		file >> line;
+
+		ss = std::stringstream(line);
+		ss >> word;
+		pos.x = std::stof(word);
+		ss >> word;
+		pos.y = std::stof(word);
+		ss >> word;
+		pos.z = std::stof(word);
+
+		file >> line;
+		ss = std::stringstream(line);
+		ss >> word;
+		rot.x = std::stof(word);
+		ss >> word;
+		rot.y = std::stof(word);
+		ss >> word;
+		rot.z = std::stof(word);
+
+		file >> line;
+		ss = std::stringstream(line);
+		ss >> word;
+		scale.x = std::stof(word);
+		ss >> word;
+		scale.y = std::stof(word);
+		ss >> word;
+		scale.z = std::stof(word);
+
+		file >> word;
+		ss = std::stringstream(line);
+		std::string name;
+		ss >> name;
+		int slot;
+		ss >> slot;
+		int verticiesCount;
+		file >> verticiesCount;
+		Vertex* verticies = new Vertex[verticiesCount];
+		for (int i = 0; i < verticiesCount; i++)
+		{
+			linmath::vec3 pos{};
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> pos.x;
+			ss >> pos.y;
+			ss >> pos.z;
+			linmath::vec3 normal{};
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> normal.x;
+			ss >> normal.y;
+			ss >> normal.z;
+			linmath::vec4 color{};
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> color.x;
+			ss >> color.y;
+			ss >> color.z;
+			ss >> color.w;
+			linmath::vec2 uv{};
+			file >> line;
+			ss = std::stringstream(line);
+			ss >> uv.x;
+			ss >> uv.y;
+			verticies[i].position = pos;
+			verticies[i].normal = normal;
+			verticies[i].color = color;
+			verticies[i].uv = uv;
+		}
+		int indeciesCount;
+		file >> indeciesCount;
+		unsigned int* indecies = new unsigned int[indeciesCount];
+		for (int i = 0; i < indeciesCount; i++)
+		{
+			file >> indecies[i];
+		}
 	}
 	return true;
 }
