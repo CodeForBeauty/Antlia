@@ -2,7 +2,13 @@
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
 * text=auto
-
+3DRenderer/Dependencies/include/stb/stb_image.h linguist-detectable=false
+3DRenderer/Dependencies/include/GL/glew.h linguist-detectable=false
+3DRenderer/Dependencies/include/GL/glxew.h linguist-detectable=false
+3DRenderer/Dependencies/include/GL/eglew.h linguist-detectable=false
+3DRenderer/Dependencies/include/GLFW/glfw3.h linguist-detectable=false
+3DRenderer/Dependencies/include/GL/wglew.h linguist-detectable=false
+3DRenderer/Dependencies/include/GLFW/glfw3native.h linguist-detectable=false
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
