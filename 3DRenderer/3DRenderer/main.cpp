@@ -104,6 +104,8 @@ int main(void)
 
     double lastTime = glfwGetTime();
     double time, deltaTime;
+    float fps;
+    std::string title = "";
 
     load::SaveScene("test.scene", scene);
 
@@ -146,6 +148,12 @@ int main(void)
         lastypos = ypos;
         glfwGetFramebufferSize(window, &width, &height);
         glViewport(0, 0, width, height);
+
+        fps = 1 / deltaTime;
+
+        title = "Testing - " + std::to_string(fps);
+
+        glfwSetWindowTitle(window, title.c_str());
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
