@@ -15,8 +15,8 @@ public:
 	void setShader(std::string shader);
 
 	unsigned int compileShader();
+	unsigned int id;
 private:
 	std::string shader_text;
 	unsigned int type;
-	unsigned int id;
 };

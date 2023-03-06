@@ -180,6 +180,8 @@
     <None Include="shaders\BasicFragment.frag" />
     <None Include="shaders\BasicGeometry.geom" />
     <None Include="shaders\BasicVertex.vert" />
+    <None Include="shaders\FrameBuffer.frag" />
+    <None Include="shaders\FrameBuffer.vert" />
     <None Include="test.scene" />
   </ItemGroup>
   <ItemGroup>

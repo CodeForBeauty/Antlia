@@ -25,7 +25,7 @@ int main(void)
     glHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(800, 560, "Testing", NULL, NULL);
+    window = glfwCreateWindow(850, 600, "Testing", NULL, NULL);
 
     if (!window) 
     {
@@ -88,15 +88,17 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", scene);
+    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/icosphere.obj", scene);
     Mesh* suzanne = objs[0];
 
 
     glEnable(GL_DEPTH_TEST);
 
+    /*
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
+    */
 
     double xpos, ypos;
     double lastxpos, lastypos;
@@ -155,7 +157,7 @@ int main(void)
 
         glfwSetWindowTitle(window, title.c_str());
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         i.y += 1;
         i1.y += 1;

@@ -4,6 +4,7 @@
 #include "Objects.h"
 #include "Lighting.h"
 #include "Camera.h"
+#include "Shader.h"
 
 class Scene
 {
@@ -26,6 +27,9 @@ public:
 	unsigned int vao;
 	unsigned int vbo;
 	unsigned int ibo;
+	unsigned int fbo;
+	unsigned int fbt;
+	unsigned int rbo;
 
 	Camera* preview = new Camera(90, 0.5, 100);
 	Camera* renderCamera = new Camera(90, 0.1, 100);
@@ -40,4 +44,16 @@ private:
 	std::vector <std::vector <Mesh*>> materialGroup;
 
 	bool updateLight = true;
+	unsigned int program;
+	unsigned int rectVAO, rectVBO;
+	float rect[30] = {-1.0f,  1.0f, 1.0f, 0, 1,
+					  -1.0f, -1.0f, 1.0f, 0, 0,
+					   1.0f,  -1.0f, 1.0f, 1, 0,
+
+					   1.0f, -1.0f, 1.0f, 1, 0,
+					   1.0f,  1.0f, 1.0f, 1, 1,
+					  -1.0f,  1.0f, 1.0f, 0, 1};
+
+	Shader FrameBufferVert = Shader("shaders/FrameBuffer.vert", GL_VERTEX_SHADER);
+	Shader FrameBufferFrag = Shader("shaders/FrameBuffer.frag", GL_FRAGMENT_SHADER);
 };

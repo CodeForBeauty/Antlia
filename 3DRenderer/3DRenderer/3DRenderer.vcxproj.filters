@@ -103,6 +103,12 @@
     <None Include="test.scene">
       <Filter>res</Filter>
     </None>
+    <None Include="shaders\FrameBuffer.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="shaders\FrameBuffer.frag">
+      <Filter>res\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png">
