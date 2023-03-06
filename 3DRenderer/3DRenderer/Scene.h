@@ -22,7 +22,7 @@ public:
 	void DeleteLight(Light* light);
 	void DeleteObject(Mesh* object);
 
-	void Render(float* proj);
+	void Render(float* proj, int width, int height);
 
 	unsigned int vao;
 	unsigned int vbo;

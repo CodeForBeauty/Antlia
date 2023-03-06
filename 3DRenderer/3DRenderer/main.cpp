@@ -174,7 +174,7 @@ int main(void)
         //cube->SetRotation(i);
 
 
-        scene->Render(proj);
+        scene->Render(proj, width, height);
 
         glfwSwapBuffers(window);
 

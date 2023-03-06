@@ -196,13 +196,14 @@ void Scene::DeleteObject(Mesh* object)
 }
 
 
-void Scene::Render(float* proj)
+void Scene::Render(float* proj, int width, int height)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
 		glEnable(GL_DEPTH_TEST);
+		glViewport(0, 0, 850, 600);
 		materials[i]->Bind();
 		materials[i]->SetProj(proj);
 
@@ -284,6 +285,7 @@ void Scene::Render(float* proj)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(program);
+		glViewport(0, 0, width, height);
 		glBindVertexArray(rectVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
 		glDisable(GL_DEPTH_TEST);
