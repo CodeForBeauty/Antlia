@@ -44,13 +44,30 @@ Scene::Scene()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbt, 0);
+	
+	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << fboStatus << std::endl;
+
+	glGenFramebuffers(1, &fboAA);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
+
+	glGenTextures(1, &fbtAA);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, fbtAA);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, AAsamples, GL_RGB, 850, 600, GL_TRUE);
+	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, fbtAA, 0);
+
 
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 850, 600);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, AAsamples, GL_DEPTH24_STENCIL8, 850, 600);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
-	auto fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << fboStatus << std::endl;
 
@@ -198,7 +215,7 @@ void Scene::DeleteObject(Mesh* object)
 
 void Scene::Render(float* proj, int width, int height)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
@@ -282,6 +299,10 @@ void Scene::Render(float* proj, int width, int height)
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
 
 		glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboAA);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+		glBlitFramebuffer(0, 0, 850, 600, 0, 0, 850, 600, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(program);

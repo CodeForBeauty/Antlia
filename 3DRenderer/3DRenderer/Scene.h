@@ -29,7 +29,10 @@ public:
 	unsigned int ibo;
 	unsigned int fbo;
 	unsigned int fbt;
+	unsigned int fboAA;
+	unsigned int fbtAA;
 	unsigned int rbo;
+	int AAsamples = 4;
 
 	Camera* preview = new Camera(90, 0.5, 100);
 	Camera* renderCamera = new Camera(90, 0.1, 100);
