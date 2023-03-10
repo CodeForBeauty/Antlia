@@ -69,6 +69,18 @@ void linmath::perspective(float width, float height, float fov, float far, float
     out[10] = far / (far - near);
     out[11] = -(far / (far - near)) * near;
 }
+void linmath::orthogonal(float right, float left, float top, float bottom, float far, float near, float* out)
+{
+    out[0] = 2 / (right - left);
+    out[5] = 2 / (top - bottom);
+    out[10] = -2 / (far - near);
+
+    out[12] = -((right + left) / (right - left));
+    out[13] = -((top + bottom) / (top - bottom));
+    out[14] = -(far + near) / (far - near);
+    out[15] = 1;
+}
+
 float linmath::deg2radians(float degree)
 {
 	return degree * PI / 180;

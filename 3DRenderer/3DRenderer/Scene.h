@@ -49,13 +49,15 @@ private:
 	bool updateLight = true;
 	unsigned int program;
 	unsigned int rectVAO, rectVBO;
-	float rect[30] = {-1.0f,  1.0f, 1.0f, 0, 1,
-					  -1.0f, -1.0f, 1.0f, 0, 0,
+	float rect[30] = {
 					   1.0f,  -1.0f, 1.0f, 1, 0,
+					  -1.0f, -1.0f, 1.0f, 0, 0,
+					  -1.0f,  1.0f, 1.0f, 0, 1,
 
-					   1.0f, -1.0f, 1.0f, 1, 0,
+					  -1.0f,  1.0f, 1.0f, 0, 1,
 					   1.0f,  1.0f, 1.0f, 1, 1,
-					  -1.0f,  1.0f, 1.0f, 0, 1};
+					   1.0f, -1.0f, 1.0f, 1, 0
+	};
 
 	Shader FrameBufferVert = Shader("shaders/FrameBuffer.vert", GL_VERTEX_SHADER);
 	Shader FrameBufferFrag = Shader("shaders/FrameBuffer.frag", GL_FRAGMENT_SHADER);

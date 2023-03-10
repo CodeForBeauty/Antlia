@@ -18,7 +18,7 @@ Scene::Scene()
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 10000, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * 1000, nullptr, GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -31,7 +31,7 @@ Scene::Scene()
 
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 40000, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 4000, nullptr, GL_DYNAMIC_DRAW);
 
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -219,6 +219,7 @@ void Scene::Render(float* proj, int width, int height)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
+		glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
 		glEnable(GL_DEPTH_TEST);
 		glViewport(0, 0, 850, 600);
 		materials[i]->Bind();
@@ -290,7 +291,7 @@ void Scene::Render(float* proj, int width, int height)
 			batchIndecies.insert(batchIndecies.end(), materialGroup[i][j]->geometry->transformedIndecies,
 				materialGroup[i][j]->geometry->transformedIndecies + materialGroup[i][j]->geometry->indeciesCount);
 		}
-
+		
 		glBindVertexArray(vao);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -306,9 +307,9 @@ void Scene::Render(float* proj, int width, int height)
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(program);
-		glViewport(0, 0, width, height);
 		glBindVertexArray(rectVAO);
 		glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
+		glViewport(0, 0, width, height);
 		glDisable(GL_DEPTH_TEST);
 		glBindTexture(GL_TEXTURE_2D, fbt);
 		glDrawArrays(GL_TRIANGLES, 0, 6);

@@ -328,7 +328,6 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 	isSmooth.push_back(crntSmooth);
 
 	std::vector<Mesh*> meshes;
-
 	for (int i = 0; i < names.size(); i++)
 	{
 		Mesh* temp = new Mesh(verticies[i], indecies[i], verticiesCount[i], indeciesCount[i]);

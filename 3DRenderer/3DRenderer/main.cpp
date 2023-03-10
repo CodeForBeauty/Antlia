@@ -61,10 +61,8 @@ int main(void)
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
     mat1->LoadTexture("waterNormal.jpg", TEXTURE_NORMAL);
-    //mat2->LoadTexture("test1.jpg", 1);
 
     scene->AddMaterial(mat1);
-    scene->AddMaterial(mat2);
 
     scene->AddLight(light1);
     scene->AddLight(spotLight);
@@ -88,7 +86,7 @@ int main(void)
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
 
-    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/icosphere.obj", scene);
+    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", scene);
     Mesh* suzanne = objs[0];
 
 
@@ -163,14 +161,15 @@ int main(void)
         i.y += 1;
         i1.y += 1;
 
-        suzanne->SetRotation(i);
+        //suzanne->SetRotation(i);
         //suzanne->Move(i);
 
         spotLight->Rotate(Vector3D(1, 0, 0));
 
         //scene->preview->SetRotation(i);
 
-        linmath::perspective(width, height, fov, far, near, proj);
+        //linmath::perspective(width, height, fov, far, near, proj);
+        linmath::orthogonal(0.5, -0.5, 0.5 * ((float)height / width), -0.5 * ((float)height / width), -0.5, 0.5, proj);
 
         //cube->SetRotation(i);
 
