@@ -11,7 +11,7 @@ namespace linmath
 	struct vec4 { float x, y, z, w; };
 
 	void perspective(float width, float height, float fov, float far, float near, float* out);
-	void orthogonal(float right, float left, float top, float bottom, float far, float near, float* out);
+	void orthographic(float right, float left, float top, float bottom, float far, float near, float* out);
 
 	float deg2radians(float degree);
 	void multiplyMetricies4x4(float* metrix1, float* metrix2, float* out);
