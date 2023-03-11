@@ -114,3 +114,46 @@ linmath::vec3 linmath::mulVector3dByVec3(Vector3D vec1, vec3 vec2)
 {
     return { vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z };
 }
+
+float linmath::dot(linmath::vec3 vec1, linmath::vec3 vec2)
+{
+    return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
+}
+
+linmath::vec3 linmath::cross(linmath::vec3 vec1, linmath::vec3 vec2)
+{
+    vec3 out = {};
+    out.x = vec1.y * vec2.z - vec1.z * vec2.y;
+    out.y = vec1.z * vec2.x - vec1.x * vec2.z;
+    out.z = vec1.x * vec2.y - vec1.y * vec2.x;
+    return out;
+}
+
+linmath::vec3 linmath::normalize(linmath::vec3 vec)
+{
+    float sum = vec.x + vec.y + vec.z;
+    return { vec.x / sum, vec.y / sum, vec.z / sum };
+}
+
+void linmath::lookAt(Vector3D at, vec3 eye, float* out, vec3 up)
+{
+    vec3 zaxis = normalize({at.x - eye.x, at.y - eye.y, at.z - eye.z});
+    vec3 xaxis = normalize(cross(up, zaxis));
+    vec3 yaxis = cross(zaxis, xaxis);
+
+    out[0] = xaxis.x;
+    out[4] = xaxis.y;
+    out[8] = xaxis.z;
+
+    out[1] = yaxis.x;
+    out[5] = yaxis.y;
+    out[9] = yaxis.z;
+
+    out[2] = zaxis.x;
+    out[6] = zaxis.y;
+    out[10] = zaxis.z;
+
+    out[12] = -dot(xaxis, eye);
+    out[13] = -dot(yaxis, eye);
+    out[14] = -dot(zaxis, eye);
+}
