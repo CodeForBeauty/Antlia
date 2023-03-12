@@ -5,6 +5,7 @@ in vec3 v_Normal;
 in vec3 v_CamPos;
 in vec3 v_Pos;
 in mat3 v_TBN;
+in vec4 v_ScreenPos;
 
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
@@ -36,6 +37,8 @@ uniform vec4 u_SpotLightColor[8];
 uniform vec4 u_SpotLightPos[8];
 uniform vec3 u_SpotLightDir[8];
 uniform vec2 u_SpotLightAngle[8];
+
+uniform sampler2D u_Shadow;
 
 out vec4 color;
 
@@ -183,6 +186,7 @@ void main()
 
 	int lightCount = 1;
 	vec3 totalLight = vec3(0, 0, 0);
+	float shadow = texture(u_Shadow, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
 	for (int i = 0; i < 8; i++)
 	{
 		if (u_PointLightPos[i].w > 0)
@@ -198,7 +202,7 @@ void main()
 		if (u_DirectLightColor[i].w > 0)
 		{
 			totalLight += directLight(vec3(u_DirectLightColor[i]), -u_DirectLightDir[i], u_DirectLightColor[i].w,
-									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity);
+									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity) * shadow;
 			lightCount++;
 		}
 	}
@@ -216,6 +220,8 @@ void main()
 
 	vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0) * albedo;
 	
+	//shadow.x = 1.0f;
+
 	color = ambient + vec4(totalLight, 1.0);
 	color.rgb = pow(color.rgb, vec3(1 / gamma));
 }

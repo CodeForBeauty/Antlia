@@ -182,6 +182,11 @@
     <None Include="shaders\BasicVertex.vert" />
     <None Include="shaders\FrameBuffer.frag" />
     <None Include="shaders\FrameBuffer.vert" />
+    <None Include="shaders\ShadowMap.frag" />
+    <None Include="shaders\ShadowMap.vert" />
+    <None Include="shaders\ShadowRender.frag" />
+    <None Include="shaders\ShadowRender.geom" />
+    <None Include="shaders\ShadowRender.vert" />
     <None Include="test.scene" />
   </ItemGroup>
   <ItemGroup>

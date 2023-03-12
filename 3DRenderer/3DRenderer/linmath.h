@@ -7,12 +7,25 @@
 namespace linmath
 {
 	struct vec2 { float x, y; };
-	struct vec3 { float x, y, z; };
+	struct vec3 { 
+		float x, y, z;
+		vec3 operator +=(const vec3& a)
+		{
+			x += a.x;
+			y += a.y;
+			z += a.z;
+			return *this;
+		}
+		vec3 operator *(const float& a)
+		{
+			return { x * a, y * a, z * a };
+		}
+	};
 	struct vec4 { float x, y, z, w; };
 
 	void perspective(float width, float height, float fov, float far, float near, float* out);
 	void orthographic(float right, float left, float top, float bottom, float far, float near, float* out);
-	void lookAt(Vector3D at, vec3 eye, float* out, vec3 up = { 0.0f, 1.0f, 0.0f });
+	void lookAt(vec3 at, vec3 eye, float* out, vec3 up = { 0.0f, 1.0f, 0.0f });
 
 	float deg2radians(float degree);
 	void multiplyMetricies4x4(float* matrix1, float* matrix2, float* out);

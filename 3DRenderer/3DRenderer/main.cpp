@@ -50,23 +50,14 @@ int main(void)
     mat2->SetSpecular(0.5f);
     mat2->SetAlbedo(0.8, 0.2, 0.2, 1.0);
 
-    PointLight* light1 = new PointLight({ 0, 0, 1 }, 20);
-    SpotLight* spotLight = new SpotLight({ 0, 1, 0 }, 20, 45);
-    PointLight* light3 = new PointLight({ 1, 0, 0 }, 20);
     DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
 
-    light1->SetPosition(Vector3D(0, 1, 0));
-    spotLight->SetPosition(Vector3D(0, 1, 1.3));
-    light3->SetPosition(Vector3D(0, -1, 2));
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
     mat1->LoadTexture("waterNormal.jpg", TEXTURE_NORMAL);
 
     scene->AddMaterial(mat1);
 
-    scene->AddLight(light1);
-    scene->AddLight(spotLight);
-    scene->AddLight(light3);
     scene->AddLight(dirLight);
 
 
@@ -98,6 +89,7 @@ int main(void)
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
     */
+    
 
     double xpos, ypos;
     double lastxpos, lastypos;
@@ -164,12 +156,12 @@ int main(void)
         //suzanne->SetRotation(i);
         //suzanne->Move(i);
 
-        spotLight->Rotate(Vector3D(1, 0, 0));
+        //dirLight->Rotate(Vector3D(1, 0, 0));
 
         //scene->preview->SetRotation(i);
 
-        //linmath::perspective(width, height, fov, far, near, proj);
-        linmath::orthogonal(0.5, -0.5, 0.5 * ((float)height / width), -0.5 * ((float)height / width), -0.5, 0.5, proj);
+        linmath::perspective(width, height, fov, far, near, proj);
+        //linmath::orthographic(0.5, -0.5, 0.5 * ((float)height / width), -0.5 * ((float)height / width), -0.5, 0.5, proj);
 
         //cube->SetRotation(i);
 

@@ -1,7 +1,12 @@
+#include <GL/glew.h>
+
 #include <iostream>
 #include "Lighting.h"
+#include "linmath.h"
 
-Light::Light(linmath::vec3 color) : color({ color.x, color.y, color.z, 0.0f }), type(0) {}
+Light::Light(linmath::vec3 color) : color({ color.x, color.y, color.z, 0.0f }), type(0) 
+{
+}
 
 void Light::SetColor(linmath::vec3 col)
 {
@@ -42,7 +47,29 @@ std::string Light::GetName() const
 }
 
 
-DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vector3D()) { SetName("directLight"); SetType(1); }
+DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vector3D()) { 
+	SetName("directLight");
+	SetType(1);
+	float projection[16] = {
+							0, 0, 0, 0,
+							0, 0, 0, 0,
+							0, 0, 0, 0,
+							0, 0, 0, 0};
+	float view[16] = {
+							1, 0, 0, 0,
+							0, 1, 0, 0,
+							0, 0, 1, 0,
+							0, 0, 0, 1 };
+	float proj1[16] = {
+							0, 0, 0, 0,
+							0, 0, 0, 0,
+							0, 0, 0, 0,
+							0, 0, 0, 0 };
+	linmath::orthographic(5, -5, 5, -5, -5, 5, projection);
+	linmath::lookAt({0, 20, 0}, { 0, 0, 0 }, view, { 0, 0, 1 });
+	linmath::multiplyMetricies4x4(projection, view, proj);
+	
+}
 DirectLight::DirectLight(Vector3D* rotation, linmath::vec3 color) : Light(color), rotation(rotation) { SetName("directLight"); SetType(1); }
 DirectLight::~DirectLight(){ delete rotation, rotMetricies; }
 

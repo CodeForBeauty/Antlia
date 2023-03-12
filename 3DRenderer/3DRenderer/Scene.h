@@ -31,7 +31,7 @@ public:
 	unsigned int fbt;
 	unsigned int fboAA;
 	unsigned int fbtAA;
-	unsigned int rbo;
+	unsigned int rbo, rboShadow, rboShadowColor;
 	int AAsamples = 4;
 
 	Camera* preview = new Camera(90, 0.5, 100);
@@ -49,6 +49,11 @@ private:
 	bool updateLight = true;
 	unsigned int program;
 	unsigned int rectVAO, rectVBO;
+	unsigned int shadowProgram;
+	unsigned int shadowFBO, shadowMap;
+	unsigned int shadowWidth = 2048, shadowHeight = 2048;
+	unsigned int shadowRProgram;
+	unsigned int shadowRenderer, shadowRendererT;
 	float rect[30] = {
 					   1.0f,  -1.0f, 1.0f, 1, 0,
 					  -1.0f, -1.0f, 1.0f, 0, 0,
@@ -61,4 +66,9 @@ private:
 
 	Shader FrameBufferVert = Shader("shaders/FrameBuffer.vert", GL_VERTEX_SHADER);
 	Shader FrameBufferFrag = Shader("shaders/FrameBuffer.frag", GL_FRAGMENT_SHADER);
+	Shader ShadowVert = Shader("shaders/ShadowMap.vert", GL_VERTEX_SHADER);
+	Shader ShadowFrag = Shader("shaders/ShadowMap.frag", GL_FRAGMENT_SHADER);
+	Shader ShadowRVert = Shader("shaders/ShadowRender.vert", GL_VERTEX_SHADER);
+	Shader ShadowRFrag = Shader("shaders/ShadowRender.frag", GL_FRAGMENT_SHADER);
+	Shader ShadowRGeom = Shader("shaders/ShadowRender.geom", GL_GEOMETRY_SHADER);
 };

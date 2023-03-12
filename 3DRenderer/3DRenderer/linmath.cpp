@@ -135,7 +135,7 @@ linmath::vec3 linmath::normalize(linmath::vec3 vec)
     return { vec.x / sum, vec.y / sum, vec.z / sum };
 }
 
-void linmath::lookAt(Vector3D at, vec3 eye, float* out, vec3 up)
+void linmath::lookAt(vec3 at, vec3 eye, float* out, vec3 up)
 {
     vec3 zaxis = normalize({at.x - eye.x, at.y - eye.y, at.z - eye.z});
     vec3 xaxis = normalize(cross(up, zaxis));

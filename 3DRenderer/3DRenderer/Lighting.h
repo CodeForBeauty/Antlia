@@ -2,6 +2,7 @@
 
 #include "Metrics.h"
 #include "linmath.h"
+#include "Shader.h"
 
 class Light
 {
@@ -18,6 +19,7 @@ public:
 	int GetType();
 
 	float intensity = 1;
+
 
 protected:
 	void SetType(int type);
@@ -41,6 +43,13 @@ public:
 
 	void SetRotation(const Vector3D rotation);
 	void Rotate(const Vector3D offset);
+
+	float* proj = new float[16] {
+									1, 0, 0, 0,
+									0, 1, 0, 0,
+									0, 0, 1, 0,
+									0, 0, 1, 0
+	};
 protected:
 	Vector3D* rotation;
 	linmath::vec3 pointing = {0, 1, 0};

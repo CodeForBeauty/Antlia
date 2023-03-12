@@ -91,6 +91,65 @@ Scene::Scene()
 	glActiveTexture(GL_TEXTURE0);
 	glUniform1i(glGetUniformLocation(program, "u_ScreenTex"), 0);
 	glUseProgram(0);
+
+
+	glGenFramebuffers(1, &shadowFBO);
+	glGenTextures(1, &shadowMap);
+	glBindTexture(GL_TEXTURE_2D, shadowMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float border[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	shadowProgram = glCreateProgram();
+	glAttachShader(shadowProgram, ShadowVert.compileShader());
+	glAttachShader(shadowProgram, ShadowFrag.compileShader());
+	glLinkProgram(shadowProgram);
+	glValidateProgram(shadowProgram);
+	glUseProgram(shadowProgram);
+	glUseProgram(0);
+
+
+	glGenFramebuffers(1, &shadowRenderer);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer);
+
+	glGenTextures(1, &shadowRendererT);
+	glBindTexture(GL_TEXTURE_2D, shadowRendererT);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 850, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererT, 0);
+	
+	glGenRenderbuffers(1, &rboShadowColor);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboShadowColor);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 850, 600);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboShadowColor);
+	
+	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << fboStatus << std::endl;
+
+	shadowRProgram = glCreateProgram();
+	glAttachShader(shadowRProgram, ShadowRVert.compileShader());
+	glAttachShader(shadowRProgram, ShadowRGeom.compileShader());
+	glAttachShader(shadowRProgram, ShadowRFrag.compileShader());
+	glLinkProgram(shadowRProgram);
+	glValidateProgram(shadowRProgram);
+	glUseProgram(shadowRProgram);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glUseProgram(0);
 }
 
 Scene::~Scene()
@@ -215,14 +274,18 @@ void Scene::DeleteObject(Mesh* object)
 
 void Scene::Render(float* proj, int width, int height)
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
 		glEnable(GL_DEPTH_TEST);
-		glViewport(0, 0, 850, 600);
-		materials[i]->Bind();
+		materials[i]->Use();
 		materials[i]->SetProj(proj);
 
 		if (preview->update)
@@ -232,14 +295,36 @@ void Scene::Render(float* proj, int width, int height)
 			materials[i]->SetView(preview->rotMetricies);
 		}
 
-		if (updateLight)
+
+		std::vector <Vertex> batchVerticies;
+		std::vector <unsigned int> batchIndecies;
+
+		for (int j = 0; j < materialGroup[i].size(); j++)
 		{
-			for (int j = 0; j < lights.size(); j++)
+			batchVerticies.insert(batchVerticies.end(), materialGroup[i][j]->geometry->transformedVerticies, 
+				materialGroup[i][j]->geometry->transformedVerticies + materialGroup[i][j]->geometry->verticiesCount);
+
+			batchIndecies.insert(batchIndecies.end(), materialGroup[i][j]->geometry->transformedIndecies,
+				materialGroup[i][j]->geometry->transformedIndecies + materialGroup[i][j]->geometry->indeciesCount);
+		}
+
+		glBindVertexArray(vao);
+
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, batchVerticies.size() * sizeof(Vertex), batchVerticies.data());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
+		
+		for (int j = 0; j < lights.size(); j++)
+		{
+			int type = lights[j]->GetType();
+			if (type == 1)
 			{
-				int type = lights[j]->GetType();
-				if (type == 1)
+				DirectLight* light = static_cast<DirectLight*>(lights[j]);
+				if (updateLight)
 				{
-					DirectLight* light = static_cast<DirectLight*>(lights[j]);
+					glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
+					materials[i]->Use();
 					std::string buff = "u_DirectLightColor[" + std::to_string(j) + "]";
 					linmath::vec3 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
@@ -247,9 +332,38 @@ void Scene::Render(float* proj, int width, int height)
 					linmath::vec3 dir = light->GetVector();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 				}
-				if (type == 2)
+				glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+				glUseProgram(shadowProgram);
+				glViewport(0, 0, shadowWidth, shadowHeight);
+				glUniformMatrix4fv(glGetUniformLocation(shadowProgram, "lightProj"), 1, GL_TRUE, light->proj);
+				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+				
+				glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer);
+				glUseProgram(shadowRProgram);
+				glUniformMatrix4fv(glGetUniformLocation(shadowRProgram, "u_Proj"), 1, GL_TRUE, proj);
+
+				glUniformMatrix4fv(glGetUniformLocation(shadowRProgram, "lightProj"), 1, GL_TRUE, light->proj);
+
+				if (preview->update)
 				{
-					PointLight* light = static_cast<PointLight*>(lights[j]);
+					Vector3D camPos = preview->GetPosition();
+					glUniform3f(glGetUniformLocation(shadowRProgram, "u_CamPos"), -camPos.x, -camPos.y, -camPos.z);
+					glUniformMatrix4fv(glGetUniformLocation(shadowRProgram, "u_View"), 1, GL_TRUE, preview->rotMetricies);
+				}
+				glViewport(0, 0, 850, 600);
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, shadowMap);
+				glUniform1i(glGetUniformLocation(shadowRProgram, "u_ShadowMap"), 1);
+				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+				glActiveTexture(GL_TEXTURE0);
+			}
+			if (type == 2)
+			{
+				PointLight* light = static_cast<PointLight*>(lights[j]);
+				if (updateLight)
+				{
+					glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
+					materials[i]->Use();
 					std::string buff = "u_PointLightColor[" + std::to_string(j) + "]";
 					linmath::vec3 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
@@ -257,9 +371,14 @@ void Scene::Render(float* proj, int width, int height)
 					Vector3D posiion = light->GetPosition();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), posiion.x, posiion.y, posiion.z, light->GetDistance());
 				}
-				if (type == 3)
+			}
+			if (type == 3)
+			{
+				SpotLight* light = static_cast<SpotLight*>(lights[j]);
+				if (updateLight)
 				{
-					SpotLight* light = static_cast<SpotLight*>(lights[j]);
+					glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
+					materials[i]->Use();
 					std::string buff = "u_SpotLightColor[" + std::to_string(j) + "]";
 					linmath::vec3 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
@@ -279,26 +398,15 @@ void Scene::Render(float* proj, int width, int height)
 				}
 			}
 		}
+		glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
+		materials[i]->Bind();
 
-		std::vector <Vertex> batchVerticies;
-		std::vector <unsigned int> batchIndecies;
+		glActiveTexture(GL_TEXTURE6);
+		glBindTexture(GL_TEXTURE_2D, shadowRendererT);
+		glUniform1i(glGetUniformLocation(materials[i]->program, "u_Shadow"), 6);
+		glActiveTexture(GL_TEXTURE0);
 
-		for (int j = 0; j < materialGroup[i].size(); j++)
-		{
-			batchVerticies.insert(batchVerticies.end(), materialGroup[i][j]->geometry->transformedVerticies, 
-				materialGroup[i][j]->geometry->transformedVerticies + materialGroup[i][j]->geometry->verticiesCount);
-
-			batchIndecies.insert(batchIndecies.end(), materialGroup[i][j]->geometry->transformedIndecies,
-				materialGroup[i][j]->geometry->transformedIndecies + materialGroup[i][j]->geometry->indeciesCount);
-		}
-		
-		glBindVertexArray(vao);
-
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, batchVerticies.size() * sizeof(Vertex), batchVerticies.data());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
-
+		glViewport(0, 0, 850, 600);
 		glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboAA);
