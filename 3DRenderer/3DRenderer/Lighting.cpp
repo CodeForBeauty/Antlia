@@ -50,24 +50,7 @@ std::string Light::GetName() const
 DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vector3D()) { 
 	SetName("directLight");
 	SetType(1);
-	float projection[16] = {
-							0, 0, 0, 0,
-							0, 0, 0, 0,
-							0, 0, 0, 0,
-							0, 0, 0, 0};
-	float view[16] = {
-							1, 0, 0, 0,
-							0, 1, 0, 0,
-							0, 0, 1, 0,
-							0, 0, 0, 1 };
-	float proj1[16] = {
-							0, 0, 0, 0,
-							0, 0, 0, 0,
-							0, 0, 0, 0,
-							0, 0, 0, 0 };
-	linmath::orthographic(5, -5, 5, -5, -5, 5, projection);
-	linmath::lookAt({0, 20, 0}, { 0, 0, 0 }, view, { 0, 0, 1 });
-	linmath::multiplyMetricies4x4(projection, view, proj);
+	UpdateProj();
 	
 }
 DirectLight::DirectLight(Vector3D* rotation, linmath::vec3 color) : Light(color), rotation(rotation) { SetName("directLight"); SetType(1); }
@@ -82,6 +65,8 @@ void DirectLight::SetRotation(const Vector3D rot)
 	rotation->z = rot.z;
 	linmath::rotateMetricies(*rotation, rotMetricies);
 	pointing = linmath::multiplyByMetricies4x4(rotMetricies, {0, 1, 0});
+	up = linmath::multiplyByMetricies4x4(rotMetricies, {0, 0, 1});
+	UpdateProj();
 }
 void DirectLight::Rotate(const Vector3D offset)
 {
@@ -90,6 +75,30 @@ void DirectLight::Rotate(const Vector3D offset)
 	rotation->z += offset.z;
 	linmath::rotateMetricies(*rotation, rotMetricies);
 	pointing = linmath::multiplyByMetricies4x4(rotMetricies, { 0, 1, 0 });
+	up = linmath::multiplyByMetricies4x4(rotMetricies, { 0, 0, 1 });
+	UpdateProj();
+}
+
+void DirectLight::UpdateProj()
+{
+	float projection[16] = {
+							   0, 0, 0, 0,
+							   0, 0, 0, 0,
+							   0, 0, 0, 0,
+							   0, 0, 0, 0 };
+	float view[16] = {
+							1, 0, 0, 0,
+							0, 1, 0, 0,
+							0, 0, 1, 0,
+							0, 0, 0, 1 };
+	float proj1[16] = {
+							0, 0, 0, 0,
+							0, 0, 0, 0,
+							0, 0, 0, 0,
+							0, 0, 0, 0 };
+	linmath::orthographic(5, -5, 5, -5, -5, 5, projection);
+	linmath::lookAt(pointing * 20, { 0, 0, 0 }, view, up);
+	linmath::multiplyMetricies4x4(projection, view, proj);
 }
 
 

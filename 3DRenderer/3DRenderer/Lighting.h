@@ -44,6 +44,8 @@ public:
 	void SetRotation(const Vector3D rotation);
 	void Rotate(const Vector3D offset);
 
+	void UpdateProj();
+
 	float* proj = new float[16] {
 									1, 0, 0, 0,
 									0, 1, 0, 0,
@@ -53,6 +55,7 @@ public:
 protected:
 	Vector3D* rotation;
 	linmath::vec3 pointing = {0, 1, 0};
+	linmath::vec3 up = {0, 0, 1};
 	float* rotMetricies = new float[16] {
 											1, 0, 0, 0,
 											0, 1, 0, 0,

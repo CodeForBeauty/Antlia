@@ -51,6 +51,13 @@ int main(void)
     mat2->SetAlbedo(0.8, 0.2, 0.2, 1.0);
 
     DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
+    DirectLight* dirLight1 = new DirectLight({ 1, 0.5, 0.5 });
+    DirectLight* dirLight2 = new DirectLight({ 1, 0.5, 0.5 });
+    DirectLight* dirLight3 = new DirectLight({ 1, 0.5, 0.5 });
+
+    dirLight1->SetRotation(Vector3D(25, 0, 0));
+    dirLight2->SetRotation(Vector3D(-20, 0, 0));
+    dirLight3->SetRotation(Vector3D(45, 0, 0));
 
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
@@ -59,6 +66,9 @@ int main(void)
     scene->AddMaterial(mat1);
 
     scene->AddLight(dirLight);
+    scene->AddLight(dirLight1);
+    scene->AddLight(dirLight2);
+    scene->AddLight(dirLight3);
 
 
     float* proj = new float[16] {
@@ -84,11 +94,11 @@ int main(void)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
-    /*
+    
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
-    */
+    
     
 
     double xpos, ypos;

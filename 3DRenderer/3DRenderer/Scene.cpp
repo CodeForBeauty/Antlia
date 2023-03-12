@@ -315,6 +315,8 @@ void Scene::Render(float* proj, int width, int height)
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
 		
+		bool rendered = false;
+
 		for (int j = 0; j < lights.size(); j++)
 		{
 			int type = lights[j]->GetType();
@@ -333,13 +335,16 @@ void Scene::Render(float* proj, int width, int height)
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 				}
 				glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+				//glClear(GL_COLOR_BUFFER_BIT);
 				glUseProgram(shadowProgram);
+				glClear(GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
 				glUniformMatrix4fv(glGetUniformLocation(shadowProgram, "lightProj"), 1, GL_TRUE, light->proj);
 				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 				
 				glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer);
 				glUseProgram(shadowRProgram);
+				glClear(GL_DEPTH_BUFFER_BIT);
 				glUniformMatrix4fv(glGetUniformLocation(shadowRProgram, "u_Proj"), 1, GL_TRUE, proj);
 
 				glUniformMatrix4fv(glGetUniformLocation(shadowRProgram, "lightProj"), 1, GL_TRUE, light->proj);
@@ -351,11 +356,16 @@ void Scene::Render(float* proj, int width, int height)
 					glUniformMatrix4fv(glGetUniformLocation(shadowRProgram, "u_View"), 1, GL_TRUE, preview->rotMetricies);
 				}
 				glViewport(0, 0, 850, 600);
-				glActiveTexture(GL_TEXTURE1);
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, shadowMap);
-				glUniform1i(glGetUniformLocation(shadowRProgram, "u_ShadowMap"), 1);
+				glUniform1i(glGetUniformLocation(shadowRProgram, "u_ShadowMap"), 0);
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, shadowRendererT);
+				glUniform1i(glGetUniformLocation(shadowRProgram, "u_ShadowRender"), 1);
+				glUniform1i(glGetUniformLocation(shadowRProgram, "u_HasPrevious"), rendered);
 				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 				glActiveTexture(GL_TEXTURE0);
+				rendered = true;
 			}
 			if (type == 2)
 			{

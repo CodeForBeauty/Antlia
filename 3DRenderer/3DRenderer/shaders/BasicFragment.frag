@@ -104,7 +104,7 @@ vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance,
 
 vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity,
 				vec3 albedo, float specular, float roughness, float metalic,
-				vec3 normal, vec3 vector, vec3 reflectivity)
+				vec3 normal, vec3 vector, vec3 reflectivity, float shadow)
 {
 	vec3 lightDir = normalize(lightVec);
 	vec3 H = normalize(vector + lightDir);
@@ -125,7 +125,7 @@ vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity,
 	vec3 KD = vec3(1.0) - freshnel;
 	KD *= 1.0 - metalic;
 
-	return (KD * albedo / Pi + spec) * (intensity * lightColor) * lightReflect;
+	return (KD * albedo * shadow / Pi + spec) * (intensity * lightColor) * lightReflect;
 }
 
 vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float intensity, float innerCone, float outerCone,
@@ -202,7 +202,7 @@ void main()
 		if (u_DirectLightColor[i].w > 0)
 		{
 			totalLight += directLight(vec3(u_DirectLightColor[i]), -u_DirectLightDir[i], u_DirectLightColor[i].w,
-									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity) * shadow;
+									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity, shadow);
 			lightCount++;
 		}
 	}
