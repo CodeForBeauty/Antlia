@@ -30,11 +30,35 @@ void main()
 		float currentDepth = lightCoords.z;
 
 		float bias = 0.05f;
-		if (currentDepth > closestDepth + bias)
-			shadow = 0.0f + previous / 2;
-		if (previous < 0.9)
-			shadow = previous / 2 + shadow / 2;
-		//shadow -= 1 - previous;
+
+		int sampleRadius = 1;
+		vec2 pixelSize = 1.0f / textureSize(u_ShadowMap, 0);
+		vec2 prevPixelSize = 1.0f / textureSize(u_ShadowRender, 0);
+		float isShadow = 0.0f;
+		for (int y = -sampleRadius; y <= sampleRadius; y++)
+		{
+			for (int x = -sampleRadius; x <= sampleRadius; x++)
+			{
+				shadow = 1.0f;
+				closestDepth = texture(u_ShadowMap, lightCoords.xy + vec2(x, y) * pixelSize).r;
+				currentDepth = lightCoords.z;
+				if (currentDepth > closestDepth + bias)
+					shadow = 0.0f + previous / 2;
+				if (previous < 0.9)
+					shadow = (previous + shadow) / 2;
+				shadow -= (1 - previous) * 0.5;
+				shadow = 1 - shadow;
+				isShadow += shadow;
+			}
+		}
+		isShadow /= pow((sampleRadius * 2 + 1), 2);
+
+		shadow = (1 - isShadow);// + previous / 2;
+		//if (currentDepth > closestDepth + bias)
+		//	shadow = 0.0f + previous / 2;
+		//if (previous < 1)
+		//	shadow = previous / 2 + shadow / 2;
+		//shadow -= (1 - previous)*0.5;
 		//shadow = previous + 0.1;
 	}
 

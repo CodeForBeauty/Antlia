@@ -80,9 +80,9 @@ int main(void)
     int width, height;
 
 
-    float fov = linmath::deg2radians(45);
-    float far = 10;
-    float near = 0.1;
+    float fov = linmath::deg2radians(60);
+    float far = 100;
+    float near = -0.1;
 
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();

@@ -125,7 +125,7 @@ vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity,
 	vec3 KD = vec3(1.0) - freshnel;
 	KD *= 1.0 - metalic;
 
-	return (KD * albedo * shadow / Pi + spec) * (intensity * lightColor) * lightReflect;
+	return (KD * albedo / Pi + spec) * (intensity * lightColor) * lightReflect * (shadow + 0.2);
 }
 
 vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float intensity, float innerCone, float outerCone,

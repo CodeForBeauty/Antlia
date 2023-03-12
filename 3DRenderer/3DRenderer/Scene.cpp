@@ -131,12 +131,25 @@ Scene::Scene()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererT, 0);
+
 	
 	glGenRenderbuffers(1, &rboShadowColor);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboShadowColor);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 850, 600);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboShadowColor);
 	
+	glGenFramebuffers(1, &shadowRenderer1);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer1);
+
+	glGenTextures(1, &shadowRendererT1);
+	glBindTexture(GL_TEXTURE_2D, shadowRendererT1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 850, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererT1, 0);
+
 	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << fboStatus << std::endl;
@@ -316,6 +329,7 @@ void Scene::Render(float* proj, int width, int height)
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
 		
 		bool rendered = false;
+		bool second = false;
 
 		for (int j = 0; j < lights.size(); j++)
 		{
@@ -335,7 +349,6 @@ void Scene::Render(float* proj, int width, int height)
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 				}
 				glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
-				//glClear(GL_COLOR_BUFFER_BIT);
 				glUseProgram(shadowProgram);
 				glClear(GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
@@ -360,10 +373,16 @@ void Scene::Render(float* proj, int width, int height)
 				glBindTexture(GL_TEXTURE_2D, shadowMap);
 				glUniform1i(glGetUniformLocation(shadowRProgram, "u_ShadowMap"), 0);
 				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, shadowRendererT);
+				glBindTexture(GL_TEXTURE_2D, shadowRendererT1);
 				glUniform1i(glGetUniformLocation(shadowRProgram, "u_ShadowRender"), 1);
 				glUniform1i(glGetUniformLocation(shadowRProgram, "u_HasPrevious"), rendered);
+
 				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, shadowRenderer);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, shadowRenderer1);
+				glBlitFramebuffer(0, 0, 850, 600, 0, 0, 850, 600, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
 				glActiveTexture(GL_TEXTURE0);
 				rendered = true;
 			}

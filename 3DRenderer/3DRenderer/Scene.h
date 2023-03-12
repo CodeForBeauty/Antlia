@@ -53,7 +53,7 @@ private:
 	unsigned int shadowFBO, shadowMap;
 	unsigned int shadowWidth = 2048, shadowHeight = 2048;
 	unsigned int shadowRProgram;
-	unsigned int shadowRenderer, shadowRendererT;
+	unsigned int shadowRenderer, shadowRendererT, shadowRenderer1, shadowRendererT1;
 	float rect[30] = {
 					   1.0f,  -1.0f, 1.0f, 1, 0,
 					  -1.0f, -1.0f, 1.0f, 0, 0,
