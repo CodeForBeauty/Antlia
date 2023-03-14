@@ -16,9 +16,21 @@ namespace linmath
 			z += a.z;
 			return *this;
 		}
+		vec3 operator +(const vec3& a)
+		{
+			return { x + a.x, y + a.y, z + a.z };
+		}
 		vec3 operator *(const float& a)
 		{
 			return { x * a, y * a, z * a };
+		}
+		vec3 operator -()
+		{
+			return { -x, -y, -z };
+		}
+		vec3 operator -(const vec3& a)
+		{
+			return { x - a.x, y - a.y, z - a.z };
 		}
 	};
 	struct vec4 { float x, y, z, w; };

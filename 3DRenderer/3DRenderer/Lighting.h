@@ -20,6 +20,15 @@ public:
 
 	float intensity = 1;
 
+	virtual void UpdateProj(linmath::vec3 camera = { 0, 0, 0 });
+
+	float* proj = new float[16] {
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 0
+	};
+
 
 protected:
 	void SetType(int type);
@@ -44,14 +53,8 @@ public:
 	void SetRotation(const Vector3D rotation);
 	void Rotate(const Vector3D offset);
 
-	void UpdateProj();
+	void UpdateProj(linmath::vec3 camera = {0, 0, 0}) override;
 
-	float* proj = new float[16] {
-									1, 0, 0, 0,
-									0, 1, 0, 0,
-									0, 0, 1, 0,
-									0, 0, 1, 0
-	};
 protected:
 	Vector3D* rotation;
 	linmath::vec3 pointing = {0, 1, 0};
@@ -96,6 +99,8 @@ public:
 
 	float GetDistance();
 	void SetDistance(float distance);
+
+	void UpdateProj(linmath::vec3 camera = {0, 0, 0}) override;
 
 	Vector3D GetPosition();
 

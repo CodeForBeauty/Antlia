@@ -53,11 +53,14 @@ int main(void)
     DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
     DirectLight* dirLight1 = new DirectLight({ 1, 0.5, 0.5 });
     DirectLight* dirLight2 = new DirectLight({ 1, 0.5, 0.5 });
-    DirectLight* dirLight3 = new DirectLight({ 1, 0.5, 0.5 });
+    SpotLight* dirLight3 = new SpotLight({ 1, 0, 0 });
+
+    dirLight3->SetPosition(Vector3D(0, 4, 0));
+    dirLight3->SetRotation(Vector3D(0, 0, 0));
 
     dirLight1->SetRotation(Vector3D(25, 0, 0));
     dirLight2->SetRotation(Vector3D(-20, 0, 0));
-    dirLight3->SetRotation(Vector3D(45, 0, 0));
+    dirLight->SetRotation(Vector3D(0, 0, 0));
 
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
@@ -65,9 +68,9 @@ int main(void)
 
     scene->AddMaterial(mat1);
 
-    scene->AddLight(dirLight);
-    scene->AddLight(dirLight1);
     scene->AddLight(dirLight2);
+    scene->AddLight(dirLight1);
+    scene->AddLight(dirLight);
     scene->AddLight(dirLight3);
 
 
@@ -80,9 +83,9 @@ int main(void)
     int width, height;
 
 
-    float fov = linmath::deg2radians(60);
-    float far = 100;
-    float near = -0.1;
+    float fov = linmath::deg2radians(45);
+    float far = 50;
+    float near = 0;
 
     Vector3D i = Vector3D();
     Vector3D i1 = Vector3D();
@@ -166,7 +169,8 @@ int main(void)
         //suzanne->SetRotation(i);
         //suzanne->Move(i);
 
-        //dirLight->Rotate(Vector3D(1, 0, 0));
+        dirLight3->Rotate(Vector3D(1, 0, 0));
+        //dirLight3->Move(Vector3D(0.0, 0.05, 0.0));
 
         //scene->preview->SetRotation(i);
 

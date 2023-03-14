@@ -46,6 +46,10 @@ std::string Light::GetName() const
 	return name;
 }
 
+void Light::UpdateProj(linmath::vec3 camera)
+{
+}
+
 
 DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vector3D()) { 
 	SetName("directLight");
@@ -56,7 +60,9 @@ DirectLight::DirectLight(linmath::vec3 color) : Light(color), rotation(new Vecto
 DirectLight::DirectLight(Vector3D* rotation, linmath::vec3 color) : Light(color), rotation(rotation) { SetName("directLight"); SetType(1); }
 DirectLight::~DirectLight(){ delete rotation, rotMetricies; }
 
-Vector3D DirectLight::GetRotation() { return *rotation; }
+Vector3D DirectLight::GetRotation() { 
+	return *rotation;
+}
 linmath::vec3 DirectLight::GetVector() { return pointing; }
 void DirectLight::SetRotation(const Vector3D rot)
 {
@@ -66,7 +72,7 @@ void DirectLight::SetRotation(const Vector3D rot)
 	linmath::rotateMetricies(*rotation, rotMetricies);
 	pointing = linmath::multiplyByMetricies4x4(rotMetricies, {0, 1, 0});
 	up = linmath::multiplyByMetricies4x4(rotMetricies, {0, 0, 1});
-	UpdateProj();
+	UpdateProj({ 0, 0, 0 });
 }
 void DirectLight::Rotate(const Vector3D offset)
 {
@@ -76,28 +82,24 @@ void DirectLight::Rotate(const Vector3D offset)
 	linmath::rotateMetricies(*rotation, rotMetricies);
 	pointing = linmath::multiplyByMetricies4x4(rotMetricies, { 0, 1, 0 });
 	up = linmath::multiplyByMetricies4x4(rotMetricies, { 0, 0, 1 });
-	UpdateProj();
+	UpdateProj({ 0, 0, 0 });
 }
 
-void DirectLight::UpdateProj()
+void DirectLight::UpdateProj(linmath::vec3 camera)
 {
 	float projection[16] = {
-							   0, 0, 0, 0,
-							   0, 0, 0, 0,
-							   0, 0, 0, 0,
-							   0, 0, 0, 0 };
+							   1, 0, 0, 0,
+							   0, 1, 0, 0,
+							   0, 0, 1, 0,
+							   0, 0, 0, 1 };
 	float view[16] = {
 							1, 0, 0, 0,
 							0, 1, 0, 0,
 							0, 0, 1, 0,
 							0, 0, 0, 1 };
-	float proj1[16] = {
-							0, 0, 0, 0,
-							0, 0, 0, 0,
-							0, 0, 0, 0,
-							0, 0, 0, 0 };
-	linmath::orthographic(5, -5, 5, -5, -5, 5, projection);
-	linmath::lookAt(pointing * 20, { 0, 0, 0 }, view, up);
+	linmath::orthographic(10, -10, 10, -10, 10, -10, projection);
+	//linmath::lookAt(camera + pointing * 50, { 0, 0, 0 }, view, up);
+	linmath::lookAt(pointing * 20, { 0, 0, 0 }, view, -up);
 	linmath::multiplyMetricies4x4(projection, view, proj);
 }
 
@@ -137,11 +139,32 @@ void PointLight::Move(const Vector3D offset)
 
 
 SpotLight::SpotLight(linmath::vec3 color, float distance, float angle) : DirectLight(color), angle(angle), distance(distance), position(new Vector3D()) 
-	{ SetName("spotLight"); SetType(3); }
+{ 
+	SetName("spotLight"); 
+	SetType(3);
+	UpdateProj({0, 0, 0});
+}
 SpotLight::SpotLight(linmath::vec3 color, Vector3D* position, float distance, float angle) 
 	: DirectLight(color), angle(angle), distance(distance), position(position) { SetName("spotLight"); SetType(3); }
 SpotLight::SpotLight(linmath::vec3 color, Vector3D* position, Vector3D* rotation, float distance, float angle) 
 	: DirectLight(rotation, color), angle(angle), distance(distance), position(position) { SetName("spotLight"); SetType(3); }
+
+void SpotLight::UpdateProj(linmath::vec3 camera)
+{
+	float projection[16] = {
+							   1, 0, 0, 0,
+							   0, 1, 0, 0,
+							   0, 0, 1, 0,
+							   0, 0, 1, 1 };
+	float view[16] = {
+							1, 0, 0, 0,
+							0, 1, 0, 0,
+							0, 0, 1, 0,
+							0, 0, 0, 1 };
+	linmath::perspective(1, 1, linmath::deg2radians(90), 20, 0, projection);
+	linmath::lookAt(pointing * -10, {0, 0, 0}, view, -up);
+	linmath::multiplyMetricies4x4(projection, view, proj);
+}
 
 float SpotLight::GetAngle()
 {

@@ -6,6 +6,7 @@ uniform mat4 lightProj;
 uniform vec3 u_CamPos;
 uniform mat4 u_Proj;
 uniform mat4 u_View;
+uniform vec3 u_Pos;
 
 out DATA
 {
@@ -22,5 +23,5 @@ void main()
 	data_out.camPos = u_CamPos;
 	data_out.projection = u_Proj;
 	data_out.view = u_View;
-	data_out.lightPos = lightProj * vec4(position, 1);
+	data_out.lightPos = lightProj * vec4(position + u_Pos, 1);
 }

@@ -132,15 +132,18 @@ linmath::vec3 linmath::cross(linmath::vec3 vec1, linmath::vec3 vec2)
 linmath::vec3 linmath::normalize(linmath::vec3 vec)
 {
     float sum = vec.x + vec.y + vec.z;
-    return { vec.x / sum, vec.y / sum, vec.z / sum };
+    float magnitude = std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    if (magnitude > 0)
+        return { vec.x / magnitude, vec.y / magnitude, vec.z / magnitude };
+    return vec;
 }
 
 void linmath::lookAt(vec3 at, vec3 eye, float* out, vec3 up)
 {
-    vec3 zaxis = normalize({at.x - eye.x, at.y - eye.y, at.z - eye.z});
+    vec3 zaxis = normalize(at - eye);
     vec3 xaxis = normalize(cross(up, zaxis));
     vec3 yaxis = cross(zaxis, xaxis);
-
+    
     out[0] = xaxis.x;
     out[4] = xaxis.y;
     out[8] = xaxis.z;
@@ -152,8 +155,9 @@ void linmath::lookAt(vec3 at, vec3 eye, float* out, vec3 up)
     out[2] = zaxis.x;
     out[6] = zaxis.y;
     out[10] = zaxis.z;
+    
 
-    out[12] = -dot(xaxis, eye);
-    out[13] = -dot(yaxis, eye);
-    out[14] = -dot(zaxis, eye);
+    //out[12] = at.x;//dot(xaxis, -at);
+    //out[13] = at.y;//dot(yaxis, -at);
+    //out[14] = at.z;//dot(zaxis, -at);
 }
