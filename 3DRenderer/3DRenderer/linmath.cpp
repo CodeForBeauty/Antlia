@@ -157,7 +157,8 @@ void linmath::lookAt(vec3 at, vec3 eye, float* out, vec3 up)
     out[10] = zaxis.z;
     
 
-    //out[12] = at.x;//dot(xaxis, -at);
-    //out[13] = at.y;//dot(yaxis, -at);
-    //out[14] = at.z;//dot(zaxis, -at);
+    out[12] = -dot(xaxis, eye);
+    out[13] = -dot(yaxis, eye);
+    out[14] = -dot(zaxis, eye);
+    out[15] = 1;
 }

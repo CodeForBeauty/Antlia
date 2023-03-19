@@ -54,6 +54,8 @@ int main(void)
     DirectLight* dirLight1 = new DirectLight({ 1, 0.5, 0.5 });
     DirectLight* dirLight2 = new DirectLight({ 1, 0.5, 0.5 });
     SpotLight* dirLight3 = new SpotLight({ 1, 0, 0 });
+    PointLight* pointLight = new PointLight({ 1, 0, 0 });
+    PointLight* pointLight1 = new PointLight({ 0, 0, 1 });
 
     dirLight3->SetPosition(Vector3D(0, 4, 0));
     dirLight3->SetRotation(Vector3D(0, 0, 0));
@@ -62,16 +64,21 @@ int main(void)
     dirLight2->SetRotation(Vector3D(-20, 0, 0));
     dirLight->SetRotation(Vector3D(0, 0, 0));
 
+    pointLight->SetPosition(Vector3D(0, 5, 0));
+    pointLight1->SetPosition(Vector3D(-2, 5, -2));
+
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
     mat1->LoadTexture("waterNormal.jpg", TEXTURE_NORMAL);
 
     scene->AddMaterial(mat1);
 
-    scene->AddLight(dirLight2);
-    scene->AddLight(dirLight1);
-    scene->AddLight(dirLight);
-    scene->AddLight(dirLight3);
+    //scene->AddLight(dirLight2);
+    //scene->AddLight(dirLight1);
+    //scene->AddLight(dirLight);
+    //scene->AddLight(dirLight3);
+    scene->AddLight(pointLight);
+    scene->AddLight(pointLight1);
 
 
     float* proj = new float[16] {
@@ -101,6 +108,7 @@ int main(void)
     glEnable(GL_CULL_FACE);
     glCullFace(GL_FRONT);
     glFrontFace(GL_CCW);
+    
     
     
 
@@ -169,7 +177,7 @@ int main(void)
         //suzanne->SetRotation(i);
         //suzanne->Move(i);
 
-        dirLight3->Rotate(Vector3D(1, 0, 0));
+        //dirLight3->Rotate(Vector3D(1, 0, 0));
         //dirLight3->Move(Vector3D(0.0, 0.05, 0.0));
 
         //scene->preview->SetRotation(i);

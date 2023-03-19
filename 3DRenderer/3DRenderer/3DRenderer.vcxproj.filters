@@ -124,6 +124,24 @@
     <None Include="shaders\ShadowRender.geom">
       <Filter>res\shaders</Filter>
     </None>
+    <None Include="shaders\ShadowRender1.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="shaders\ShadowRender1.geom">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="shaders\ShadowRender1.vert">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="shaders\ShadowMap1.frag">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="shaders\ShadowMap1.geom">
+      <Filter>res\shaders</Filter>
+    </None>
+    <None Include="shaders\ShadowMap1.vert">
+      <Filter>res\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png">

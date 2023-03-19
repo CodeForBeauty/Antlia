@@ -1,0 +1,26 @@
+#version 330 core
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 18) out;
+
+uniform mat4 matrix[6];
+
+out vec4 fragPos;
+
+void main()
+{
+	for (int face = 0; face < 6; ++face)
+	{
+		gl_Layer = face;
+		for (int i = 0; i < 3; i++)
+		{
+			fragPos = gl_in[i].gl_Position;
+			fragPos.xz = -fragPos.xz;
+			gl_Position = matrix[face] * fragPos;
+			gl_Position.z /= -gl_Position.w;
+			//gl_Position.z = -gl_Position.z;
+			EmitVertex();
+		}
+		EndPrimitive();
+	}
+}

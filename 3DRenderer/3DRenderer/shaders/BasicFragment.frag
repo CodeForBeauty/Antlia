@@ -40,6 +40,7 @@ uniform vec2 u_SpotLightAngle[8];
 
 uniform sampler2D u_ShadowDir;
 uniform sampler2D u_ShadowSpot;
+uniform sampler2D u_ShadowPoint;
 
 out vec4 color;
 
@@ -73,7 +74,7 @@ vec3 freshnelSchlick(float hDotV, vec3 baseReflectivity)
 
 vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance,
 				vec3 albedo, float specular, float roughness, float metalic,
-				vec3 normal, vec3 vector, vec3 reflectivity)
+				vec3 normal, vec3 vector, vec3 reflectivity, float shadow)
 {
 	vec3 lightDir = normalize(lightVec);
 	vec3 H = normalize(vector + lightDir);
@@ -100,7 +101,7 @@ vec3 pointLight(vec3 lightColor, vec3 lightVec, float intensity, float distance,
 	vec3 KD = vec3(1.0) - freshnel;
 	KD *= 1.0 - metalic;
 
-	return (KD * albedo / Pi + spec) * radiance * lightReflect;
+	return (KD * albedo / Pi + spec * shadow) * radiance * lightReflect * shadow;
 }
 
 vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity,
@@ -126,7 +127,7 @@ vec3 directLight(vec3 lightColor, vec3 lightVec, float intensity,
 	vec3 KD = vec3(1.0) - freshnel;
 	KD *= 1.0 - metalic;
 
-	return (KD * albedo / Pi + spec) * (intensity * lightColor) * lightReflect * (shadow + 0.2);
+	return (KD * albedo / Pi + spec * shadow) * (intensity * lightColor) * lightReflect * shadow;
 }
 
 vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float intensity, float innerCone, float outerCone,
@@ -162,7 +163,7 @@ vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float i
 	float angle = dot(dir, lightDir);
 	float cone = clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
 
-	return (KD * albedo / Pi + spec) * cone * radiance * lightReflect * shadow;
+	return (KD * albedo / Pi + spec * shadow) * cone * radiance * lightReflect * shadow;
 }
 
 void main()
@@ -189,13 +190,14 @@ void main()
 	vec3 totalLight = vec3(0, 0, 0);
 	float shadow1 = texture(u_ShadowDir, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
 	float shadow2 = texture(u_ShadowSpot, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
+	float shadow3 = texture(u_ShadowPoint, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
 	for (int i = 0; i < 8; i++)
 	{
 		if (u_PointLightPos[i].w > 0)
 		{
 			vec3 lightVec = vec3(u_PointLightPos[i]) - v_Pos;
 			totalLight += pointLight(vec3(u_PointLightColor[i]), lightVec, u_PointLightColor[i].w, u_PointLightPos[i].w,
-									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity);
+									vec3(albedo), specular, roughness, metalic, normal, vector, reflectivity, shadow3);
 			lightCount++;
 		}
 	}

@@ -49,18 +49,19 @@ Scene::Scene()
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << fboStatus << std::endl;
 
+
+
 	glGenFramebuffers(1, &fboAA);
 	glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
 
 	glGenTextures(1, &fbtAA);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, fbtAA);
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, AAsamples, GL_RGB, 850, 600, GL_TRUE);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, fbtAA, 0);
-
 
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -119,6 +120,69 @@ Scene::Scene()
 	glUseProgram(shadowProgram);
 	glUseProgram(0);
 
+	glGenFramebuffers(1, &shadowFBO1);
+
+	glGenTextures(1, &shadowMap1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMap1);
+	for (int i = 0; i < 6; i++)
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO1);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowMap1, 0);
+
+	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << fboStatus << std::endl;
+
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	
+	shadowProgram1 = glCreateProgram();
+	glAttachShader(shadowProgram1, ShadowVert1.compileShader());
+	glAttachShader(shadowProgram1, ShadowGeom1.compileShader());
+	glAttachShader(shadowProgram1, ShadowFrag1.compileShader());
+	glLinkProgram(shadowProgram1);
+	glValidateProgram(shadowProgram1);
+	glUseProgram(shadowProgram1);
+
+	float perspective[16] =
+	{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 1, 0
+	};
+	linmath::perspective(1, 1, linmath::deg2radians(90), 100, 0.1, perspective);
+	float cubeLook[6][16] = {};
+	float cubeMatrix[6][16] = {};
+	linmath::lookAt({ 0, 0, 0 }, { 1, 0, 0 }, cubeLook[0], { 0, -1, 0 });
+	linmath::lookAt({ 0, 0, 0 }, { -1, 0, 0 }, cubeLook[1], { 0, -1, 0 });
+	linmath::lookAt({ 0, 0, 0 }, { 0,  1, 0 }, cubeLook[2], { 0, 0,  1 });
+	linmath::lookAt({ 0, 0, 0 }, { 0, -1, 0 }, cubeLook[3], { 0, 0, -1 });
+	linmath::lookAt({ 0, 0, 0 }, { 0, 0,  1 }, cubeLook[4], { 0, -1, 0 });
+	linmath::lookAt({ 0, 0, 0 }, { 0, 0, -1 }, cubeLook[5], { 0, -1, 0 });
+
+	linmath::multiplyMetricies4x4(perspective, cubeLook[0], cubeMatrix[0]);
+	linmath::multiplyMetricies4x4(perspective, cubeLook[1], cubeMatrix[1]);
+	linmath::multiplyMetricies4x4(perspective, cubeLook[2], cubeMatrix[2]);
+	linmath::multiplyMetricies4x4(perspective, cubeLook[3], cubeMatrix[3]);
+	linmath::multiplyMetricies4x4(perspective, cubeLook[4], cubeMatrix[4]);
+	linmath::multiplyMetricies4x4(perspective, cubeLook[5], cubeMatrix[5]);
+
+	glUniformMatrix4fv(glGetUniformLocation(shadowProgram1, "matrix[0]"), 1, GL_TRUE, cubeMatrix[0]);
+	glUniformMatrix4fv(glGetUniformLocation(shadowProgram1, "matrix[1]"), 1, GL_TRUE, cubeMatrix[1]);
+	glUniformMatrix4fv(glGetUniformLocation(shadowProgram1, "matrix[2]"), 1, GL_TRUE, cubeMatrix[2]);
+	glUniformMatrix4fv(glGetUniformLocation(shadowProgram1, "matrix[3]"), 1, GL_TRUE, cubeMatrix[3]);
+	glUniformMatrix4fv(glGetUniformLocation(shadowProgram1, "matrix[4]"), 1, GL_TRUE, cubeMatrix[4]);
+	glUniformMatrix4fv(glGetUniformLocation(shadowProgram1, "matrix[5]"), 1, GL_TRUE, cubeMatrix[5]);
+	
+	glUniform1f(glGetUniformLocation(shadowProgram1, "u_FarPlane"), 100);
+
 
 	glGenFramebuffers(1, &shadowRenderer);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer);
@@ -167,6 +231,38 @@ Scene::Scene()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(0);
 
+
+	glGenFramebuffers(1, &shadowRenderer2);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer2);
+
+	glGenTextures(1, &shadowRendererT2);
+	glBindTexture(GL_TEXTURE_2D, shadowRendererT2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 850, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererT2, 0);
+
+	glGenRenderbuffers(1, &rboShadowColor2);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboShadowColor2);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 850, 600);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboShadowColor2);
+
+	shadowRProgram1 = glCreateProgram();
+	glAttachShader(shadowRProgram1, ShadowRVert1.compileShader());
+	glAttachShader(shadowRProgram1, ShadowRGeom1.compileShader());
+	glAttachShader(shadowRProgram1, ShadowRFrag1.compileShader());
+	glLinkProgram(shadowRProgram1);
+	glValidateProgram(shadowRProgram1);
+	glUseProgram(shadowRProgram1);
+
+	glUniformMatrix4fv(glGetUniformLocation(shadowRProgram1, "u_"), 1, GL_TRUE, cubeMatrix[2]);
+	glUniform1f(glGetUniformLocation(shadowRProgram1, "u_FarPlane"), 100);
+
+	glUseProgram(0);
+
+
 	glGenFramebuffers(1, &shadowRendererDir);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererDir);
 
@@ -200,9 +296,21 @@ Scene::Scene()
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE)
 		std::cout << fboStatus << std::endl;
 
+
+	glGenFramebuffers(1, &shadowRendererPoint);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererPoint);
+
+	glGenTextures(1, &shadowRendererTPoint);
+	glBindTexture(GL_TEXTURE_2D, shadowRendererTPoint);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 850, 600, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererTPoint, 0);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(0);
-	
 }
 
 Scene::~Scene()
@@ -330,10 +438,16 @@ void Scene::Render(float* proj, int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO1);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer2);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
@@ -373,6 +487,7 @@ void Scene::Render(float* proj, int width, int height)
 		
 		bool rendered = false;
 		bool renderedSpot = false;
+		bool renderedPoint = false;
 		bool second = false;
 
 		for (int j = 0; j < lights.size(); j++)
@@ -395,7 +510,7 @@ void Scene::Render(float* proj, int width, int height)
 				Vector3D camPos = preview->GetPosition();
 				glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 				glUseProgram(shadowProgram);
-				glClear(GL_DEPTH_BUFFER_BIT);
+				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
 				glUniformMatrix4fv(glGetUniformLocation(shadowProgram, "lightProj"), 1, GL_TRUE, light->proj);
 				glUniform3f(glGetUniformLocation(shadowProgram, "u_Pos"), -camPos.x, -camPos.y, -camPos.z);
@@ -436,6 +551,7 @@ void Scene::Render(float* proj, int width, int height)
 			if (type == 2)
 			{
 				PointLight* light = static_cast<PointLight*>(lights[j]);
+				Vector3D position = light->GetPosition();
 				if (updateLight)
 				{
 					glBindFramebuffer(GL_FRAMEBUFFER, fboAA);
@@ -444,9 +560,50 @@ void Scene::Render(float* proj, int width, int height)
 					linmath::vec3 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 					buff = "u_PointLightPos[" + std::to_string(j) + "]";
-					Vector3D posiion = light->GetPosition();
-					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), posiion.x, posiion.y, posiion.z, light->GetDistance());
+					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), -position.x, -position.y, -position.z, light->GetDistance());
 				}
+				glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO1);
+				glUseProgram(shadowProgram1);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				glViewport(0, 0, shadowWidth, shadowHeight);
+				glUniform3f(glGetUniformLocation(shadowProgram1, "u_Pos"), position.x, position.y, position.z);
+				glUniform3f(glGetUniformLocation(shadowProgram1, "u_LightPos"), position.x, -position.y, -position.z);
+				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+
+				glBindFramebuffer(GL_FRAMEBUFFER, shadowRenderer2);
+				glUseProgram(shadowRProgram1);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				glUniformMatrix4fv(glGetUniformLocation(shadowRProgram1, "u_Proj"), 1, GL_TRUE, proj);
+
+				glUniform3f(glGetUniformLocation(shadowRProgram1, "u_Pos"), position.x, position.y, position.z);
+				glUniform1f(glGetUniformLocation(shadowRProgram1, "u_Bias"), 0.001f);
+				//glUniform1f(glGetUniformLocation(shadowRProgram1, "u_FarPlane"), 10);
+				glUniform3f(glGetUniformLocation(shadowRProgram1, "lightPos"), -position.x, -position.y, -position.z);
+
+				if (preview->update)
+				{
+					Vector3D camPos = preview->GetPosition();
+					glUniform3f(glGetUniformLocation(shadowRProgram1, "u_CamPos"), -camPos.x, -camPos.y, -camPos.z);
+					glUniformMatrix4fv(glGetUniformLocation(shadowRProgram1, "u_View"), 1, GL_TRUE, preview->rotMetricies);
+				}
+				glViewport(0, 0, 850, 600);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMap1);
+				glUniform1i(glGetUniformLocation(shadowRProgram1, "u_ShadowMap"), 0);
+				
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, shadowRendererTPoint);
+				glUniform1i(glGetUniformLocation(shadowRProgram1, "u_ShadowRender"), 1);
+				glUniform1i(glGetUniformLocation(shadowRProgram1, "u_HasPrevious"), renderedPoint);
+
+				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, shadowRenderer2);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, shadowRendererPoint);
+				glBlitFramebuffer(0, 0, 850, 600, 0, 0, 850, 600, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+				glActiveTexture(GL_TEXTURE0);
+				renderedPoint = true;
 			}
 			if (type == 3)
 			{
@@ -472,8 +629,6 @@ void Scene::Render(float* proj, int width, int height)
 					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(linmath::deg2radians(angle-5)),
 						std::cos(linmath::deg2radians(angle)));
 				}
-				light->UpdateProj({0, 0, 0});
-
 				glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 				glUseProgram(shadowProgram);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -525,6 +680,9 @@ void Scene::Render(float* proj, int width, int height)
 		glActiveTexture(GL_TEXTURE7);
 		glBindTexture(GL_TEXTURE_2D, shadowRendererTSpot);
 		glUniform1i(glGetUniformLocation(materials[i]->program, "u_ShadowSpot"), 7);
+		glActiveTexture(GL_TEXTURE8);
+		glBindTexture(GL_TEXTURE_2D, shadowRendererTPoint);
+		glUniform1i(glGetUniformLocation(materials[i]->program, "u_ShadowPoint"), 8);
 		glActiveTexture(GL_TEXTURE0);
 
 		glViewport(0, 0, 850, 600);
@@ -540,6 +698,7 @@ void Scene::Render(float* proj, int width, int height)
 		glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
 		glViewport(0, 0, width, height);
 		glDisable(GL_DEPTH_TEST);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, fbt);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

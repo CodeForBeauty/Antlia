@@ -1,0 +1,35 @@
+#version 330 core
+
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
+
+out vec3 v_CamPos;
+out vec3 v_Pos;
+out vec4 v_LightPos;
+out vec4 v_ScreenPos;
+
+uniform mat4 u_Mat;
+uniform vec3 lightPos;
+
+in DATA
+{
+	vec3 pos;
+	vec3 camPos;
+	mat4 projection;
+	mat4 view;
+} data_in[];
+
+void main()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		gl_Position = data_in[i].projection * (data_in[i].view * vec4(data_in[i].pos + data_in[i].camPos, 1));
+		//gl_Position = u_Mat * (vec4(data_in[i].pos + lightPos + data_in[i].camPos, 1));
+		v_ScreenPos = gl_Position;
+		gl_Position.z /=  -gl_Position.w;
+		v_CamPos = data_in[i].camPos;
+		v_Pos = data_in[i].pos;
+		EmitVertex();
+	}
+	EndPrimitive();
+}

@@ -184,9 +184,15 @@
     <None Include="shaders\FrameBuffer.vert" />
     <None Include="shaders\ShadowMap.frag" />
     <None Include="shaders\ShadowMap.vert" />
+    <None Include="shaders\ShadowMap1.frag" />
+    <None Include="shaders\ShadowMap1.geom" />
+    <None Include="shaders\ShadowMap1.vert" />
     <None Include="shaders\ShadowRender.frag" />
     <None Include="shaders\ShadowRender.geom" />
     <None Include="shaders\ShadowRender.vert" />
+    <None Include="shaders\ShadowRender1.frag" />
+    <None Include="shaders\ShadowRender1.geom" />
+    <None Include="shaders\ShadowRender1.vert" />
     <None Include="test.scene" />
   </ItemGroup>
   <ItemGroup>
