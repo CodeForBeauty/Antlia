@@ -1,164 +1,197 @@
-#include <iostream>
 #include "linmath.h"
 
-void linmath::rotateMetricies(Vector3D& degree, float* out)
+using namespace ln;
+
+
+double ln::radians(double angle)
 {
-    float thetaX = linmath::deg2radians(degree.x);
-    float thetaY = linmath::deg2radians(degree.y);
-    float thetaZ = linmath::deg2radians(degree.z);
-
-    float rot1[16] = {
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 1, 0
-    };
-    float rot2[16] = {
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 1, 0
-    };
-    float rot3[16] = {
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 1, 0
-    };
-    
-    rot1[0] = std::cos(thetaZ);
-    rot1[1] = -std::sin(thetaZ);
-    rot1[4] = -rot1[1];
-    rot1[5] = rot1[0];
-    
-    rot2[0] = std::cos(thetaY);
-    rot2[2] = -std::sin(thetaY);
-    rot2[8] = -rot2[2];
-    rot2[10] = rot2[0];
-
-    rot3[5] = std::cos(thetaX);
-    rot3[6] = -std::sin(thetaX);
-    rot3[9] = -rot3[6];
-    rot3[10] = rot3[5];
-
-    float result[16] = {
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 0
-    };
-
-    multiplyMetricies4x4(rot3, rot2, result);
-    multiplyMetricies4x4(result, rot1, out);
+	return angle * PI / 180;
 }
 
-linmath::vec3 linmath::multiplyByMetricies4x4(float* metricies, vec3 position)
+double ln::dot(vec2 v1, vec2 v2)
 {
-    vec3 out = { 0, 0, 0 };
-    out.x = metricies[0] * position.x + metricies[1] * position.y + metricies[2] * position.z;
-    out.y = metricies[4] * position.x + metricies[5] * position.y + metricies[6] * position.z;
-    out.z = metricies[8] * position.x + metricies[9] * position.y + metricies[10] * position.z;
-    
-    return out;
+	return v1.x * v2.x + v1.y * v2.y;
 }
 
-void linmath::perspective(float width, float height, float fov, float far, float near, float* out)
+double ln::dot(vec3 v1, vec3 v2)
 {
-    out[5] = 1 / std::tan(fov / 2);
-    out[0] = ((float)height / width) * out[5];
-    out[10] = far / (far - near);
-    out[11] = -(far / (far - near)) * near;
-}
-void linmath::orthographic(float right, float left, float top, float bottom, float far, float near, float* out)
-{
-    out[0] = 2 / (right - left);
-    out[5] = 2 / (top - bottom);
-    out[10] = -2 / (far - near);
-
-    out[12] = -((right + left) / (right - left));
-    out[13] = -((top + bottom) / (top - bottom));
-    out[14] = -(far + near) / (far - near);
-    out[15] = 1;
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-float linmath::deg2radians(float degree)
+double ln::dot(vec4 v1, vec4 v2)
 {
-	return degree * PI / 180;
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
 }
 
-void linmath::multiplyMetricies4x4(float* matrix1, float* matrix2, float* out)
+double ln::cross(vec2 v1, vec2 v2)
 {
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < 4; j++)
-        {
-            out[i * 4 + j] = 0;
-            for (int k = 0; k < 4; k++)
-            {
-                out[i * 4 + j] += matrix1[i * 4 + k] * matrix2[k * 4 + j];
-            }
-        }
-    }
+	return v1.x * v2.y - v1.y * v2.x;
 }
 
-linmath::vec3 linmath::addVector3dByVec3(const Vector3D vec1, linmath::vec3 vec2)
+vec3 ln::cross(vec3 v1, vec3 v2)
 {
-    return { vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z };
+	vec3 out = {};
+	out.x = v1.y * v2.z - v1.z * v2.y;
+	out.y = v1.z * v2.x - v1.x * v2.z;
+	out.z = v1.x * v2.y - v1.y * v2.x;
+	return out;
 }
 
-linmath::vec3 linmath::subVector3dByVec3(Vector3D vec1, vec3 vec2)
+
+double ln::magnitude(vec2 v)
 {
-    return { vec2.x - vec1.x, vec2.y - vec1.y, vec2.z - vec1.z };
-}
-linmath::vec3 linmath::mulVector3dByVec3(Vector3D vec1, vec3 vec2)
-{
-    return { vec1.x * vec2.x, vec1.y * vec2.y, vec1.z * vec2.z };
+	return std::sqrt(dot(v, v));
 }
 
-float linmath::dot(linmath::vec3 vec1, linmath::vec3 vec2)
+double ln::magnitude(vec3 v)
 {
-    return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
+	return std::sqrt(dot(v, v));
 }
 
-linmath::vec3 linmath::cross(linmath::vec3 vec1, linmath::vec3 vec2)
+double ln::magnitude(vec4 v)
 {
-    vec3 out = {};
-    out.x = vec1.y * vec2.z - vec1.z * vec2.y;
-    out.y = vec1.z * vec2.x - vec1.x * vec2.z;
-    out.z = vec1.x * vec2.y - vec1.y * vec2.x;
-    return out;
+	return std::sqrt(dot(v, v));
 }
 
-linmath::vec3 linmath::normalize(linmath::vec3 vec)
+vec2 ln::normalize(vec2 v)
 {
-    float sum = vec.x + vec.y + vec.z;
-    float magnitude = std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
-    if (magnitude > 0)
-        return { vec.x / magnitude, vec.y / magnitude, vec.z / magnitude };
-    return vec;
+	return v / magnitude(v);
 }
 
-void linmath::lookAt(vec3 at, vec3 eye, float* out, vec3 up)
+vec3 ln::normalize(vec3 v)
 {
-    vec3 zaxis = normalize(at - eye);
-    vec3 xaxis = normalize(cross(up, zaxis));
-    vec3 yaxis = cross(zaxis, xaxis);
-    
-    out[0] = xaxis.x;
-    out[4] = xaxis.y;
-    out[8] = xaxis.z;
+	return v / magnitude(v);
+}
 
-    out[1] = yaxis.x;
-    out[5] = yaxis.y;
-    out[9] = yaxis.z;
+vec4 ln::normalize(vec4 v)
+{
+	return v / magnitude(v);
+}
 
-    out[2] = zaxis.x;
-    out[6] = zaxis.y;
-    out[10] = zaxis.z;
-    
 
-    out[12] = -dot(xaxis, eye);
-    out[13] = -dot(yaxis, eye);
-    out[14] = -dot(zaxis, eye);
-    out[15] = 1;
+vec2 ln::mat2::getX()
+{
+	return { x.x, y.x };
+}
+
+vec2 ln::mat2::getY()
+{
+	return { x.y, y.y };
+}
+
+vec3 ln::mat3::getX()
+{
+	return { x.x, y.x, z.x };
+}
+
+vec3 ln::mat3::getY()
+{
+	return { x.y, y.y, z.y };
+}
+
+vec3 ln::mat3::getZ()
+{
+	return { x.z, y.z, z.z };
+}
+
+vec4 ln::mat4::getX()
+{
+	return { x.x, y.x, z.x, w.x };
+}
+
+vec4 ln::mat4::getY()
+{
+	return { x.y, y.y, z.y, w.y };
+}
+
+vec4 ln::mat4::getZ()
+{
+	return { x.z, y.z, z.z, w.z };
+}
+
+vec4 ln::mat4::getW()
+{
+	return { x.w, y.w, z.w, w.w };
+}
+
+
+mat4 ln::orthographic(float left, float right, float bottom, float top, float back, float front)
+{
+	mat4 out = {};
+
+	out.x.x = 2 / (right - left);
+	out.y.y = 2 / (top - bottom);
+	out.z.z = 2 / (front - back);
+
+	out.w.x = -((right + left) / (right - left));
+	out.w.y = -((top + bottom) / (top - bottom));
+	out.w.z = -((front + back) / (front - back));
+	out.w.w = 1;
+
+	return out;
+}
+
+mat4 ln::perspective(float fov, float near, float far, float ratio)
+{
+	mat4 out = {};
+	out.y.y = 1 / std::tan(fov / 2);
+	out.x.x = out.y.y * ratio;
+	out.z.z = far / (far - near);
+	out.w.z = 1.0;
+
+	return out;
+}
+
+mat4 ln::lookAt(vec3 at, vec3 eye, vec3 up)
+{
+	mat4 out = {};
+	vec3 zaxis = normalize(at - eye);
+	vec3 xaxis = normalize(cross(up, zaxis));
+	vec3 yaxis = cross(zaxis, xaxis);
+
+	out.x = xaxis;
+	out.y = yaxis;
+	out.z = zaxis;
+
+	out.w = vec4(-dot(xaxis, eye), -dot(yaxis, eye), -dot(zaxis, eye), 1.0);
+	return out;
+}
+
+mat3 ln::eulerRotation(vec3 degree)
+{
+	vec3 theta = { radians(degree.x), radians(degree.y), radians(degree.z) };
+
+	mat3 out = {};
+	out.x = { std::cos(theta.z) * std::cos(theta.y), -std::sin(theta.z), -std::sin(theta.y) };
+	out.y = { -out.x.y, std::cos(theta.z) * std::cos(theta.x), -std::sin(theta.x) };
+	out.z = { std::sin(theta.y), std::sin(theta.x), std::cos(theta.y) * std::cos(theta.x) };
+
+	return out;
+}
+
+vec3 ln::concatVec3(vec4 vec) { return { vec.x, vec.y, vec.z }; }
+vec2 ln::concatVec2(vec4 vec) { return { vec.x, vec.y }; }
+vec2 ln::concatVec2(vec3 vec) { return { vec.x, vec.y }; }
+
+mat2 ln::concatMat2(mat4 matrix) { return { concatVec2(matrix.x), concatVec2(matrix.y) }; }
+mat2 ln::concatMat2(mat3 matrix) { return { concatVec2(matrix.x), concatVec2(matrix.y) }; }
+mat3 ln::concatMat3(mat4 matrix) { return { concatVec3(matrix.x), concatVec3(matrix.y), concatVec3(matrix.z) }; }
+
+
+std::ostream& operator <<(std::ostream& os, vec2 vec)
+{
+	os << "X: " << vec.x << " Y: " << vec.y << " ";
+	return os;
+}
+
+std::ostream& operator <<(std::ostream& os, vec3 vec)
+{
+	os << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z << " ";
+	return os;
+}
+
+std::ostream& operator <<(std::ostream& os, vec4 vec)
+{
+	os << "X: " << vec.x << " Y: " << vec.y << " Z: " << vec.z << " W: " << vec.w << " ";
+	return os;
 }

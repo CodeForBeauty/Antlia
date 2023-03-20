@@ -6,34 +6,34 @@
 class Camera
 {
 public:
-	Camera(float fov, float near, float far);
+	Camera(float fov, float near, float far, int width, int height);
 	~Camera();
 
-	void SetPosition(const Vector3D& position);
-	void Move(const Vector3D& offset);
-	void SetRotation(const Vector3D& rotation);
-	void Rotate(const Vector3D& offset);
+	void SetPosition(ln::vec3 position);
+	void Move(ln::vec3 offset);
+	void SetRotation(ln::vec3 rotation);
+	void Rotate(ln::vec3 offset);
 
-	Vector3D GetPosition() const;
-	Vector3D GetRotation() const;
+	ln::vec3 GetPosition() const;
+	ln::vec3 GetRotation() const;
+
+	void UpdateProjection(double windowRatio);
 
 
 	float fov;
 	float near;
 	float far;
+	int width, height;
 
 	bool update = true;
 	
-	float* rotMetricies = new float[16] {
-											1, 0, 0, 0,
-											0, 1, 0, 0,
-											0, 0, 1, 0,
-											0, 0, 1, 0
-										};
+	ln::mat4 camMetricies = {};
+	ln::mat4 camProjection = {};
 
-	Vector3D forward = Vector3D(0, 0, 1);
-	Vector3D right = Vector3D(1, 0, 0);
+	ln::vec3 forward = ln::vec3(0, 0, 1);
+	ln::vec3 right = ln::vec3(1, 0, 0);
+
 private:
-	Vector3D* position;
-	Vector3D* rotation;
+	ln::vec3 position = {};
+	ln::vec3 rotation = {};
 };
