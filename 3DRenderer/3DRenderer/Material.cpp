@@ -1,41 +1,53 @@
 #include "Material.h"
 
 Material::Material()
+	:vs(Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER)), 
+	fs(Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER)),
+	gs(Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER))
 {
-	vs = new Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER);
-	fs = new Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
-	gs = new Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER);
-	albedo = new float[4] {1, 1, 1, 1};
 	CompileShaders();
 }
 
-Material::Material(Shader* vs, Shader* fs, Shader* gs) : vs(vs), fs(fs) { CompileShaders(); albedo = new float[4] {1, 1, 1, 1}; }
-
-Material::Material(Shader* vs, Shader* fs, Shader* gs, float* albedo) : vs(vs), fs(fs), albedo(albedo) { CompileShaders(); }
-
-Material::Material(float* albedo) : albedo(albedo) 
+Material::Material(Shader vs, Shader fs, Shader gs)
+	: vs(vs), fs(fs), gs(gs)
 {
-	vs = new Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER);
-	fs = new Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
-	gs = new Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER);
+	CompileShaders(); 
+}
+
+Material::Material(Shader vs, Shader fs, Shader gs, ln::vec4 albedo) 
+	: vs(vs), fs(fs), gs(gs), albedo(albedo)
+{
+	CompileShaders();
+}
+
+Material::Material(ln::vec4 albedo) 
+	: albedo(albedo),
+	vs(Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER)),
+	fs(Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER)),
+	gs(Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER))
+{
+	vs = Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER);
+	fs = Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER);
+	gs = Shader("shaders/BasicGeometry.geom", GL_GEOMETRY_SHADER);
 	CompileShaders();
 }
 
 Material::~Material()
 {
 	glDeleteProgram(program);
-	glUseProgram(0);
-	delete vs, fs, albedo;
-	if (texture)
-		delete texture;
+	if (texture) delete texture;
+	if (specTex) delete specTex;
+	if (metalTex) delete metalTex;
+	if (roughTex) delete roughTex;
+	if (normal) delete normal;
 }
 
 void Material::CompileShaders()
 {
 	program = glCreateProgram();
-	glAttachShader(program, vs->compileShader());
-	glAttachShader(program, fs->compileShader());
-	glAttachShader(program, gs->compileShader());
+	glAttachShader(program, vs.compileShader());
+	glAttachShader(program, fs.compileShader());
+	glAttachShader(program, gs.compileShader());
 	glLinkProgram(program);
 	glValidateProgram(program);
 	glUseProgram(program);
@@ -45,27 +57,22 @@ void Material::CompileShaders()
 	proj = glGetUniformLocation(program, "u_Proj");
 	color = glGetUniformLocation(program, "u_Color");
 
-	glUniform4f(color, albedo[0], albedo[1], albedo[2], albedo[3]);
-	//glUniform1i(glGetUniformLocation(program, "u_Texture"), 0);
+	glUniform4f(color, albedo.x, albedo.y, albedo.z, albedo.w);
 
 	glUniform1f(glGetUniformLocation(program, "u_Metalic"), metalic);
 	glUniform1f(glGetUniformLocation(program, "u_Roughness"), roughness);
 	glUniform1f(glGetUniformLocation(program, "u_Specular"), specular);
-
-	glUniform1i(glGetUniformLocation(program, "u_UseSpecTex"), 0);
-	glUniform1i(glGetUniformLocation(program, "u_UseRoughTex"), 0);
-	glUniform1i(glGetUniformLocation(program, "u_UseMetalTex"), 0);
 }
 
 void Material::SetCamPos(float x, float y, float z)
 {
 	glUniform3f(camPos, -x, -y, -z);
 }
-void Material::SetView(float* value)
+void Material::SetView(ln::mat4 value)
 {
 	glUniformMatrix4fv(view, 1, GL_TRUE, value);
 }
-void Material::SetProj(float* value)
+void Material::SetProj(ln::mat4 value)
 {
 	glUniformMatrix4fv(proj, 1, GL_TRUE, value);
 }
@@ -73,13 +80,13 @@ void Material::SetProj(float* value)
 
 void Material::SetAlbedo(float r, float g, float b, float a)
 {
-	albedo[0] = r;
-	albedo[1] = g;
-	albedo[2] = b;
-	albedo[3] = a;
+	albedo.x = r;
+	albedo.y = g;
+	albedo.z = b;
+	albedo.w = a;
 	glUniform4f(color, r, g, b, a);
 }
-float* Material::GetAlbedo()
+ln::vec4 Material::GetAlbedo()
 {
 	return albedo;
 }

@@ -1,26 +1,27 @@
 #pragma once
 
+#include <string>
+#include "linmath.h"
 #include "Shader.h"
 #include "Texture.h"
-#include <string>
 
-#define TEXTURE_ALBEDO 1
-#define TEXTURE_METALIC 2
-#define TEXTURE_SPECULAR 3
-#define TEXTURE_ROUGHNESS 4
-#define TEXTURE_NORMAL 5
+const int TEXTURE_ALBEDO = 1;
+const int TEXTURE_METALIC = 2;
+const int TEXTURE_SPECULAR = 3;
+const int TEXTURE_ROUGHNESS = 4;
+const int TEXTURE_NORMAL = 5;
 
 class Material
 {
 public:
 	Material();
-	Material(Shader* vs, Shader* fs, Shader* gs);
-	Material(Shader* vs, Shader* fs, Shader* gs, float* albedo);
-	Material(float* albedo);
+	Material(Shader vs, Shader fs, Shader gs);
+	Material(Shader vs, Shader fs, Shader gs, ln::vec4 albedo);
+	Material(ln::vec4 albedo);
 	~Material();
 
 	void SetAlbedo(float r, float g, float b, float a);
-	float* GetAlbedo();
+	ln::vec4 GetAlbedo();
 	void SetMetalic(float value);
 	float GetMetalic();
 	void SetRoughness(float value);
@@ -38,21 +39,21 @@ public:
 	void Bind();
 
 	void SetCamPos(float x, float y, float z);
-	void SetView(float* value);
-	void SetProj(float* value);
+	void SetView(ln::mat4 value);
+	void SetProj(ln::mat4 value);
 	unsigned int program;
 	unsigned int sceneSlot;
+private:
 	Texture* texture;
 	Texture* specTex;
 	Texture* metalTex;
 	Texture* roughTex;
 	Texture* normal;
-private:
 	void CompileShaders();
-	Shader* vs;
-	Shader* fs;
-	Shader* gs;
-	float* albedo = new float[4] {1, 1, 1, 1};
+	Shader vs;
+	Shader fs;
+	Shader gs;
+	ln::vec4 albedo = {1, 1, 1, 1};
 	float metalic = 0.0;
 	float roughness = 0.5;
 	float specular = 0.5;

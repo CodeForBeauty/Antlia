@@ -169,6 +169,15 @@ mat3 ln::eulerRotation(vec3 degree)
 	return out;
 }
 
+mat4 ln::transform(vec3 position, vec3 rotation)
+{
+	mat4 out = eulerRotation(rotation);
+	out.x.w = position.x;
+	out.y.w = position.y;
+	out.z.w = position.z;
+	return out;
+}
+
 vec3 ln::cutVec3(vec4 vec) { return { vec.x, vec.y, vec.z }; }
 vec2 ln::cutVec2(vec4 vec) { return { vec.x, vec.y }; }
 vec2 ln::cutVec2(vec3 vec) { return { vec.x, vec.y }; }
