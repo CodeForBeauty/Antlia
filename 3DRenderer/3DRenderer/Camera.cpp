@@ -51,3 +51,10 @@ ln::vec3 Camera::GetRotation() const
 {
 	return rotation;
 }
+
+void Camera::UpdateProjection(int windowWidth, int windowHeight)
+{
+	width = windowWidth;
+	height = windowHeight;
+	camProjection = ln::perspective(fov, near, far, (float)height / width);
+}

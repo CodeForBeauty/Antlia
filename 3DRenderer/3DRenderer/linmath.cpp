@@ -169,13 +169,13 @@ mat3 ln::eulerRotation(vec3 degree)
 	return out;
 }
 
-vec3 ln::concatVec3(vec4 vec) { return { vec.x, vec.y, vec.z }; }
-vec2 ln::concatVec2(vec4 vec) { return { vec.x, vec.y }; }
-vec2 ln::concatVec2(vec3 vec) { return { vec.x, vec.y }; }
+vec3 ln::cutVec3(vec4 vec) { return { vec.x, vec.y, vec.z }; }
+vec2 ln::cutVec2(vec4 vec) { return { vec.x, vec.y }; }
+vec2 ln::cutVec2(vec3 vec) { return { vec.x, vec.y }; }
 
-mat2 ln::concatMat2(mat4 matrix) { return { concatVec2(matrix.x), concatVec2(matrix.y) }; }
-mat2 ln::concatMat2(mat3 matrix) { return { concatVec2(matrix.x), concatVec2(matrix.y) }; }
-mat3 ln::concatMat3(mat4 matrix) { return { concatVec3(matrix.x), concatVec3(matrix.y), concatVec3(matrix.z) }; }
+mat2 ln::cutMat2(mat4 matrix) { return { cutVec2(matrix.x), cutVec2(matrix.y) }; }
+mat2 ln::cutMat2(mat3 matrix) { return { cutVec2(matrix.x), cutVec2(matrix.y) }; }
+mat3 ln::cutMat3(mat4 matrix) { return { cutVec3(matrix.x), cutVec3(matrix.y), cutVec3(matrix.z) }; }
 
 
 std::ostream& operator <<(std::ostream& os, vec2 vec)

@@ -259,13 +259,13 @@ namespace ln
 	mat4 lookAt(vec3 at, vec3 eye, vec3 up = { 0, 1, 0 });
 	mat3 eulerRotation(vec3 degree);
 
-	vec3 concatVec3(vec4 vec);
-	vec2 concatVec2(vec4 vec);
-	vec2 concatVec2(vec3 vec);
+	vec3 cutVec3(vec4 vec);
+	vec2 cutVec2(vec4 vec);
+	vec2 cutVec2(vec3 vec);
 
-	mat2 concatMat2(mat4 matrix);
-	mat2 concatMat2(mat3 matrix);
-	mat3 concatMat3(mat4 matrix);
+	mat2 cutMat2(mat4 matrix);
+	mat2 cutMat2(mat3 matrix);
+	mat3 cutMat3(mat4 matrix);
 }
 
 std::ostream& operator <<(std::ostream& os, ln::vec2 vec);

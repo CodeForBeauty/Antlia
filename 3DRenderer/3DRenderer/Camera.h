@@ -7,7 +7,6 @@ class Camera
 {
 public:
 	Camera(float fov, float near, float far, int width, int height);
-	~Camera();
 
 	void SetPosition(ln::vec3 position);
 	void Move(ln::vec3 offset);
@@ -17,7 +16,7 @@ public:
 	ln::vec3 GetPosition() const;
 	ln::vec3 GetRotation() const;
 
-	void UpdateProjection(double windowRatio);
+	void UpdateProjection(int windowWidth, int windowHeight);
 
 
 	float fov;

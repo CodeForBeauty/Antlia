@@ -7,11 +7,11 @@
 class Light
 {
 public:
-	Light(linmath::vec3 color);
+	Light(ln::vec3 color);
 
-	void SetColor(linmath::vec3 color);
-	void SetColor(float r, float g, float b);
-	linmath::vec3 GetColor() const;
+	void SetColor(ln::vec3 color);
+	void SetColor(double r, double g, double b, double a);
+	ln::vec4 GetColor() const;
 
 	void SetName(std::string newName);
 	std::string GetName() const;
@@ -20,14 +20,9 @@ public:
 
 	float intensity = 1;
 
-	virtual void UpdateProj(linmath::vec3 camera = { 0, 0, 0 });
+	virtual void UpdateProj(ln::vec3 camera = { 0, 0, 0 });
 
-	float* proj = new float[16] {
-			1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, 1, 0,
-			0, 0, 0, 0
-	};
+	ln::mat4 projection = {};
 
 
 protected:
@@ -35,7 +30,7 @@ protected:
 
 private:
 	int type;
-	linmath::vec4 color;
+	ln::vec4 color;
 	std::string name = "light";
 };
 
@@ -43,56 +38,49 @@ private:
 class DirectLight : public Light
 {
 public:
-	DirectLight(linmath::vec3 color);
-	DirectLight(Vector3D* rotation, linmath::vec3 color);
-	~DirectLight();
+	DirectLight(ln::vec3 color);
+	DirectLight(ln::vec3 rotation, ln::vec3 color);
 
-	Vector3D GetRotation();
-	linmath::vec3 GetVector();
+	ln::vec3 GetRotation();
+	ln::vec3 GetForward();
 
-	void SetRotation(const Vector3D rotation);
-	void Rotate(const Vector3D offset);
+	void SetRotation(ln::vec3 rotation);
+	void Rotate(ln::vec3 offset);
 
-	void UpdateProj(linmath::vec3 camera = {0, 0, 0}) override;
+	void UpdateProj(ln::vec3 camera = {0, 0, 0}) override;
 
 protected:
-	Vector3D* rotation;
-	linmath::vec3 pointing = {0, 1, 0};
-	linmath::vec3 up = {0, 0, 1};
-	float* rotMetricies = new float[16] {
-											1, 0, 0, 0,
-											0, 1, 0, 0,
-											0, 0, 1, 0,
-											0, 0, 1, 0
-										};
+	ln::vec3 rotation;
+	ln::vec3 forward = {0, 1, 0};
+	ln::vec3 up = {0, 0, 1};
+	ln::mat4 rotMetricies = {};
 };
 
 class PointLight : public Light
 {
 public:
-	PointLight(linmath::vec3 color, float distance = 5);
-	PointLight(Vector3D* position, linmath::vec3 color, float distance = 10);
-	~PointLight();
+	PointLight(ln::vec3 color, float distance = 5);
+	PointLight(ln::vec3 position, ln::vec3 color, float distance = 5);
 
 	float GetDistance();
 
 	void SetDistance(float distance);
 
-	Vector3D GetPosition();
+	ln::vec3 GetPosition();
 
-	void SetPosition(const Vector3D position);
-	void Move(const Vector3D offset);
+	void SetPosition(ln::vec3 position);
+	void Move(ln::vec3 offset);
 protected:
-	Vector3D* position;
+	ln::vec3 position;
 	float distance;
 };
 
 class SpotLight : public DirectLight
 {
 public:
-	SpotLight(linmath::vec3 color, float distance = 5, float angle = 25);
-	SpotLight(linmath::vec3 color, Vector3D* position, float distance = 5, float angle = 25);
-	SpotLight(linmath::vec3 color, Vector3D* position, Vector3D* rotation, float distance = 5, float angle = 25);
+	SpotLight(ln::vec3 color, float distance = 5, float angle = 25);
+	SpotLight(ln::vec3 color, ln::vec3 position, float distance = 5, float angle = 25);
+	SpotLight(ln::vec3 color, ln::vec3 position, ln::vec3 rotation, float distance = 5, float angle = 25);
 
 	float GetAngle();
 	void SetAngle(float angle);
@@ -100,15 +88,15 @@ public:
 	float GetDistance();
 	void SetDistance(float distance);
 
-	void UpdateProj(linmath::vec3 camera = {0, 0, 0}) override;
+	void UpdateProj(ln::vec3 camera = {0, 0, 0}) override;
 
-	Vector3D GetPosition();
+	ln::vec3 GetPosition();
 
-	void SetPosition(const Vector3D position);
-	void Move(const Vector3D offset);
+	void SetPosition(ln::vec3 position);
+	void Move(ln::vec3 offset);
 private:
+	ln::vec3 position;
 	float angle;
-	Vector3D* position;
 	float distance;
 };
 
