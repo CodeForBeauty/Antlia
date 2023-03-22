@@ -42,6 +42,7 @@ void Texture::Bind(int slt)
 
 void Texture::Unbind()
 {
+	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
