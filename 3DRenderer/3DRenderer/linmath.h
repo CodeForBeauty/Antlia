@@ -84,7 +84,7 @@ namespace ln
 
 		vec4() { x = 0; y = 0; z = 0; w = 0; }
 		vec4(vec2 v) { x = v.x; y = v.y; z = 0; w = 0; }
-		vec4(vec3 v) { x = v.x; y = v.y; z = v.z; w = 0; }
+		vec4(vec3 v) { x = v.x; y = v.y; z = v.z; w = 1; }
 		vec4(double x1, double y1, double z1, double w1) { x = x1; y = y1; z = z1; w = w1; }
 
 		vec4 operator +(const vec4& a) { return { x + a.x, y + a.y, z + a.z, w + a.w }; }

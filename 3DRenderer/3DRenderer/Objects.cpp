@@ -90,124 +90,130 @@ Mesh::Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCoun
 	: Entity()
 {
 	name = "mesh";
-	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
 
-Mesh::Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
+Mesh::Mesh(ln::vec3 position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
 	: Entity(position)
 {
 	name = "mesh";
-	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
 
-Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount) 
+Mesh::Mesh(ln::vec3 position, ln::vec3 rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
 	: Entity(position, rotation)
 {
 	name = "mesh";
-	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
 
-Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
+Mesh::Mesh(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount)
 	: Entity(position, rotation, scale)
 {
 	name = "mesh";
-	delete geometry;
 	geometry = new Geometry(verticies, indecies, verticiesCount, indeciesCount);
 }
 
-Mesh::Mesh() : Entity() { name = "mesh"; }
-Mesh::Mesh(Vector3D* position) : Entity(position) { name = "mesh"; }
-Mesh::Mesh(Vector3D* position, Vector3D* rotation) : Entity(position, rotation) { name = "mesh"; }
-Mesh::Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Entity(position, rotation, scale) { name = "mesh"; }
+Mesh::Mesh() : Entity() 
+{
+	name = "mesh";
+	geometry = new Geometry(
+		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
+					   { { -0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 1.0}},
+					   { { -0.5, -0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 0.0}} },
+		new unsigned int[3] {0, 1, 2},
+		3, 3
+	);
+}
+Mesh::Mesh(ln::vec3 position) : Entity(position) 
+{
+	name = "mesh";
+	geometry = new Geometry(
+		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
+					   { { -0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 1.0}},
+					   { { -0.5, -0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 0.0}} },
+		new unsigned int[3] {0, 1, 2},
+		3, 3
+	);
+}
+Mesh::Mesh(ln::vec3 position, ln::vec3 rotation) : Entity(position, rotation) 
+{
+	name = "mesh";
+	geometry = new Geometry(
+		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
+					   { { -0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 1.0}},
+					   { { -0.5, -0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 0.0}} },
+		new unsigned int[3] {0, 1, 2},
+		3, 3
+	);
+}
+Mesh::Mesh(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale) : Entity(position, rotation, scale) 
+{
+	name = "mesh";
+	geometry = new Geometry(
+		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
+					   { { -0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 1.0}},
+					   { { -0.5, -0.5, 0 }, {0.0, 0.0, 1.0}, {0.0, 0.0}} },
+		new unsigned int[3] {0, 1, 2},
+		3, 3
+	);
+}
 
 Mesh::~Mesh()
 {
-	delete geometry, rotMetricies;
+	delete geometry;
 }
 
-void Mesh::SetPosition(const Vector3D& pos) const
+void Mesh::SetPosition(ln::vec3 pos)
 {
 	for (int i = 0; i < geometry->verticiesCount; i++)
-	{
-		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(-(*position - pos), geometry->transformedVerticies[i].position);
-	}
-	position->x = pos.x;
-	position->y = pos.y;
-	position->z = pos.z;
+		geometry->transformedVerticies[i].position = pos - position + geometry->transformedVerticies[i].position;
+	position = pos;
 }
 
-void Mesh::Move(const Vector3D& offset) const
+void Mesh::Move(ln::vec3 offset)
 {
 	for (int i = 0; i < geometry->verticiesCount; i++)
-	{
-		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(offset, geometry->transformedVerticies[i].position);
-	}
-	*position += offset;
+		geometry->transformedVerticies[i].position = offset + geometry->transformedVerticies[i].position;
+	position += offset;
 	
 }
 
-void Mesh::SetRotation(const Vector3D& rot) const
+void Mesh::SetRotation(ln::vec3 rot)
 {
-	Vector3D rotOffset = -(*rotation - rot);
-	linmath::rotateMetricies(rotOffset, rotMetricies);
-	rotation->x = rot.x;
-	rotation->y = rot.y;
-	rotation->z = rot.z;
+	transformMatrix = ln::transform(position, rot);
+	rotation = rot;
 	for (int i = 0; i < geometry->verticiesCount; i++)
-	{
-		geometry->transformedVerticies[i].position = linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position);
-		geometry->transformedVerticies[i].position = linmath::multiplyByMetricies4x4(rotMetricies, geometry->transformedVerticies[i].position);
-		geometry->transformedVerticies[i].normal = linmath::multiplyByMetricies4x4(rotMetricies, geometry->transformedVerticies[i].normal);
-		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
-	}
-	
+		geometry->transformedVerticies[i].position = ln::cutVec3(transformMatrix * geometry->verticies[i].position);
 }
 
-void Mesh::Rotate(const Vector3D& offset) const
+void Mesh::Rotate(ln::vec3 offset)
 {
-	*rotation += offset;
-	linmath::rotateMetricies(*rotation, rotMetricies);
+	rotation += offset;
+	transformMatrix = ln::transform(position, rotation);
 	for (int i = 0; i < geometry->verticiesCount; i++)
-	{
-		geometry->transformedVerticies[i].position = linmath::multiplyByMetricies4x4(rotMetricies, geometry->verticies[i].position);
-		geometry->transformedVerticies[i].normal = linmath::multiplyByMetricies4x4(rotMetricies, geometry->verticies[i].normal);
-		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
-	}
+		geometry->transformedVerticies[i].position = ln::cutVec3(transformMatrix * geometry->verticies[i].position);
 }
 
-void Mesh::SetScale(const Vector3D& value) const
+void Mesh::SetScale(ln::vec3 value)
 {
 	for (int i = 0; i < geometry->verticiesCount; i++)
-	{
-		geometry->transformedVerticies[i].position = linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position);
-		geometry->transformedVerticies[i].position = linmath::mulVector3dByVec3(Vector3D(value.x / scale->x, value.y / scale->y, value.z / scale->z),
-			geometry->transformedVerticies[i].position);
-		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
-	}
-	scale->x = value.x;
-	scale->y = value.y;
-	scale->z = value.z;
+		geometry->transformedVerticies[i].position = (geometry->transformedVerticies[i].position - position) * (scale / value) + position;
+	scale = value;
 }
 
-void Mesh::AddScale(const Vector3D& offset) const
+void Mesh::AddScale(ln::vec3 offset)
 {
 	for (int i = 0; i < geometry->verticiesCount; i++)
-	{
-		geometry->transformedVerticies[i].position = linmath::mulVector3dByVec3(*scale / (*scale + offset), 
-			linmath::subVector3dByVec3(*position, geometry->transformedVerticies[i].position));
-		geometry->transformedVerticies[i].position = linmath::addVector3dByVec3(*position, geometry->transformedVerticies[i].position);
-	}
-	*scale += offset;
+		geometry->transformedVerticies[i].position = (geometry->transformedVerticies[i].position - position) * (scale / (scale + offset)) + position;
+	scale += offset;
 }
 
 
 Plane::Plane() : Mesh() { setGeometry(); }
-Plane::Plane(Vector3D* position) : Mesh(position) { setGeometry(); }
-Plane::Plane(Vector3D* position, Vector3D* rotation) : Mesh(position, rotation) { setGeometry(); }
-Plane::Plane(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(position, rotation, scale) { setGeometry(); }
+Plane::Plane(ln::vec3 position) : Mesh(position) { setGeometry(); }
+Plane::Plane(ln::vec3 position, ln::vec3 rotation) : Mesh(position, rotation) { setGeometry(); }
+Plane::Plane(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale) : Mesh(position, rotation, scale) { setGeometry(); }
 
 void Plane::setGeometry()
 {
@@ -226,9 +232,9 @@ void Plane::setGeometry()
 
 
 Cube::Cube() : Mesh() { setGeometry(); }
-Cube::Cube(Vector3D* position) : Mesh(position) { setGeometry(); }
-Cube::Cube(Vector3D* position, Vector3D* rotation) : Mesh(position, rotation) { setGeometry(); }
-Cube::Cube(Vector3D* position, Vector3D* rotation, Vector3D* scale) : Mesh(position, rotation, scale) { setGeometry(); }
+Cube::Cube(ln::vec3 position) : Mesh(position) { setGeometry(); }
+Cube::Cube(ln::vec3 position, ln::vec3 rotation) : Mesh(position, rotation) { setGeometry(); }
+Cube::Cube(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale) : Mesh(position, rotation, scale) { setGeometry(); }
 
 void Cube::setGeometry()
 {
@@ -290,9 +296,9 @@ void Cube::setGeometry()
 
 
 Sphere::Sphere(int resolution) : Mesh() { setGeometry(resolution); }
-Sphere::Sphere(Vector3D* position, int resolution) : Mesh(position) { setGeometry(resolution); }
-Sphere::Sphere(Vector3D* position, Vector3D* rotation, int resolution) : Mesh(position, rotation) { setGeometry(resolution); }
-Sphere::Sphere(Vector3D* position, Vector3D* rotation, Vector3D* scale, int resolution) : Mesh(position, rotation, scale) { setGeometry(resolution); }
+Sphere::Sphere(ln::vec3 position, int resolution) : Mesh(position) { setGeometry(resolution); }
+Sphere::Sphere(ln::vec3 position, ln::vec3 rotation, int resolution) : Mesh(position, rotation) { setGeometry(resolution); }
+Sphere::Sphere(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale, int resolution) : Mesh(position, rotation, scale) { setGeometry(resolution); }
 
 void Sphere::setGeometry(int resolution)
 {

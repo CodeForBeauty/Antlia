@@ -52,20 +52,20 @@ class Mesh : public Entity
 public:
 	Mesh();
 	Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position, Vector3D* rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(Vector3D* position);
-	Mesh(Vector3D* position, Vector3D* rotation);
-	Mesh(Vector3D* position, Vector3D* rotation, Vector3D* scale);
+	Mesh(ln::vec3 position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(ln::vec3 position, ln::vec3 rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(ln::vec3 position);
+	Mesh(ln::vec3 position, ln::vec3 rotation);
+	Mesh(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
 	~Mesh();
 
-	void SetPosition(const Vector3D& position) const override;
-	void Move(const Vector3D& offset) const override;
-	void SetRotation(const Vector3D& rotation) const override;
-	void Rotate(const Vector3D& offset) const override;
-	void SetScale(const Vector3D& scale) const override;
-	void AddScale(const Vector3D& offset) const override;
+	void SetPosition(ln::vec3 position) override;
+	void Move(ln::vec3 offset) override;
+	void SetRotation(ln::vec3 rotation) override;
+	void Rotate(ln::vec3 offset) override;
+	void SetScale(ln::vec3 scale) override;
+	void AddScale(ln::vec3 offset) override;
 
 	Geometry* geometry = new Geometry(
 		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
@@ -76,21 +76,16 @@ public:
 	);
 	Material* material;
 	bool isSmooth = true;
-	float* rotMetricies = new float[16] {
-											1, 0, 0, 0,
-											0, 1, 0, 0,
-											0, 0, 1, 0,
-											0, 0, 1, 0
-										};
+	ln::mat4 transformMatrix = {};
 };
 
 class Plane : public Mesh
 {
 public:
 	Plane();
-	Plane(Vector3D* position);
-	Plane(Vector3D* position, Vector3D* rotation);
-	Plane(Vector3D* position, Vector3D* rotation, Vector3D* scale);
+	Plane(ln::vec3 position);
+	Plane(ln::vec3 position, ln::vec3 rotation);
+	Plane(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
 private:
 	void setGeometry();
 };
@@ -99,9 +94,9 @@ class Cube : public Mesh
 {
 public:
 	Cube();
-	Cube(Vector3D* position);
-	Cube(Vector3D* position, Vector3D* rotation);
-	Cube(Vector3D* position, Vector3D* rotation, Vector3D* scale);
+	Cube(ln::vec3 position);
+	Cube(ln::vec3 position, ln::vec3 rotation);
+	Cube(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
 private:
 	void setGeometry();
 };
@@ -110,9 +105,9 @@ class Sphere : public Mesh
 {
 public:
 	Sphere(int resolution = 10);
-	Sphere(Vector3D* position, int resolution = 10);
-	Sphere(Vector3D* position, Vector3D* rotation, int resolution = 10);
-	Sphere(Vector3D* position, Vector3D* rotation, Vector3D* scale, int resolution = 10);
+	Sphere(ln::vec3 position, int resolution = 10);
+	Sphere(ln::vec3 position, ln::vec3 rotation, int resolution = 10);
+	Sphere(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale, int resolution = 10);
 private:
 	void setGeometry(int resolution);
 };
