@@ -43,6 +43,8 @@ void Shader::setShader(std::string shader)
 
 unsigned int Shader::compileShader()
 {
+	glDeleteShader(id);
+
 	id = glCreateShader(type);
 	const char* src = shader_text.c_str();
 	glShaderSource(id, 1, &src, nullptr);
@@ -56,7 +58,7 @@ unsigned int Shader::compileShader()
 		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 		char* msg = (char*)alloca(length * sizeof(char));
 		glGetShaderInfoLog(id, length, &length, msg);
-		std::cout << "error" << msg;
+		std::cout << "Error: " << msg;
 	}
 
 	return id;
