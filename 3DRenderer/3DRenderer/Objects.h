@@ -8,29 +8,29 @@ class Entity
 {
 public:
 	Entity();
-	Entity(Vector3D* position);
-	Entity(Vector3D* position, Vector3D* rotation);
-	Entity(Vector3D* position, Vector3D* rotation, Vector3D* scale);
+	Entity(ln::vec3 position);
+	Entity(ln::vec3 position, ln::vec3 rotation);
+	Entity(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
 	~Entity();
 
-	virtual void SetPosition(const Vector3D& position) const;
-	virtual void Move(const Vector3D& offset) const;
-	virtual void SetRotation(const Vector3D& rotation) const;
-	virtual void Rotate(const Vector3D& offset) const;
-	virtual void SetScale(const Vector3D& scale) const;
-	virtual void AddScale(const Vector3D& offset) const;
+	virtual void SetPosition(ln::vec3 position);
+	virtual void Move(ln::vec3 offset);
+	virtual void SetRotation(ln::vec3 rotation);
+	virtual void Rotate(ln::vec3 offset);
+	virtual void SetScale(ln::vec3 scale);
+	virtual void AddScale(ln::vec3 offset);
 
-	Vector3D GetPosition() const;
-	Vector3D GetRotation() const;
-	Vector3D GetScale() const;
+	ln::vec3 GetPosition() const;
+	ln::vec3 GetRotation() const;
+	ln::vec3 GetScale() const;
 
 	void SetName(std::string newName);
 	std::string GetName() const;
 
 protected:
-	Vector3D* position;
-	Vector3D* rotation;
-	Vector3D* scale;
+	ln::vec3 position;
+	ln::vec3 rotation;
+	ln::vec3 scale;
 	std::string name = "entity";
 };
 

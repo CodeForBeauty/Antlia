@@ -4,76 +4,61 @@
 #include "Objects.h"
 #include "linmath.h"
 
-Entity::Entity()
-{
-	position = new Vector3D();
-	rotation = new Vector3D();
-	scale = new Vector3D(1, 1, 1);
-}
-Entity::Entity(Vector3D* position) : position(position)
-{
-	rotation = new Vector3D();
-	scale = new Vector3D(1, 1, 1);
-}
-Entity::Entity(Vector3D* position, Vector3D* rotation) : position(position), rotation(rotation)
-{
-	scale = new Vector3D(1, 1, 1);
-}
-Entity::Entity(Vector3D* position, Vector3D* rotation, Vector3D* scale) : position(position), rotation(rotation), scale(scale) {}
+Entity::Entity() {}
+Entity::Entity(ln::vec3 position) 
+	: position(position) {}
+Entity::Entity(ln::vec3 position, ln::vec3 rotation) 
+	: position(position), rotation(rotation) {}
+Entity::Entity(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale) 
+	: position(position), rotation(rotation), scale(scale) {}
 Entity::~Entity()
 {
 	delete position, rotation, scale;
 }
 
-void Entity::SetPosition(const Vector3D& pos) const
+void Entity::SetPosition(ln::vec3 pos)
 {
-	position->x = pos.x;
-	position->y = pos.y;
-	position->z = pos.z;
+	position = pos;
 }
 
-void Entity::Move(const Vector3D& offset) const
+void Entity::Move(ln::vec3 offset)
 {
-	*position += offset;
+	position += offset;
 }
 
-void Entity::SetRotation(const Vector3D& rot) const
+void Entity::SetRotation(ln::vec3 rot)
 {
-	rotation->x = rot.x;
-	rotation->y = rot.y;
-	rotation->z = rot.z;
+	rotation = rot;
 }
 
-void Entity::Rotate(const Vector3D& offset) const
+void Entity::Rotate(ln::vec3 offset)
 {
-	*rotation += offset;
+	rotation += offset;
 }
 
-void Entity::SetScale(const Vector3D& value) const
+void Entity::SetScale(ln::vec3 value)
 {
-	scale->x = value.x;
-	scale->y = value.y;
-	scale->z = value.z;
+	scale = value;
 }
 
-void Entity::AddScale(const Vector3D& offset) const
+void Entity::AddScale(ln::vec3 offset)
 {
-	*scale += offset;
+	scale += offset;
 }
 
-Vector3D Entity::GetPosition() const
+ln::vec3 Entity::GetPosition() const
 {
-	return *position;
+	return position;
 }
 
-Vector3D Entity::GetRotation() const
+ln::vec3 Entity::GetRotation() const
 {
-	return *rotation;
+	return rotation;
 }
 
-Vector3D Entity::GetScale() const
+ln::vec3 Entity::GetScale() const
 {
-	return *scale;
+	return scale;
 }
 
 void Entity::SetName(std::string newName)
@@ -89,7 +74,6 @@ Geometry::Geometry(Vertex* verticies, unsigned int* indecies, unsigned int verti
 	:verticies(verticies), indecies(indecies)
 	,verticiesCount(verticiesCount), indeciesCount(indeciesCount) 
 {
-	//delete transformedVerticies;
 	transformedVerticies = (Vertex*)malloc(sizeof(Vertex) * verticiesCount);
 	memcpy(transformedVerticies, verticies, sizeof(Vertex) * verticiesCount);
 	transformedIndecies = (unsigned int*)malloc(sizeof(unsigned int) * indeciesCount);
