@@ -27,7 +27,7 @@ int main(void)
 
     window = glfwCreateWindow(850, 600, "Testing", NULL, NULL);
 
-    if (!window) 
+    if (!window)
     {
         glfwTerminate();
         return -1;
@@ -38,7 +38,7 @@ int main(void)
     glewInit();
 
     Scene* scene = new Scene();
-    
+
 
     Material* mat1 = new Material();
     mat1->SetMetalic(0.0f);
@@ -57,15 +57,15 @@ int main(void)
     PointLight* pointLight = new PointLight({ 1, 0, 0 });
     PointLight* pointLight1 = new PointLight({ 0, 0, 1 });
 
-    dirLight3->SetPosition(Vector3D(0, 4, 0));
-    dirLight3->SetRotation(Vector3D(0, 0, 0));
+    dirLight3->SetPosition({ 0, 4, 0 });
+    dirLight3->SetRotation({ 0, 0, 0 });
 
-    dirLight1->SetRotation(Vector3D(25, 0, 0));
-    dirLight2->SetRotation(Vector3D(-20, 0, 0));
-    dirLight->SetRotation(Vector3D(0, 0, 0));
+    dirLight1->SetRotation({ 25, 0, 0 });
+    dirLight2->SetRotation({ -20, 0, 0 });
+    dirLight->SetRotation({ 0, 0, 0 });
 
-    pointLight->SetPosition(Vector3D(0, 5, 0));
-    pointLight1->SetPosition(Vector3D(-2, 5, -2));
+    pointLight->SetPosition({ 0, 5, 0 });
+    pointLight1->SetPosition({ -2, 5, -2 });
 
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
@@ -90,7 +90,7 @@ int main(void)
     int width, height;
 
 
-    float fov = linmath::deg2radians(45);
+    float fov = ln::radians(45);
     float far = 50;
     float near = 0;
 
@@ -132,31 +132,31 @@ int main(void)
         glfwGetCursorPos(window, &xpos, &ypos);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
-            scene->preview->Move(scene->preview->forward * 0.05f);
+            scene->preview.Move(scene->preview.forward * 0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
-            scene->preview->Move(scene->preview->forward * -0.05f);
+            scene->preview.Move(scene->preview.forward * -0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            scene->preview->Move(scene->preview->right * -0.05f);
+            scene->preview.Move(scene->preview.right * -0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
-            scene->preview->Move(scene->preview->right * 0.05f);
+            scene->preview.Move(scene->preview.right * 0.05f);
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         {
-            scene->preview->Move(Vector3D(0, 0.05, 0));
+            scene->preview.Move({ 0, 0.05, 0 });
         }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         {
-            scene->preview->Move(Vector3D(0, -0.05, 0));
+            scene->preview.Move({ 0, -0.05, 0 });
         }
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && (xpos != lastxpos || ypos != lastypos))
         {
-            scene->preview->Rotate(Vector3D((lastypos - ypos) * 10 * deltaTime, (xpos - lastxpos) * 10 * deltaTime, 0));
+            scene->preview.Rotate({ (lastypos - ypos) * 10 * deltaTime, (xpos - lastxpos) * 10 * deltaTime, 0 });
         }
         lastxpos = xpos;
         lastypos = ypos;
@@ -182,7 +182,7 @@ int main(void)
 
         //scene->preview->SetRotation(i);
 
-        linmath::perspective(width, height, fov, far, near, proj);
+        ln::perspective(fov, far, near, (float)height/width);
         //linmath::orthographic(0.5, -0.5, 0.5 * ((float)height / width), -0.5 * ((float)height / width), -0.5, 0.5, proj);
 
         //cube->SetRotation(i);

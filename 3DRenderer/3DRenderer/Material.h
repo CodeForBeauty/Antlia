@@ -39,6 +39,7 @@ public:
 	void Bind();
 
 	void SetCamPos(float x, float y, float z);
+	void SetCamPos(ln::vec3 position);
 	void SetView(ln::mat4 value);
 	void SetProj(ln::mat4 value);
 	unsigned int program;

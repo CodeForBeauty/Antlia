@@ -24,18 +24,8 @@ public:
 
 	void Render(float* proj, int width, int height);
 
-	unsigned int vao;
-	unsigned int vbo;
-	unsigned int ibo;
-	unsigned int fbo;
-	unsigned int fbt;
-	unsigned int fboAA;
-	unsigned int fbtAA;
-	unsigned int rbo, rboShadow, rboShadowColor, rboShadowColor1, rboShadowColor2;
-	int AAsamples = 4;
-
-	Camera* preview = new Camera(90, 0.5, 100);
-	Camera* renderCamera = new Camera(90, 0.1, 100);
+	Camera preview = Camera(90.0f, 0.5, 100, 1920, 1080);
+	Camera renderCamera = Camera(90.0f, 0.1, 100, 1920, 1080);
 
 	std::string savePath = "";
 
@@ -46,41 +36,22 @@ public:
 private:
 	std::vector <std::vector <Mesh*>> materialGroup;
 
+	unsigned int vao, vbo, ibo;
+
 	bool updateLight = true;
 	unsigned int program;
-	unsigned int rectVAO, rectVBO;
-	unsigned int shadowProgram, shadowProgram1;
-	unsigned int shadowFBO, shadowMap, shadowFBO1, shadowMap1;
+	unsigned int directShadowProgram, cubeShadowProgram;
+
+	unsigned int directShadowFBO, directShadowMap, cubeShadowFBO, cubeShadowMap;
 	unsigned int shadowWidth = 2048, shadowHeight = 2048;
-	unsigned int shadowRProgram, shadowRProgram1;
-	unsigned int shadowRenderer, shadowRendererT,
-					shadowRendererDir, shadowRendererTDir,
-					shadowRenderer1, shadowRendererT1,
-					shadowRenderer2, shadowRendererT2,
-					shadowRendererSpot, shadowRendererTSpot,
-					shadowRendererPoint, shadowRendererTPoint;
-	float rect[30] = {
-					   1.0f,  -1.0f, 1.0f, 1, 0,
-					  -1.0f, -1.0f, 1.0f, 0, 0,
-					  -1.0f,  1.0f, 1.0f, 0, 1,
 
-					  -1.0f,  1.0f, 1.0f, 0, 1,
-					   1.0f,  1.0f, 1.0f, 1, 1,
-					   1.0f, -1.0f, 1.0f, 1, 0
-	};
-
-	Shader FrameBufferVert = Shader("shaders/FrameBuffer.vert", GL_VERTEX_SHADER);
-	Shader FrameBufferFrag = Shader("shaders/FrameBuffer.frag", GL_FRAGMENT_SHADER);
-	Shader ShadowVert = Shader("shaders/ShadowMap.vert", GL_VERTEX_SHADER);
-	Shader ShadowFrag = Shader("shaders/ShadowMap.frag", GL_FRAGMENT_SHADER);
-	Shader ShadowRVert = Shader("shaders/ShadowRender.vert", GL_VERTEX_SHADER);
-	Shader ShadowRFrag = Shader("shaders/ShadowRender.frag", GL_FRAGMENT_SHADER);
-	Shader ShadowRGeom = Shader("shaders/ShadowRender.geom", GL_GEOMETRY_SHADER);
+	unsigned int directShadowRendererFBO, directShadowRendererMap;
 	
-	Shader ShadowVert1 = Shader("shaders/ShadowMap1.vert", GL_VERTEX_SHADER);
-	Shader ShadowFrag1 = Shader("shaders/ShadowMap1.frag", GL_FRAGMENT_SHADER);
-	Shader ShadowGeom1 = Shader("shaders/ShadowMap1.geom", GL_GEOMETRY_SHADER);
-	Shader ShadowRVert1 = Shader("shaders/ShadowRender1.vert", GL_VERTEX_SHADER);
-	Shader ShadowRFrag1 = Shader("shaders/ShadowRender1.frag", GL_FRAGMENT_SHADER);
-	Shader ShadowRGeom1 = Shader("shaders/ShadowRender1.geom", GL_GEOMETRY_SHADER);
+
+	Shader DirectShadowVert = Shader("shaders/ShadowMap.vert", GL_VERTEX_SHADER);
+	Shader DirectShadowFrag = Shader("shaders/ShadowMap.frag", GL_FRAGMENT_SHADER);
+	
+	Shader CubeShadowVert = Shader("shaders/ShadowMap1.vert", GL_VERTEX_SHADER);
+	Shader CubeShadowFrag = Shader("shaders/ShadowMap1.frag", GL_FRAGMENT_SHADER);
+	Shader CubeShadowGeom = Shader("shaders/ShadowMap1.geom", GL_GEOMETRY_SHADER);
 };

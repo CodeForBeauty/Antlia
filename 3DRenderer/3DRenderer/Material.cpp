@@ -68,6 +68,10 @@ void Material::SetCamPos(float x, float y, float z)
 {
 	glUniform3f(camPos, -x, -y, -z);
 }
+void Material::SetCamPos(ln::vec3 position)
+{
+	glUniform3fv(camPos, 1, -position);
+}
 void Material::SetView(ln::mat4 value)
 {
 	glUniformMatrix4fv(view, 1, GL_TRUE, value);

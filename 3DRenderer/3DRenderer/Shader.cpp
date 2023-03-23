@@ -8,6 +8,7 @@ using namespace std;
 Shader::Shader(std::string filepath, unsigned int type) : type(type)
 {
 	loadFromFile(filepath);
+	compileShader();
 }
 
 Shader::~Shader()
@@ -41,10 +42,8 @@ void Shader::setShader(std::string shader)
 	shader_text = shader;
 }
 
-unsigned int Shader::compileShader()
+void Shader::compileShader()
 {
-	glDeleteShader(id);
-
 	id = glCreateShader(type);
 	const char* src = shader_text.c_str();
 	glShaderSource(id, 1, &src, nullptr);
@@ -60,6 +59,4 @@ unsigned int Shader::compileShader()
 		glGetShaderInfoLog(id, length, &length, msg);
 		std::cout << "Error: " << msg;
 	}
-
-	return id;
 }
