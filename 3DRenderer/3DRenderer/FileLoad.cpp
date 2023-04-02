@@ -10,9 +10,9 @@ namespace fs = std::filesystem;
 
 std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 {
-	std::vector<linmath::vec3> verPos;
-	std::vector<linmath::vec3> verNor;
-	std::vector<linmath::vec2> verUV;
+	std::vector<ln::vec3> verPos;
+	std::vector<ln::vec3> verNor;
+	std::vector<ln::vec2> verUV;
 
 	std::vector<std::string> names;
 	std::vector<int> materialIdx;
@@ -92,7 +92,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 						}
 						else if (word == "Kd")
 						{
-							linmath::vec3 color{};
+							ln::vec3 color{};
 							ss >> word;
 							color.x = std::stof(word);
 							ss >> word;
@@ -232,9 +232,9 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 					std::string vtind;
 					Vertex vertex{};
 
-					linmath::vec3 position{};
-					linmath::vec3 normal{};
-					linmath::vec2 uv{};
+					ln::vec3 position{};
+					ln::vec3 normal{};
+					ln::vec2 uv{};
 					int crnt = 0;
 
 					std::getline(index, vind, '/');
@@ -281,7 +281,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			}
 			else if (word == "vt")
 			{
-				linmath::vec2 uv{};
+				ln::vec2 uv{};
 				ss >> word;
 				uv.x = std::stof(word);
 				ss >> word;
@@ -292,7 +292,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			}
 			else if (word == "vn")
 			{
-				linmath::vec3 normal{};
+				ln::vec3 normal{};
 				ss >> word;
 				normal.x = std::stof(word);
 				ss >> word;
@@ -303,7 +303,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			}
 			else if (word == "v")
 			{
-				linmath::vec3 vertex{};
+				ln::vec3 vertex{};
 				ss >> word;
 				vertex.x = std::stof(word);
 				ss >> word;
