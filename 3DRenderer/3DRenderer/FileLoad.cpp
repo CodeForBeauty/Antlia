@@ -496,11 +496,12 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	near = std::stof(word);
 	ss >> word;
 	far = std::stof(word);
-	delete scene->preview;
-	scene->preview = new Camera(fov, near, far);
+	scene->preview.fov = fov;
+	scene->preview.near = near;
+	scene->preview.far = far;
 
 	file >> line;
-	Vector3D pos;
+	ln::vec3 pos;
 	ss = std::stringstream(line);
 	ss >> word;
 	pos.x = std::stof(word);
@@ -508,10 +509,10 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	pos.y = std::stof(word);
 	ss >> word;
 	pos.z = std::stof(word);
-	scene->preview->SetPosition(pos);
+	scene->preview.SetPosition(pos);
 
 	file >> line;
-	Vector3D rot;
+	ln::vec3 rot;
 	ss = std::stringstream(line);
 	ss >> word;
 	rot.x = std::stof(word);
@@ -519,7 +520,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	rot.y = std::stof(word);
 	ss >> word;
 	rot.z = std::stof(word);
-	scene->preview->SetRotation(rot);
+	scene->preview.SetRotation(rot);
 
 
 	ss = std::stringstream(line);
@@ -529,8 +530,9 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	near = std::stof(word);
 	ss >> word;
 	far = std::stof(word);
-	delete scene->renderCamera;
-	scene->renderCamera = new Camera(fov, near, far);
+	scene->renderCamera.fov = fov;
+	scene->renderCamera.near = near;
+	scene->renderCamera.far = far;
 
 	file >> line;
 	ss = std::stringstream(line);
@@ -540,7 +542,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	pos.y = std::stof(word);
 	ss >> word;
 	pos.z = std::stof(word);
-	scene->renderCamera->SetPosition(pos);
+	scene->renderCamera.SetPosition(pos);
 
 	file >> line;
 	ss = std::stringstream(line);
@@ -550,10 +552,10 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	rot.y = std::stof(word);
 	ss >> word;
 	rot.z = std::stof(word);
-	scene->renderCamera->SetRotation(rot);
+	scene->renderCamera.SetRotation(rot);
 
 
-	linmath::vec3 color;
+	ln::vec3 color;
 	while (true)
 	{
 		file >> line;
@@ -579,7 +581,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 			rot.y = std::stof(word);
 			ss >> word;
 			rot.z = std::stof(word);
-			DirectLight* dirLight = new DirectLight(&rot, color);
+			DirectLight* dirLight = new DirectLight(rot, color);
 			dirLight->SetName(name);
 			scene->AddLight(dirLight);
 		}
@@ -594,7 +596,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 			ss >> word;
 			pos.z = std::stof(word);
 			ss >> word;
-			PointLight* point = new PointLight(&pos, color, std::stof(word));
+			PointLight* point = new PointLight(pos, color, std::stof(word));
 			point->SetName(name);
 			scene->AddLight(point);
 		}
@@ -621,14 +623,14 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 			rot.z = std::stof(word);
 			ss >> word;
 
-			SpotLight* spot = new SpotLight(color, &pos, &rot, distance, std::stof(word));
+			SpotLight* spot = new SpotLight(color, pos, rot, distance, std::stof(word));
 			spot->SetName(name);
 			scene->AddLight(spot);
 		}
 	}
 	while (true)
 	{
-		linmath::vec4 albedo;
+		ln::vec4 albedo;
 		file >> line;
 		if (line == "entity") break;
 		ss = std::stringstream(line);
@@ -667,7 +669,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 
 		scene->AddMaterial(mat);
 	}
-	Vector3D scale;
+	ln::vec3 scale;
 	while (true)
 	{
 		file >> line;
@@ -700,7 +702,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 		scale.z = std::stof(word);
 
 		file >> line;
-		Entity* entity = new Entity(&pos, &rot, &scale);
+		Entity* entity = new Entity(pos, rot, scale);
 		entity->SetName(line);
 	}
 	while (true)
@@ -745,26 +747,26 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 		Vertex* verticies = new Vertex[verticiesCount];
 		for (int i = 0; i < verticiesCount; i++)
 		{
-			linmath::vec3 pos{};
+			ln::vec3 pos{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> pos.x;
 			ss >> pos.y;
 			ss >> pos.z;
-			linmath::vec3 normal{};
+			ln::vec3 normal{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> normal.x;
 			ss >> normal.y;
 			ss >> normal.z;
-			linmath::vec4 color{};
+			ln::vec4 color{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> color.x;
 			ss >> color.y;
 			ss >> color.z;
 			ss >> color.w;
-			linmath::vec2 uv{};
+			ln::vec2 uv{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> uv.x;
