@@ -349,25 +349,25 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 	file.open(filepath);
 
 	std::string line;
-	line = std::to_string(scene->preview->fov) + " " + std::to_string(scene->preview->near) + " " + std::to_string(scene->preview->far) + "\n";
+	line = std::to_string(scene->preview.fov) + " " + std::to_string(scene->preview.near) + " " + std::to_string(scene->preview.far) + "\n";
 	file << line;
-	Vector3D pos = scene->preview->GetPosition();
-	Vector3D rot = scene->preview->GetRotation();
+	ln::vec3 pos = scene->preview.GetPosition();
+	ln::vec3 rot = scene->preview.GetRotation();
 	line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
 	file << line;
 	line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
 	file << line;
 
-	line = std::to_string(scene->renderCamera->fov) + " " + std::to_string(scene->renderCamera->near) + " " + std::to_string(scene->renderCamera->far) + "\n";
+	line = std::to_string(scene->renderCamera.fov) + " " + std::to_string(scene->renderCamera.near) + " " + std::to_string(scene->renderCamera.far) + "\n";
 	file << line;
-	pos = scene->renderCamera->GetPosition();
-	rot = scene->renderCamera->GetRotation();
+	pos = scene->renderCamera.GetPosition();
+	rot = scene->renderCamera.GetRotation();
 	line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
 	file << line;
 	line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
 	file << line;
 
-	linmath::vec3 color;
+	ln::vec4 color;
 	for (Light* light : scene->lights)
 	{
 		int type = light->GetType();
@@ -425,7 +425,7 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 	}
 	file << "entity\n";
 
-	Vector3D scale;
+	ln::vec3 scale;
 	for (Entity* entity : scene->entities)
 	{
 		pos = entity->GetPosition();

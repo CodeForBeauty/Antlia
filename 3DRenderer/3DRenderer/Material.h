@@ -44,12 +44,12 @@ public:
 	void SetProj(ln::mat4 value);
 	unsigned int program;
 	unsigned int sceneSlot;
-private:
 	Texture* texture;
 	Texture* specTex;
 	Texture* metalTex;
 	Texture* roughTex;
 	Texture* normal;
+private:
 	void CompileShaders();
 	Shader vs;
 	Shader fs;
