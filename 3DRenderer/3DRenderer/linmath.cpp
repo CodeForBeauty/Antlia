@@ -3,27 +3,27 @@
 using namespace ln;
 
 
-double ln::radians(double angle)
+float ln::radians(float angle)
 {
 	return angle * PI / 180;
 }
 
-double ln::dot(vec2 v1, vec2 v2)
+float ln::dot(vec2 v1, vec2 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y;
 }
 
-double ln::dot(vec3 v1, vec3 v2)
+float ln::dot(vec3 v1, vec3 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-double ln::dot(vec4 v1, vec4 v2)
+float ln::dot(vec4 v1, vec4 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
 }
 
-double ln::cross(vec2 v1, vec2 v2)
+float ln::cross(vec2 v1, vec2 v2)
 {
 	return v1.x * v2.y - v1.y * v2.x;
 }
@@ -38,17 +38,17 @@ vec3 ln::cross(vec3 v1, vec3 v2)
 }
 
 
-double ln::magnitude(vec2 v)
+float ln::magnitude(vec2 v)
 {
 	return std::sqrt(dot(v, v));
 }
 
-double ln::magnitude(vec3 v)
+float ln::magnitude(vec3 v)
 {
 	return std::sqrt(dot(v, v));
 }
 
-double ln::magnitude(vec4 v)
+float ln::magnitude(vec4 v)
 {
 	return std::sqrt(dot(v, v));
 }

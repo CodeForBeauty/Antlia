@@ -116,12 +116,12 @@ int main(void)
     double lastxpos, lastypos;
     glfwGetCursorPos(window, &lastxpos, &lastypos);
 
-    double lastTime = glfwGetTime();
-    double time, deltaTime;
+    float lastTime = glfwGetTime();
+    float time, deltaTime;
     float fps;
     std::string title = "";
 
-    load::SaveScene("test.scene", scene);
+    //load::SaveScene("test.scene", scene);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -156,7 +156,7 @@ int main(void)
         }
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && (xpos != lastxpos || ypos != lastypos))
         {
-            scene->preview.Rotate({ (lastypos - ypos) * 10 * deltaTime, (xpos - lastxpos) * 10 * deltaTime, 0 });
+            scene->preview.Rotate({ (float)(lastypos - ypos) * 10 * deltaTime, (float)(xpos - lastxpos) * 10 * deltaTime, 0 });
         }
         lastxpos = xpos;
         lastypos = ypos;
@@ -182,13 +182,18 @@ int main(void)
 
         //scene->preview->SetRotation(i);
 
-        ln::perspective(fov, far, near, (float)height/width);
+        //ln::perspective(fov, far, near, (float)height/width);
         //linmath::orthographic(0.5, -0.5, 0.5 * ((float)height / width), -0.5 * ((float)height / width), -0.5, 0.5, proj);
 
         //cube->SetRotation(i);
 
 
         scene->Render(proj, width, height);
+
+        int fbo;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &fbo);
+
+        //std::cout << fbo << std::endl;
 
         glfwSwapBuffers(window);
 

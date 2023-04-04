@@ -45,9 +45,9 @@ Material::~Material()
 void Material::CompileShaders()
 {
 	program = glCreateProgram();
-	glAttachShader(program, vs.compileShader());
-	glAttachShader(program, fs.compileShader());
-	glAttachShader(program, gs.compileShader());
+	glAttachShader(program, vs.id);
+	glAttachShader(program, fs.id);
+	glAttachShader(program, gs.id);
 	glLinkProgram(program);
 	glValidateProgram(program);
 	glUseProgram(program);
@@ -71,6 +71,8 @@ void Material::SetCamPos(float x, float y, float z)
 void Material::SetCamPos(ln::vec3 position)
 {
 	glUniform3fv(camPos, 1, -position);
+	//glUniform3fv(camPos, 1, position);
+	//glUniform3f(camPos, -position.x, -position.y, -position.z);
 }
 void Material::SetView(ln::mat4 value)
 {
@@ -79,6 +81,7 @@ void Material::SetView(ln::mat4 value)
 void Material::SetProj(ln::mat4 value)
 {
 	glUniformMatrix4fv(proj, 1, GL_TRUE, value);
+	//glUniformMatrix4fv(proj, 1, GL_TRUE, &value.x.x);
 }
 
 

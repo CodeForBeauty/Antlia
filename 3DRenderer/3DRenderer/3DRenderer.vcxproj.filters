@@ -89,6 +89,9 @@
     <ClInclude Include="FileLoad.h">
       <Filter>header</Filter>
     </ClInclude>
+    <ClInclude Include="functions.h">
+      <Filter>header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\BasicVertex.vert">

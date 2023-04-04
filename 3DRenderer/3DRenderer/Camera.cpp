@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "Camera.h"
+#include "functions.h"
 
 
 Camera::Camera(float fov, float near, float far, int width, int height)
@@ -16,7 +17,7 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	glGenFramebuffers(1, &postProcessFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBO);
 
-	postProcessTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	postProcessTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessTexture, 0);
 
 
@@ -26,12 +27,12 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	glGenTextures(1, &antialiasingTexture);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, antialiasingTexture);
 	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, AAsamples, GL_RGB, width, height, GL_TRUE);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, antialiasingTexture, 0);
-
+	
 	unsigned int rbo;
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
@@ -39,28 +40,17 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 
-	shaderProgram = glCreateProgram();
-
-	float rect[30] = {
-					   1.0f,  -1.0f, 1.0f, 1, 0,
-					  -1.0f, -1.0f, 1.0f, 0, 0,
-					  -1.0f,  1.0f, 1.0f, 0, 1,
-
-					  -1.0f,  1.0f, 1.0f, 0, 1,
-					   1.0f,  1.0f, 1.0f, 1, 1,
-					   1.0f, -1.0f, 1.0f, 1, 0
-	};
-
 	glGenVertexArrays(1, &rectVAO);
-	glGenBuffers(1, &rectVBO);
 	glBindVertexArray(rectVAO);
+	glGenBuffers(1, &rectVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(rect), &rect, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 30, rect, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
+	shaderProgram = glCreateProgram();
 	glAttachShader(shaderProgram, VertShader.id);
 	glAttachShader(shaderProgram, FragShader.id);
 	glLinkProgram(shaderProgram);
@@ -68,14 +58,14 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 
 	glGenFramebuffers(1, &renderStoreFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, renderStoreFBO);
-	renderStoreTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	renderStoreTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderStoreTexture, 0);
-
+	
 
 	// Creating shadow renderers to render shadows from shadow maps.
 	glGenFramebuffers(1, &shadowRendererDirectFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererDirectFBO);
-	shadowRendererDirectTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	shadowRendererDirectTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererDirectTexture, 0);
 
 	unsigned int shadowRBO;
@@ -86,13 +76,13 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 
 	glGenFramebuffers(1, &shadowRendererSpotFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererSpotFBO);
-	shadowRendererSpotTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	shadowRendererSpotTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererSpotTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, shadowRBO);
 
 	glGenFramebuffers(1, &shadowRendererPointFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererPointFBO);
-	shadowRendererPointTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	shadowRendererPointTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowRendererPointTexture, 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, shadowRBO);
 
@@ -102,6 +92,7 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	glAttachShader(shadowRendererProgram, DirectShadowFrag.id);
 	glLinkProgram(shadowRendererProgram);
 	glValidateProgram(shadowRendererProgram);
+	glUseProgram(shadowRendererProgram);
 	glUniform1f(glGetUniformLocation(shadowRendererProgram, "u_Bias"), 0.05f);
 
 	cubeShadowRendererProgram = glCreateProgram();
@@ -110,6 +101,7 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	glAttachShader(cubeShadowRendererProgram, CubeShadowFrag.id);
 	glLinkProgram(cubeShadowRendererProgram);
 	glValidateProgram(cubeShadowRendererProgram);
+	glUseProgram(cubeShadowRendererProgram);
 
 	glUniform1f(glGetUniformLocation(cubeShadowRendererProgram, "u_FarPlane"), 100);
 	glUniform1f(glGetUniformLocation(cubeShadowRendererProgram, "u_Bias"), 0.001f);
@@ -118,17 +110,17 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	// Creating storages for shadows.
 	glGenFramebuffers(1, &shadowStoreDirectFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowStoreDirectFBO);
-	shadowStoreDirectTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	shadowStoreDirectTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowStoreDirectTexture, 0);
 
 	glGenFramebuffers(1, &shadowStoreSpotFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowStoreSpotFBO);
-	shadowStoreSpotTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	shadowStoreSpotTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowStoreSpotTexture, 0);
 
 	glGenFramebuffers(1, &shadowStorePointFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowStorePointFBO);
-	shadowStorePointTexture = CreateTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
+	shadowStorePointTexture = CreateNewTexture(width, height, GL_RGB, GL_UNSIGNED_BYTE, GL_NEAREST, GL_CLAMP_TO_EDGE);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowStorePointTexture, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -141,8 +133,10 @@ void Camera::SetPosition(ln::vec3 pos)
 	camMetricies.x.w = -pos.x;
 	camMetricies.y.w = -pos.y;
 	camMetricies.z.w = -pos.z;
+	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
+	glUseProgram(cubeShadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
@@ -153,8 +147,10 @@ void Camera::Move(ln::vec3 offset)
 	camMetricies.x.w = -position.x;
 	camMetricies.y.w = -position.y;
 	camMetricies.z.w = -position.z;
+	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
+	glUseProgram(cubeShadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
@@ -166,8 +162,10 @@ void Camera::SetRotation(ln::vec3 rot)
 	forward = tmpMat * ln::vec3(0, 0, 1);
 	right = tmpMat * ln::vec3(1, 0, 0);
 	camMetricies = tmpMat;
+	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
+	glUseProgram(cubeShadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
@@ -179,8 +177,10 @@ void Camera::Rotate(ln::vec3 offset)
 	forward = tmpMat * ln::vec3(0, 0, 1);
 	right = tmpMat * ln::vec3(1, 0, 0);
 	camMetricies = tmpMat;
+	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
+	glUseProgram(cubeShadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
@@ -196,11 +196,11 @@ ln::vec3 Camera::GetRotation() const
 
 void Camera::UpdateProjection(int windowWidth, int windowHeight)
 {
-	width = windowWidth;
-	height = windowHeight;
-	camProjection = ln::perspective(fov, near, far, (float)height / width);
-	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_Proj"), 1, GL_TRUE, camProjection);
+	camProjection = ln::perspective(fov, near, far, (float)windowHeight / windowWidth);
+	glUseProgram(cubeShadowRendererProgram);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_Proj"), 1, GL_TRUE, camProjection);
+	glUseProgram(shadowRendererProgram);
+	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_Proj"), 1, GL_TRUE, camProjection);
 }
 
 void Camera::Render(Material* material, int dataSize, int windowWidth, int windowHeight)
@@ -217,7 +217,6 @@ void Camera::Render(Material* material, int dataSize, int windowWidth, int windo
 	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_2D, shadowRendererPointTexture);
 	glUniform1i(glGetUniformLocation(material->program, "u_ShadowPoint"), 8);
-	glActiveTexture(GL_TEXTURE0);
 
 	glViewport(0, 0, width, height);
 	glDrawElements(GL_TRIANGLES, dataSize, GL_UNSIGNED_INT, nullptr);
@@ -226,13 +225,16 @@ void Camera::Render(Material* material, int dataSize, int windowWidth, int windo
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, renderStoreFBO);
 	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, GL_NONE);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GL_NONE);
+
 	glUseProgram(shaderProgram);
 	glBindVertexArray(rectVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, rectVBO);
 	glViewport(0, 0, windowWidth, windowHeight);
 	glDisable(GL_DEPTH_TEST);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, renderStoreTexture);
+	glBindTexture(GL_TEXTURE_2D, renderStoreTexture);//renderStoreTexture
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -303,7 +305,7 @@ void Camera::RenderPointShadow(ln::mat4 lightProj, unsigned int shadowMap, bool 
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
 	glUniform1i(glGetUniformLocation(cubeShadowRendererProgram, "u_ShadowMap"), 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, cubeShadowRendererProgram);
+	glBindTexture(GL_TEXTURE_2D, shadowStorePointTexture);
 	glUniform1i(glGetUniformLocation(cubeShadowRendererProgram, "u_ShadowRender"), 1);
 	glUniform1i(glGetUniformLocation(cubeShadowRendererProgram, "u_HasPrevious"), hasPrevious);
 
@@ -315,20 +317,19 @@ void Camera::RenderPointShadow(ln::mat4 lightProj, unsigned int shadowMap, bool 
 	glActiveTexture(GL_TEXTURE0);
 	glUseProgram(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void Camera::ClearBuffers()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, antialiasingFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBO);
-	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererDirectFBO);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererPointFBO);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererSpotFBO);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Camera::BindBuffer()

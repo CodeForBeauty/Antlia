@@ -76,37 +76,14 @@ private:
 	Shader CubeShadowVert = Shader("shaders/ShadowRender1.vert", GL_VERTEX_SHADER);
 	Shader CubeShadowFrag = Shader("shaders/ShadowRender1.frag", GL_FRAGMENT_SHADER);
 	Shader CubeShadowGeom = Shader("shaders/ShadowRender1.geom", GL_GEOMETRY_SHADER);
+
+	float rect[30] = {
+					   1.0f,  -1.0f, 1.0f, 1, 0,
+					  -1.0f, -1.0f, 1.0f, 0, 0,
+					  -1.0f,  1.0f, 1.0f, 0, 1,
+
+					  -1.0f,  1.0f, 1.0f, 0, 1,
+					   1.0f,  1.0f, 1.0f, 1, 1,
+					   1.0f, -1.0f, 1.0f, 1, 0
+	};
 };
-
-
-unsigned int CreateTexture(int width, int height,
-	unsigned int format, unsigned int type,
-	unsigned int filter = GL_NEAREST, unsigned int wrap = GL_CLAMP_TO_EDGE)
-{
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, type, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-	return texture;
-}
-
-unsigned int CreateCubeMap(int width, int height,
-	unsigned int format, unsigned int type,
-	unsigned int filter = GL_NEAREST, unsigned int wrap = GL_CLAMP_TO_EDGE)
-{
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-	for (int i = 0; i < 6; i++)
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, type, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, wrap);
-	return texture;
-}

@@ -1,7 +1,9 @@
-#include "Scene.h"
 #include <array>
 #include <iostream>
 #include <string>
+
+#include "Scene.h"
+//#include "functions.h"
 
 
 Scene::Scene()
@@ -31,7 +33,14 @@ Scene::Scene()
 
 	glActiveTexture(GL_TEXTURE0);
 	glGenFramebuffers(1, &directShadowFBO);
-	directShadowMap = CreateTexture(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_CLAMP_TO_BORDER);
+	//directShadowMap = CreateNewTexture(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_CLAMP_TO_BORDER);
+	glGenTextures(1, &directShadowMap);
+	glBindTexture(GL_TEXTURE_2D, directShadowMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 	float border[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
 
@@ -49,7 +58,16 @@ Scene::Scene()
 
 
 	glGenFramebuffers(1, &cubeShadowFBO);
-	cubeShadowMap = CreateCubeMap(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT);
+	//cubeShadowMap = CreateNewCubeMap(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT);
+	glGenTextures(1, &cubeShadowMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeShadowMap);
+	for (int i = 0; i < 6; i++)
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, cubeShadowFBO);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeShadowMap, 0);
@@ -216,6 +234,7 @@ void Scene::Render(float* proj, int width, int height)
 	for (int i = 0; i < materialGroup.size(); i++)
 	{
 		glEnable(GL_DEPTH_TEST);
+		preview.UpdateProjection(width, height);
 		materials[i]->Use();
 		materials[i]->SetProj(preview.camProjection);
 
@@ -224,7 +243,6 @@ void Scene::Render(float* proj, int width, int height)
 			materials[i]->SetCamPos(preview.GetPosition());
 			materials[i]->SetView(preview.camMetricies);
 		}
-
 
 		std::vector <Vertex> batchVerticies;
 		std::vector <unsigned int> batchIndecies;
@@ -245,6 +263,7 @@ void Scene::Render(float* proj, int width, int height)
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 		glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, batchIndecies.size() * sizeof(unsigned int), batchIndecies.data());
 		
+
 		bool rendered = false;
 		bool renderedSpot = false;
 		bool renderedPoint = false;
@@ -283,19 +302,23 @@ void Scene::Render(float* proj, int width, int height)
 				ln::vec3 position = light->GetPosition();
 				if (updateLight)
 				{
+					materials[i]->Use();
 					std::string buff = "u_PointLightColor[" + std::to_string(j) + "]";
 					ln::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 					buff = "u_PointLightPos[" + std::to_string(j) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), -position.x, -position.y, -position.z, light->GetDistance());
 				}
+
 				glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
 				glUseProgram(directShadowProgram);
 				glClear(GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
 				glUniform3f(glGetUniformLocation(directShadowProgram, "u_Pos"), position.x, position.y, position.z);
+
 				glUniform3f(glGetUniformLocation(directShadowProgram, "u_LightPos"), position.x, -position.y, -position.z);
 				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
+
 
 				preview.RenderPointShadow(light->projection, directShadowMap, renderedPoint, batchIndecies.size());
 				renderedPoint = true;
@@ -334,6 +357,7 @@ void Scene::Render(float* proj, int width, int height)
 				renderedSpot = true;
 			}
 		}
+
 		preview.Render(materials[i], batchIndecies.size(), width, height);
 	}
 	preview.update = false;

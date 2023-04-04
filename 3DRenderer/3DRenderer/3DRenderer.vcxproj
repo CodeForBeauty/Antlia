@@ -167,6 +167,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FileLoad.h" />
+    <ClInclude Include="functions.h" />
     <ClInclude Include="Lighting.h" />
     <ClInclude Include="linmath.h" />
     <ClInclude Include="Material.h" />
