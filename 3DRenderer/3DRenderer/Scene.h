@@ -25,8 +25,8 @@ public:
 
 	void Render(float* proj, int width, int height);
 
-	Camera preview = Camera(90.0f, 0.5, 100, 1920, 1080);
-	Camera renderCamera = Camera(90.0f, 0.1, 100, 1920, 1080);
+	Camera preview = Camera(45.0f, 0.5, 100, 1920, 1080);
+	Camera renderCamera = Camera(45.0f, 0.1, 100, 1920, 1080);
 
 	std::string savePath = "";
 

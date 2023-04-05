@@ -143,18 +143,18 @@ namespace ln
 			vec2 x1 = getX();
 			vec2 y1 = getY();
 			mat2 out = {};
-			out.x.x = dot(x, x1);
-			out.x.y = dot(x, y1);
-			out.y.x = dot(y, x1);
-			out.y.y = dot(y, y1);
+			out.x.x = dot(a.x, x1);
+			out.x.y = dot(a.x, y1);
+			out.y.x = dot(a.y, x1);
+			out.y.y = dot(a.y, y1);
 
 			return out;
 		}
 		vec2 operator *(const vec2& a)
 		{
 			vec2 out = {};
-			out.x = dot(x, a);
-			out.y = dot(y, a);
+			out.x = dot(getX(), a);
+			out.y = dot(getY(), a);
 
 			return out;
 		}
@@ -185,17 +185,17 @@ namespace ln
 			vec3 z1 = getZ();
 			mat3 out = {};
 
-			out.x.x = dot(x, x1);
-			out.x.y = dot(x, y1);
-			out.x.z = dot(x, z1);
+			out.x.x = dot(a.x, x1);
+			out.x.y = dot(a.x, y1);
+			out.x.z = dot(a.x, z1);
 
-			out.x.x = dot(y, x1);
-			out.x.y = dot(y, y1);
-			out.x.z = dot(y, z1);
+			out.y.x = dot(a.y, x1);
+			out.y.y = dot(a.y, y1);
+			out.y.z = dot(a.y, z1);
 
-			out.z.x = dot(z, x1);
-			out.z.y = dot(z, y1);
-			out.z.z = dot(z, z1);
+			out.z.x = dot(a.z, x1);
+			out.z.y = dot(a.z, y1);
+			out.z.z = dot(a.z, z1);
 
 			return out;
 		}
@@ -203,9 +203,9 @@ namespace ln
 		vec3 operator *(const vec3& a)
 		{
 			vec3 out = {};
-			out.x = dot(x, a);
-			out.y = dot(y, a);
-			out.z = dot(z, a);
+			out.x = dot(getX(), a);
+			out.y = dot(getY(), a);
+			out.z = dot(getZ(), a);
 
 			return out;
 		}
@@ -240,25 +240,25 @@ namespace ln
 			vec4 w1 = getW();
 			mat4 out = {};
 
-			out.x.x = dot(x, x1);
-			out.x.y = dot(x, y1);
-			out.x.z = dot(x, z1);
-			out.x.w = dot(x, w1);
+			out.x.x = dot(a.x, x1);
+			out.x.y = dot(a.x, y1);
+			out.x.z = dot(a.x, z1);
+			out.x.w = dot(a.x, w1);
 
-			out.x.x = dot(y, x1);
-			out.x.y = dot(y, y1);
-			out.x.z = dot(y, z1);
-			out.x.w = dot(y, w1);
+			out.x.x = dot(a.y, x1);
+			out.x.y = dot(a.y, y1);
+			out.x.z = dot(a.y, z1);
+			out.x.w = dot(a.y, w1);
 
-			out.z.x = dot(z, x1);
-			out.z.y = dot(z, y1);
-			out.z.z = dot(z, z1);
-			out.z.w = dot(z, w1);
+			out.z.x = dot(a.z, x1);
+			out.z.y = dot(a.z, y1);
+			out.z.z = dot(a.z, z1);
+			out.z.w = dot(a.z, w1);
 
-			out.w.x = dot(w, x1);
-			out.w.y = dot(w, y1);
-			out.w.z = dot(w, z1);
-			out.w.w = dot(w, w1);
+			out.w.x = dot(a.w, x1);
+			out.w.y = dot(a.w, y1);
+			out.w.z = dot(a.w, z1);
+			out.w.w = dot(a.w, w1);
 
 			return out;
 		}
@@ -266,10 +266,10 @@ namespace ln
 		vec4 operator *(const vec4& a)
 		{
 			vec4 out = {};
-			out.x = dot(x, a);
-			out.y = dot(y, a);
-			out.z = dot(z, a);
-			out.w = dot(w, a);
+			out.x = dot(getX(), a);
+			out.y = dot(getY(), a);
+			out.z = dot(getZ(), a);
+			out.w = dot(getW(), a);
 
 			return out;
 		}

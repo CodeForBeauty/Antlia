@@ -161,11 +161,22 @@ mat3 ln::eulerRotation(vec3 degree)
 {
 	vec3 theta = { radians(degree.x), radians(degree.y), radians(degree.z) };
 
-	mat3 out = {};
-	out.x = { std::cos(theta.z) * std::cos(theta.y), -std::sin(theta.z), -std::sin(theta.y) };
-	out.y = { -out.x.y, std::cos(theta.z) * std::cos(theta.x), -std::sin(theta.x) };
-	out.z = { std::sin(theta.y), std::sin(theta.x), std::cos(theta.y) * std::cos(theta.x) };
+	mat3 rotZ = {};
+	rotZ.x = { std::cos(theta.z), -std::sin(theta.z), 0.0f };
+	rotZ.y = { -rotZ.x.y, rotZ.x.x, 0.0f };
+	rotZ.z.z = 1.0f;
 
+	mat3 rotY = {};
+	rotY.x = { std::cos(theta.y), 0.0f, -std::sin(theta.y) };
+	rotY.y.y = 1.0f;
+	rotY.z = { -rotY.x.z, 0.0f, rotY.x.x };
+
+	mat3 rotX = {};
+	rotX.x.x = 1.0f;
+	rotX.y = { 0.0f, std::cos(theta.x), -std::sin(theta.x) };
+	rotX.z = { 0.0f, -rotX.y.z, rotX.y.y };
+
+	mat3 out = rotZ * rotY * rotX;
 	return out;
 }
 

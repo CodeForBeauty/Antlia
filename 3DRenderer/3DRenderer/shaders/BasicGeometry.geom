@@ -40,7 +40,7 @@ void main()
 
 	for (int i = 0; i < 3; i++)
 	{
-		gl_Position = data_in[i].projection * (data_in[i].view * vec4(data_in[i].pos, 1));
+		gl_Position = data_in[i].projection * (data_in[i].view * vec4(data_in[i].pos + data_in[i].camPos, 1));
 		v_ScreenPos = gl_Position;
 		gl_Position.z /= -gl_Position.w;
 		v_TexCoord = data_in[i].texCoord;

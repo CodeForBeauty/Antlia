@@ -228,5 +228,5 @@ void main()
 
 	color = ambient + vec4(totalLight, 1.0);
 	color.rgb = pow(color.rgb, vec3(1 / gamma));
-	//color = vec4(1.0f);
+	//color = vec4(shadow3);
 }

@@ -12,6 +12,7 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 
 	camProjection = ln::perspective(fov, near, far, (float)height/width);
 	camMetricies = ln::eulerRotation(rotation);
+	camMetricies.w.w = 1.0f;
 
 	// Creating framebuffers for post processing and antialiasing.
 	glGenFramebuffers(1, &postProcessFBO);
@@ -130,9 +131,6 @@ void Camera::SetPosition(ln::vec3 pos)
 {
 	position = pos;
 	update = true;
-	camMetricies.x.w = -pos.x;
-	camMetricies.y.w = -pos.y;
-	camMetricies.z.w = -pos.z;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
@@ -144,9 +142,6 @@ void Camera::Move(ln::vec3 offset)
 {
 	position += offset;
 	update = true;
-	camMetricies.x.w = -position.x;
-	camMetricies.y.w = -position.y;
-	camMetricies.z.w = -position.z;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
@@ -161,6 +156,7 @@ void Camera::SetRotation(ln::vec3 rot)
 	ln::mat3 tmpMat = ln::eulerRotation(rotation);
 	forward = tmpMat * ln::vec3(0, 0, 1);
 	right = tmpMat * ln::vec3(1, 0, 0);
+	std::cout << forward << std::endl;
 	camMetricies = tmpMat;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
@@ -176,6 +172,7 @@ void Camera::Rotate(ln::vec3 offset)
 	ln::mat3 tmpMat = ln::eulerRotation(rotation);
 	forward = tmpMat * ln::vec3(0, 0, 1);
 	right = tmpMat * ln::vec3(1, 0, 0);
+	std::cout << right << std::endl;
 	camMetricies = tmpMat;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
@@ -234,7 +231,7 @@ void Camera::Render(Material* material, int dataSize, int windowWidth, int windo
 	glViewport(0, 0, windowWidth, windowHeight);
 	glDisable(GL_DEPTH_TEST);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, renderStoreTexture);//renderStoreTexture
+	glBindTexture(GL_TEXTURE_2D, shadowRendererPointTexture);//renderStoreTexture
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 

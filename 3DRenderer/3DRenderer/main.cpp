@@ -78,7 +78,7 @@ int main(void)
     //scene->AddLight(dirLight);
     //scene->AddLight(dirLight3);
     scene->AddLight(pointLight);
-    scene->AddLight(pointLight1);
+    //scene->AddLight(pointLight1);
 
 
     float* proj = new float[16] {
