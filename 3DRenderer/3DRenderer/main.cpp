@@ -57,8 +57,7 @@ int main(void)
     PointLight* pointLight = new PointLight({ 1, 0, 0 });
     PointLight* pointLight1 = new PointLight({ 0, 0, 1 });
 
-    dirLight3->SetPosition({ 0, 4, 0 });
-    dirLight3->SetRotation({ 0, 0, 0 });
+    dirLight3->SetPosition({ 0, 5, 0 });
 
     dirLight1->SetRotation({ 25, 0, 0 });
     dirLight2->SetRotation({ -20, 0, 0 });

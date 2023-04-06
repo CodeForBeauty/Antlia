@@ -68,11 +68,12 @@ void main()
 	}
 
 	//color.y = lightCoords.z;
-	shadow = texture(u_ShadowMap, lightCoords.xy).r;
+	//shadow = texture(u_ShadowMap, lightCoords.xy).r;
 	//shadow = texture(u_ShadowMap, lightCoords.xy).r;
 	//shadow = texture(u_ShadowMap, lightCoords.xy).r;// - lightCoords.z;// / v_LightPos.w;//(v_LightPos.z / v_LightPos.w + 1.0) / 2.0;
 	color = vec4(shadow, shadow, shadow, 1.0f);
 	//color = vec4((v_ScreenPos.xy / v_ScreenPos.w) * 0.5f + 0.5f, 0.0f, 1.0f);
 	//color = vec4(lightCoords.xy, 0.0f, 1.0f);
 	//color = vec4(v_LightPos.xy, 0.0f, 1.0f);
+	//color = texture(u_ShadowMap, lightCoords.xy);
 }

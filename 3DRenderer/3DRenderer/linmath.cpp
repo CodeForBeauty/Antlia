@@ -137,6 +137,7 @@ mat4 ln::perspective(float fov, float near, float far, float ratio)
 	out.y.y = 1 / std::tan(fov / 2);
 	out.x.x = out.y.y * ratio;
 	out.z.z = far / (far - near);
+	//out.z.w = -(far / (far - near)) * near;
 	out.w.z = 1.0;
 
 	return out;

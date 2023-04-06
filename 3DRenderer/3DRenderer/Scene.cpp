@@ -349,7 +349,7 @@ void Scene::Render(float* proj, int width, int height)
 				}
 				glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
 				glUseProgram(directShadowProgram);
-				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				glClear(GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
 				glUniformMatrix4fv(glGetUniformLocation(directShadowProgram, "lightProj"), 1, GL_TRUE, light->projection);
 				glUniform3f(glGetUniformLocation(directShadowProgram, "u_Pos"), -position.x, -position.y, -position.z);
