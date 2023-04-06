@@ -58,18 +58,18 @@ Scene::Scene()
 
 
 	glGenFramebuffers(1, &cubeShadowFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, cubeShadowFBO);
 	//cubeShadowMap = CreateNewCubeMap(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT);
 	glGenTextures(1, &cubeShadowMap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeShadowMap);
 	for (int i = 0; i < 6; i++)
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, cubeShadowFBO);
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, cubeShadowMap, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
@@ -81,17 +81,18 @@ Scene::Scene()
 	glLinkProgram(cubeShadowProgram);
 	glValidateProgram(cubeShadowProgram);
 	glUseProgram(cubeShadowProgram);
-
-	ln::mat4 perspective = ln::perspective(ln::radians(90), 100, 0.1);
+	
+	ln::mat4 perspective = ln::perspective(ln::radians(90), 0.1f, 10.0f);
 	ln::mat4 metricies[6] =
 	{
-		perspective * ln::lookAt({0, 0, 0}, { 1,  0,  0}, {0, -1,  0}),
-		perspective * ln::lookAt({0, 0, 0}, {-1,  0,  0}, {0, -1,  0}),
-		perspective * ln::lookAt({0, 0, 0}, { 0,  1,  0}, {0,  0,  1}),
-		perspective * ln::lookAt({0, 0, 0}, { 0, -1,  0}, {0,  0, -1}),
-		perspective * ln::lookAt({0, 0, 0}, { 0,  0,  1}, {0, -1,  0}),
-		perspective * ln::lookAt({0, 0, 0}, { 0,  0, -1}, {0, -1,  0}),
+		ln::lookAt({0, 0, 0}, { 1,  0,  0}, {0, -1,  0}) * perspective,
+		ln::lookAt({0, 0, 0}, {-1,  0,  0}, {0, -1,  0}) * perspective,
+		ln::lookAt({0, 0, 0}, { 0,  1,  0}, {0,  0,  1}) * perspective,
+		ln::lookAt({0, 0, 0}, { 0, -1,  0}, {0,  0, -1}) * perspective,
+		ln::lookAt({0, 0, 0}, { 0,  0,  1}, {0, -1,  0}) * perspective,
+		ln::lookAt({0, 0, 0}, { 0,  0, -1}, {0, -1,  0}) * perspective,
 	};
+
 
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowProgram, "matrix[0]"), 1, GL_TRUE, metricies[0]);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowProgram, "matrix[1]"), 1, GL_TRUE, metricies[1]);
@@ -100,7 +101,8 @@ Scene::Scene()
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowProgram, "matrix[4]"), 1, GL_TRUE, metricies[4]);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowProgram, "matrix[5]"), 1, GL_TRUE, metricies[5]);
 	
-	glUniform1f(glGetUniformLocation(cubeShadowProgram, "u_FarPlane"), 100);
+	
+	glUniform1f(glGetUniformLocation(cubeShadowProgram, "u_FarPlane"), 10);
 	glUseProgram(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -310,17 +312,17 @@ void Scene::Render(float* proj, int width, int height)
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), -position.x, -position.y, -position.z, light->GetDistance());
 				}
 
-				glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
-				glUseProgram(directShadowProgram);
+				glBindFramebuffer(GL_FRAMEBUFFER, cubeShadowFBO);
+				glUseProgram(cubeShadowProgram);
 				glClear(GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
-				glUniform3f(glGetUniformLocation(directShadowProgram, "u_Pos"), position.x, position.y, position.z);
 
-				glUniform3f(glGetUniformLocation(directShadowProgram, "u_LightPos"), position.x, -position.y, -position.z);
+				glUniform3f(glGetUniformLocation(cubeShadowProgram, "u_LightPos"), -position.x, -position.y, -position.z);
+				glUniform3f(glGetUniformLocation(cubeShadowProgram, "u_Pos"), position.x, position.y, position.z);
 				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 
 
-				preview.RenderPointShadow(light->projection, directShadowMap, renderedPoint, batchIndecies.size());
+				preview.RenderPointShadow(light->projection, position, cubeShadowMap, renderedPoint, batchIndecies.size());
 				renderedPoint = true;
 			}
 			if (type == 3)
@@ -345,15 +347,15 @@ void Scene::Render(float* proj, int width, int height)
 					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(ln::radians(angle-5)),
 						std::cos(ln::radians(angle)));
 				}
-				glBindFramebuffer(GL_FRAMEBUFFER, cubeShadowFBO);
-				glUseProgram(cubeShadowProgram);
+				glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
+				glUseProgram(directShadowProgram);
 				glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 				glViewport(0, 0, shadowWidth, shadowHeight);
-				glUniformMatrix4fv(glGetUniformLocation(cubeShadowProgram, "lightProj"), 1, GL_TRUE, light->projection);
-				glUniform3f(glGetUniformLocation(cubeShadowProgram, "u_Pos"), -position.x, -position.y, -position.z);
+				glUniformMatrix4fv(glGetUniformLocation(directShadowProgram, "lightProj"), 1, GL_TRUE, light->projection);
+				glUniform3f(glGetUniformLocation(directShadowProgram, "u_Pos"), -position.x, -position.y, -position.z);
 				glDrawElements(GL_TRIANGLES, batchIndecies.size(), GL_UNSIGNED_INT, nullptr);
 
-				preview.RenderSpotShadow(light->projection, directShadowMap, renderedSpot, batchIndecies.size());
+				preview.RenderSpotShadow(light->projection, position, directShadowMap, renderedSpot, batchIndecies.size());
 				renderedSpot = true;
 			}
 		}

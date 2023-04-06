@@ -68,7 +68,7 @@ void main()
 	}
 
 	//color.y = lightCoords.z;
-	//shadow = texture(u_ShadowMap, lightCoords.xy).r;
+	shadow = texture(u_ShadowMap, lightCoords.xy).r;
 	//shadow = texture(u_ShadowMap, lightCoords.xy).r;
 	//shadow = texture(u_ShadowMap, lightCoords.xy).r;// - lightCoords.z;// / v_LightPos.w;//(v_LightPos.z / v_LightPos.w + 1.0) / 2.0;
 	color = vec4(shadow, shadow, shadow, 1.0f);

@@ -65,7 +65,7 @@ int main(void)
     dirLight->SetRotation({ 0, 0, 0 });
 
     pointLight->SetPosition({ 0, 5, 0 });
-    pointLight1->SetPosition({ -2, 5, -2 });
+    pointLight1->SetPosition({ 0, 5, 0 });
 
 
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
@@ -76,8 +76,8 @@ int main(void)
     //scene->AddLight(dirLight2);
     //scene->AddLight(dirLight1);
     //scene->AddLight(dirLight);
-    //scene->AddLight(dirLight3);
-    scene->AddLight(pointLight);
+    scene->AddLight(dirLight3);
+    //scene->AddLight(pointLight);
     //scene->AddLight(pointLight1);
 
 

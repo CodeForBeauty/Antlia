@@ -21,8 +21,8 @@ public:
 	void Render(Material* material, int dataSize, int windowWidth, int windowHeight);
 
 	void RenderDirectShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize);
-	void RenderSpotShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize);
-	void RenderPointShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize);
+	void RenderSpotShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize);
+	void RenderPointShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize);
 
 	unsigned int GetDirectShadow();
 	unsigned int GetSpotShadow();

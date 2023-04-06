@@ -5,11 +5,7 @@ layout(triangle_strip, max_vertices = 3) out;
 
 out vec3 v_CamPos;
 out vec3 v_Pos;
-out vec4 v_LightPos;
 out vec4 v_ScreenPos;
-
-uniform mat4 u_Mat;
-uniform vec3 lightPos;
 
 in DATA
 {

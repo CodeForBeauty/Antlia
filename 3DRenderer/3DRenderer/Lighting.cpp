@@ -143,8 +143,8 @@ SpotLight::SpotLight(ln::vec3 color, ln::vec3 position, ln::vec3 rotation, float
 void SpotLight::UpdateProj(ln::vec3 camera)
 {
 	ln::mat4 proj = ln::perspective(ln::radians(90), 0.1, 50);
-	ln::mat4 view = ln::lookAt(position + (forward * 20), position, up);
-	projection = proj * view;
+	ln::mat4 view = ln::lookAt((forward * -20), {0, 0, 0}, up);
+	projection = view * proj;
 }
 
 float SpotLight::GetAngle()

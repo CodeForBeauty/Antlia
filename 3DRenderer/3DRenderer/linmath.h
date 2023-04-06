@@ -245,10 +245,10 @@ namespace ln
 			out.x.z = dot(a.x, z1);
 			out.x.w = dot(a.x, w1);
 
-			out.x.x = dot(a.y, x1);
-			out.x.y = dot(a.y, y1);
-			out.x.z = dot(a.y, z1);
-			out.x.w = dot(a.y, w1);
+			out.y.x = dot(a.y, x1);
+			out.y.y = dot(a.y, y1);
+			out.y.z = dot(a.y, z1);
+			out.y.w = dot(a.y, w1);
 
 			out.z.x = dot(a.z, x1);
 			out.z.y = dot(a.z, y1);

@@ -156,7 +156,6 @@ void Camera::SetRotation(ln::vec3 rot)
 	ln::mat3 tmpMat = ln::eulerRotation(rotation);
 	forward = tmpMat * ln::vec3(0, 0, 1);
 	right = tmpMat * ln::vec3(1, 0, 0);
-	std::cout << forward << std::endl;
 	camMetricies = tmpMat;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
@@ -172,7 +171,6 @@ void Camera::Rotate(ln::vec3 offset)
 	ln::mat3 tmpMat = ln::eulerRotation(rotation);
 	forward = tmpMat * ln::vec3(0, 0, 1);
 	right = tmpMat * ln::vec3(1, 0, 0);
-	std::cout << right << std::endl;
 	camMetricies = tmpMat;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
@@ -206,13 +204,13 @@ void Camera::Render(Material* material, int dataSize, int windowWidth, int windo
 	material->Bind();
 
 	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_2D, shadowRendererDirectTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowStoreDirectTexture);
 	glUniform1i(glGetUniformLocation(material->program, "u_ShadowDir"), 6);
 	glActiveTexture(GL_TEXTURE7);
-	glBindTexture(GL_TEXTURE_2D, shadowRendererSpotTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowStoreSpotTexture);
 	glUniform1i(glGetUniformLocation(material->program, "u_ShadowSpot"), 7);
 	glActiveTexture(GL_TEXTURE8);
-	glBindTexture(GL_TEXTURE_2D, shadowRendererPointTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowStorePointTexture);
 	glUniform1i(glGetUniformLocation(material->program, "u_ShadowPoint"), 8);
 
 	glViewport(0, 0, width, height);
@@ -231,7 +229,7 @@ void Camera::Render(Material* material, int dataSize, int windowWidth, int windo
 	glViewport(0, 0, windowWidth, windowHeight);
 	glDisable(GL_DEPTH_TEST);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, shadowRendererPointTexture);//renderStoreTexture
+	glBindTexture(GL_TEXTURE_2D, shadowStoreSpotTexture);//renderStoreTexture
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -241,6 +239,7 @@ void Camera::RenderDirectShadow(ln::mat4 lightProj, unsigned int shadowMap, bool
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_Pos"), 1, -position);
+	glUniform1f(glGetUniformLocation(shadowRendererProgram, "u_Bias"), 0.001f);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "lightProj"), 1, GL_TRUE, lightProj);
 
 	glViewport(0, 0, width, height);
@@ -262,12 +261,12 @@ void Camera::RenderDirectShadow(ln::mat4 lightProj, unsigned int shadowMap, bool
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Camera::RenderSpotShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize)
+void Camera::RenderSpotShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererSpotFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shadowRendererProgram);
-	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_Pos"), 1, -position);
+	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_Pos"), 1, -lightPos);
 	glUniformMatrix4fv(glGetUniformLocation(shadowRendererProgram, "lightProj"), 1, GL_TRUE, lightProj);
 
 	glViewport(0, 0, width, height);
@@ -275,7 +274,7 @@ void Camera::RenderSpotShadow(ln::mat4 lightProj, unsigned int shadowMap, bool h
 	glBindTexture(GL_TEXTURE_2D, shadowMap);
 	glUniform1i(glGetUniformLocation(shadowRendererProgram, "u_ShadowMap"), 0);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, shadowStoreDirectTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowStoreSpotTexture);
 	glUniform1i(glGetUniformLocation(shadowRendererProgram, "u_ShadowRender"), 1);
 	glUniform1i(glGetUniformLocation(shadowRendererProgram, "u_HasPrevious"), hasPrevious);
 
@@ -289,17 +288,17 @@ void Camera::RenderSpotShadow(ln::mat4 lightProj, unsigned int shadowMap, bool h
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Camera::RenderPointShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize)
+void Camera::RenderPointShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererPointFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glUseProgram(cubeShadowRendererProgram);
-	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_Pos"), 1, -position);
+	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_Pos"), 1, lightPos);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "lightProj"), 1, GL_TRUE, lightProj);
 
 	glViewport(0, 0, width, height);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, shadowMap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, shadowMap);
 	glUniform1i(glGetUniformLocation(cubeShadowRendererProgram, "u_ShadowMap"), 0);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, shadowStorePointTexture);

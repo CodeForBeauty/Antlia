@@ -149,11 +149,20 @@ mat4 ln::lookAt(vec3 at, vec3 eye, vec3 up)
 	vec3 xaxis = normalize(cross(up, zaxis));
 	vec3 yaxis = cross(zaxis, xaxis);
 
-	out.x = xaxis;
-	out.y = yaxis;
-	out.z = zaxis;
+	out.x.x = xaxis.x;
+	out.y.x = xaxis.y;
+	out.z.x = xaxis.z;
 
-	out.w = vec4(-dot(xaxis, eye), -dot(yaxis, eye), -dot(zaxis, eye), 1.0);
+	out.x.y = yaxis.x;
+	out.y.y = yaxis.y;
+	out.z.y = yaxis.z;
+
+	out.x.z = zaxis.x;
+	out.y.z = zaxis.y;
+	out.z.z = zaxis.z;
+
+	out.w = vec4(-dot(xaxis, eye), -dot(yaxis, eye), -dot(zaxis, eye), 1.0f);
+
 	return out;
 }
 

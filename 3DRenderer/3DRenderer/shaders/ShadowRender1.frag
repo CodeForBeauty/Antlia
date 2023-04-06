@@ -3,7 +3,6 @@
 in vec3 v_Normal;
 in vec3 v_CamPos;
 in vec3 v_Pos;
-in vec4 v_LightPos;
 in vec4 v_ScreenPos;
 
 uniform samplerCube u_ShadowMap;
@@ -12,6 +11,7 @@ uniform bool u_HasPrevious;
 uniform float u_Bias;
 uniform vec3 u_Pos;
 uniform float u_FarPlane;
+uniform vec3 lightPos;
 
 out vec4 color;
 
@@ -46,16 +46,7 @@ void main()
 	shadow /= pow((sampleRadius * 2 + 1), 3);
 	//shadow = 1 - shadow;
 	color = vec4(shadow, shadow, shadow, 1.0f);
-	//color = vec4(currentDepth/10);//vec4(fragToLight, 1.0f);//texture(u_ShadowMap, fragToLight);
-	//color = (currentDepth/10) - texture(u_ShadowMap, -lightUV);
 	//color = vec4(texture(u_ShadowMap, lightUV).r);
-	//color = vec4(1.0, 1.0, 1.0, 1.0);
-	//if (currentDepth < texture(u_ShadowMap, -fragToLight).r)
-	//	color = vec4(0.3, 0.3, 0.3, 1.0);
-	//color = vec4(v_ScreenPos.xyz / v_ScreenPos.w * 0.5f + 0.5f, 1.0f);
-	//color = vec4(fragToLight, 1.0f);
-	//color.w = 1.0f;
-	//color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	color = vec4(lightUV, 1.0f);
-	color = vec4(currentDepth);
+	//color = vec4(lightUV.y);
+	//color = vec4(currentDepth/10);
 }
