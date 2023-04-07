@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include "Objects.h"
 #include "Lighting.h"
 #include "Camera.h"
@@ -30,12 +31,17 @@ public:
 
 	std::string savePath = "";
 
-	std::vector <Mesh*> objects;
-	std::vector <Light*> lights;
-	std::vector <Entity*> entities;
+	//std::vector <Mesh*> objects;
+	//std::vector <Light*> lights;
+	//std::vector <Entity*> entities;
+	std::unordered_set<Mesh*> objects;
+	std::unordered_set<Light*> lights;
+	std::unordered_set<Entity*> entities;
 	std::vector <Material*> materials;
+
 private:
-	std::vector <std::vector <Mesh*>> materialGroup;
+	//std::vector <std::vector <Mesh*>> materialGroup;
+	std::vector <std::unordered_set <Mesh*>> materialGroup;
 
 	unsigned int vao, vbo, ibo;
 

@@ -72,12 +72,12 @@ int main(void)
 
     scene->AddMaterial(mat1);
 
-    //scene->AddLight(dirLight2);
+    scene->AddLight(dirLight2);
     //scene->AddLight(dirLight1);
     //scene->AddLight(dirLight);
     scene->AddLight(dirLight3);
     //scene->AddLight(pointLight);
-    //scene->AddLight(pointLight1);
+    scene->AddLight(pointLight1);
 
 
     float* proj = new float[16] {
@@ -98,6 +98,8 @@ int main(void)
 
     std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", scene);
     Mesh* suzanne = objs[0];
+
+    scene->DeleteLight(pointLight1);
 
 
     glEnable(GL_DEPTH_TEST);

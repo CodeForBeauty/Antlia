@@ -11,10 +11,7 @@ Entity::Entity(ln::vec3 position, ln::vec3 rotation)
 	: position(position), rotation(rotation) {}
 Entity::Entity(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale) 
 	: position(position), rotation(rotation), scale(scale) {}
-Entity::~Entity()
-{
-	delete position, rotation, scale;
-}
+Entity::~Entity() {}
 
 void Entity::SetPosition(ln::vec3 pos)
 {

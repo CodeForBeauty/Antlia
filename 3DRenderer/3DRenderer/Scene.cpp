@@ -109,12 +109,12 @@ Scene::Scene()
 
 Scene::~Scene()
 {
-	for (int i = 0; i < objects.size(); i++)
-		delete objects[i];
-	for (int i = 0; i < entities.size(); i++)
-		delete entities[i];
-	for (int i = 0; i < lights.size(); i++)
-		delete lights[i];
+	for (auto i = objects.begin(); i != objects.end(); i++)
+		delete *i;
+	for (auto i = entities.begin(); i != entities.end(); i++)
+		delete *i;
+	for (auto i = lights.begin(); i != lights.end(); i++)
+		delete *i;
 	for (int i = 0; i < materials.size(); i++)
 		delete materials[i];
 }
@@ -122,28 +122,30 @@ Scene::~Scene()
 void Scene::AddObject(Mesh* object)
 {
 	int offset = 0;
-	for (int i = 0; i < materialGroup[0].size(); i++)
-	{
-		offset += materialGroup[0][i]->geometry->verticiesCount;
-	}
+	int mat = 0;
+	if (object->material)
+		mat = object->material->sceneSlot;
+	else
+		object->material = materials[0];
+
+	for (auto i = materialGroup[mat].begin(); i != materialGroup[mat].end(); i++)
+		offset += (*i)->geometry->verticiesCount;
 	
 	for (int i = 0; i < object->geometry->indeciesCount; i++)
-	{
 		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
-	}
-	objects.push_back(object);
-	materialGroup[0].push_back(object);
-	object->material = materials[0];
+	
+	objects.insert(object);
+	materialGroup[mat].insert(object);
 }
 
 void Scene::AddEntity(Entity* entity)
 {
-	entities.push_back(entity);
+	entities.insert(entity);
 }
 
 void Scene::AddLight(Light* light)
 {
-	lights.push_back(light);
+	lights.insert(light);
 	updateLight = true;
 }
 
@@ -152,31 +154,29 @@ void Scene::AddMaterial(Material* material)
 	materials.push_back(material);
 	materialGroup.push_back({});
 	material->sceneSlot = materialGroup.size()-1;
-	material->Use();
-	material->SetCamPos(preview.GetPosition());
-	material->SetView(preview.camMetricies);
 }
 
 void Scene::SetObjectMaterial(Mesh* object, Material* material)
 {
-	bool start = false;
-	for (Mesh* i : materialGroup[object->material->sceneSlot])
+	auto start = materialGroup[object->material->sceneSlot].find(object);
+
+	for (auto i = start;
+		i != materialGroup[object->material->sceneSlot].end();
+		i++)
 	{
-		if (start)
-			for (int j = 0; j < i->geometry->indeciesCount; j++)
-				i->geometry->transformedIndecies[j] -=  object->geometry->verticiesCount;
-		if (i == object) start = true;
+		for (int j = 0; j < (*i)->geometry->indeciesCount; j++)
+			(*i)->geometry->transformedIndecies[j] -= object->geometry->verticiesCount;
 	}
-	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
-		materialGroup[object->material->sceneSlot].end(),
-		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
 	
-	materialGroup[material->sceneSlot].push_back(object);
+	materialGroup[object->material->sceneSlot].erase(object);
+	
+	materialGroup[material->sceneSlot].insert(object);
 	object->material = material;
 
 	int offset = 0;
-	for (int i = 0; i < materialGroup[material->sceneSlot].size() - 1; i++)
-		offset += materialGroup[material->sceneSlot][i]->geometry->verticiesCount;
+	for (auto i = materialGroup[material->sceneSlot].begin();
+		i != materialGroup[material->sceneSlot].end(); i++)
+			offset += (*i)->geometry->verticiesCount;
 	
 	for (int i = 0; i < object->geometry->indeciesCount; i++)
 		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
@@ -185,41 +185,40 @@ void Scene::SetObjectMaterial(Mesh* object, Material* material)
 void Scene::DeleteMaterial(Material* material)
 {
 	int offset = 0;
-	for (Mesh* i : materialGroup[0])
-		offset += i->geometry->verticiesCount;
-	for (Mesh* i : materialGroup[material->sceneSlot])
+	for (auto i = materialGroup[0].begin(); i != materialGroup[0].end(); i++)
+		offset += (*i)->geometry->verticiesCount;
+
+	for (auto i = materialGroup[material->sceneSlot].begin();
+		i != materialGroup[material->sceneSlot].end(); i++)
 	{
-		materialGroup[0].push_back(i);
-		for (int j = 0; j < i->geometry->indeciesCount; j++)
-			i->geometry->transformedIndecies[j] = i->geometry->indecies[j] + offset;
-		offset += i->geometry->indeciesCount;
+		materialGroup[0].insert(*i);
+		for (int j = 0; j < (*i)->geometry->indeciesCount; j++)
+			(*i)->geometry->transformedIndecies[j] = (*i)->geometry->indecies[j] + offset;
+		offset += (*i)->geometry->indeciesCount;
 	}
 	
 	materials.erase(materials.begin() + material->sceneSlot);
 	materialGroup.erase(materialGroup.begin() + material->sceneSlot);
-	delete material;
 }
 
 void Scene::DeleteLight(Light* light)
 {
-	lights.erase(std::remove_if(lights.begin(), lights.end(), [&](Light* i) { return i == light; }), lights.end());
-	delete light;
+	lights.erase(light);
 }
 
 void Scene::DeleteObject(Mesh* object)
 {
-	bool start = false;
-	for (Mesh* i : materialGroup[object->material->sceneSlot])
+	auto start = materialGroup[object->material->sceneSlot].find(object);
+
+	for (auto i = start;
+		i != materialGroup[object->material->sceneSlot].end();
+		i++)
 	{
-		if (i == object) start = true;
-		if (start)
-			for (int j = 0; j < i->geometry->indeciesCount; j++)
-				i->geometry->transformedIndecies[j] = i->geometry->transformedIndecies[j] - object->geometry->verticiesCount;
+		for (int j = 0; j < (*i)->geometry->indeciesCount; j++)
+			(*i)->geometry->transformedIndecies[j] = object->geometry->transformedIndecies[j] - object->geometry->verticiesCount;
 	}
-	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
-		materialGroup[object->material->sceneSlot].end(),
-		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
-	delete object;
+
+	materialGroup[object->material->sceneSlot].erase(object);
 }
 
 
@@ -249,13 +248,13 @@ void Scene::Render(float* proj, int width, int height)
 		std::vector <Vertex> batchVerticies;
 		std::vector <unsigned int> batchIndecies;
 
-		for (int j = 0; j < materialGroup[i].size(); j++)
+		for (auto j = materialGroup[i].begin(); j != materialGroup[i].end(); j++)
 		{
-			batchVerticies.insert(batchVerticies.end(), materialGroup[i][j]->geometry->transformedVerticies, 
-				materialGroup[i][j]->geometry->transformedVerticies + materialGroup[i][j]->geometry->verticiesCount);
+			batchVerticies.insert(batchVerticies.end(), (*j)->geometry->transformedVerticies,
+				(*j)->geometry->transformedVerticies + (*j)->geometry->verticiesCount);
 
-			batchIndecies.insert(batchIndecies.end(), materialGroup[i][j]->geometry->transformedIndecies,
-				materialGroup[i][j]->geometry->transformedIndecies + materialGroup[i][j]->geometry->indeciesCount);
+			batchIndecies.insert(batchIndecies.end(), (*j)->geometry->transformedIndecies,
+				(*j)->geometry->transformedIndecies + (*j)->geometry->indeciesCount);
 		}
 
 		glBindVertexArray(vao);
@@ -271,18 +270,20 @@ void Scene::Render(float* proj, int width, int height)
 		bool renderedPoint = false;
 		bool second = false;
 
-		for (int j = 0; j < lights.size(); j++)
+		int count = 0;
+
+		for (auto j = lights.begin(); j != lights.end(); j++)
 		{
-			int type = lights[j]->GetType();
+			int type = (*j)->GetType();
 			if (type == 1)
 			{
-				DirectLight* light = static_cast<DirectLight*>(lights[j]);
+				DirectLight* light = static_cast<DirectLight*>(*j);
 				if (updateLight)
 				{
-					std::string buff = "u_DirectLightColor[" + std::to_string(j) + "]";
+					std::string buff = "u_DirectLightColor[" + std::to_string(count) + "]";
 					ln::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
-					buff = "u_DirectLightDir[" + std::to_string(j) + "]";
+					buff = "u_DirectLightDir[" + std::to_string(count) + "]";
 					ln::vec3 dir = light->GetForward();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 				}
@@ -300,15 +301,15 @@ void Scene::Render(float* proj, int width, int height)
 			}
 			if (type == 2)
 			{
-				PointLight* light = static_cast<PointLight*>(lights[j]);
+				PointLight* light = static_cast<PointLight*>(*j);
 				ln::vec3 position = light->GetPosition();
 				if (updateLight)
 				{
 					materials[i]->Use();
-					std::string buff = "u_PointLightColor[" + std::to_string(j) + "]";
+					std::string buff = "u_PointLightColor[" + std::to_string(count) + "]";
 					ln::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
-					buff = "u_PointLightPos[" + std::to_string(j) + "]";
+					buff = "u_PointLightPos[" + std::to_string(count) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), -position.x, -position.y, -position.z, light->GetDistance());
 				}
 
@@ -327,22 +328,22 @@ void Scene::Render(float* proj, int width, int height)
 			}
 			if (type == 3)
 			{
-				SpotLight* light = static_cast<SpotLight*>(lights[j]);
+				SpotLight* light = static_cast<SpotLight*>(*j);
 				ln::vec3 position = light->GetPosition();
 				if (updateLight)
 				{
-					std::string buff = "u_SpotLightColor[" + std::to_string(j) + "]";
+					std::string buff = "u_SpotLightColor[" + std::to_string(count) + "]";
 					ln::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 
-					buff = "u_SpotLightPos[" + std::to_string(j) + "]";
+					buff = "u_SpotLightPos[" + std::to_string(count) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), position.x, position.y, position.z, light->GetDistance());
 
-					buff = "u_SpotLightDir[" + std::to_string(j) + "]";
+					buff = "u_SpotLightDir[" + std::to_string(count) + "]";
 					ln::vec3 dir = light->GetForward();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 
-					buff = "u_SpotLightAngle[" + std::to_string(j) + "]";
+					buff = "u_SpotLightAngle[" + std::to_string(count) + "]";
 					float angle = light->GetAngle();
 					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(ln::radians(angle-5)),
 						std::cos(ln::radians(angle)));
@@ -358,6 +359,7 @@ void Scene::Render(float* proj, int width, int height)
 				preview.RenderSpotShadow(light->projection, position, directShadowMap, renderedSpot, batchIndecies.size());
 				renderedSpot = true;
 			}
+			count++;
 		}
 
 		preview.Render(materials[i], batchIndecies.size(), width, height);
