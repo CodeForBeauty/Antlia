@@ -1,34 +1,34 @@
 #include "linmath.h"
 
-using namespace ln;
+using namespace lm;
 
 
-float ln::radians(float angle)
+float lm::radians(float angle)
 {
 	return angle * PI / 180;
 }
 
-float ln::dot(vec2 v1, vec2 v2)
+float lm::dot(vec2 v1, vec2 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y;
 }
 
-float ln::dot(vec3 v1, vec3 v2)
+float lm::dot(vec3 v1, vec3 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
-float ln::dot(vec4 v1, vec4 v2)
+float lm::dot(vec4 v1, vec4 v2)
 {
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
 }
 
-float ln::cross(vec2 v1, vec2 v2)
+float lm::cross(vec2 v1, vec2 v2)
 {
 	return v1.x * v2.y - v1.y * v2.x;
 }
 
-vec3 ln::cross(vec3 v1, vec3 v2)
+vec3 lm::cross(vec3 v1, vec3 v2)
 {
 	vec3 out = {};
 	out.x = v1.y * v2.z - v1.z * v2.y;
@@ -38,84 +38,84 @@ vec3 ln::cross(vec3 v1, vec3 v2)
 }
 
 
-float ln::magnitude(vec2 v)
+float lm::magnitude(vec2 v)
 {
 	return std::sqrt(dot(v, v));
 }
 
-float ln::magnitude(vec3 v)
+float lm::magnitude(vec3 v)
 {
 	return std::sqrt(dot(v, v));
 }
 
-float ln::magnitude(vec4 v)
+float lm::magnitude(vec4 v)
 {
 	return std::sqrt(dot(v, v));
 }
 
-vec2 ln::normalize(vec2 v)
+vec2 lm::normalize(vec2 v)
 {
 	return v / magnitude(v);
 }
 
-vec3 ln::normalize(vec3 v)
+vec3 lm::normalize(vec3 v)
 {
 	return v / magnitude(v);
 }
 
-vec4 ln::normalize(vec4 v)
+vec4 lm::normalize(vec4 v)
 {
 	return v / magnitude(v);
 }
 
 
-vec2 ln::mat2::getX()
+vec2 lm::mat2::getX()
 {
 	return { x.x, y.x };
 }
 
-vec2 ln::mat2::getY()
+vec2 lm::mat2::getY()
 {
 	return { x.y, y.y };
 }
 
-vec3 ln::mat3::getX()
+vec3 lm::mat3::getX()
 {
 	return { x.x, y.x, z.x };
 }
 
-vec3 ln::mat3::getY()
+vec3 lm::mat3::getY()
 {
 	return { x.y, y.y, z.y };
 }
 
-vec3 ln::mat3::getZ()
+vec3 lm::mat3::getZ()
 {
 	return { x.z, y.z, z.z };
 }
 
-vec4 ln::mat4::getX()
+vec4 lm::mat4::getX()
 {
 	return { x.x, y.x, z.x, w.x };
 }
 
-vec4 ln::mat4::getY()
+vec4 lm::mat4::getY()
 {
 	return { x.y, y.y, z.y, w.y };
 }
 
-vec4 ln::mat4::getZ()
+vec4 lm::mat4::getZ()
 {
 	return { x.z, y.z, z.z, w.z };
 }
 
-vec4 ln::mat4::getW()
+vec4 lm::mat4::getW()
 {
 	return { x.w, y.w, z.w, w.w };
 }
 
 
-mat4 ln::orthographic(float left, float right, float bottom, float top, float back, float front)
+mat4 lm::orthographic(float left, float right, float bottom, float top, float back, float front)
 {
 	mat4 out = {};
 
@@ -131,7 +131,7 @@ mat4 ln::orthographic(float left, float right, float bottom, float top, float ba
 	return out;
 }
 
-mat4 ln::perspective(float fov, float near, float far, float ratio)
+mat4 lm::perspective(float fov, float near, float far, float ratio)
 {
 	mat4 out = {};
 	out.y.y = 1 / std::tan(fov / 2);
@@ -143,7 +143,7 @@ mat4 ln::perspective(float fov, float near, float far, float ratio)
 	return out;
 }
 
-mat4 ln::lookAt(vec3 at, vec3 eye, vec3 up)
+mat4 lm::lookAt(vec3 at, vec3 eye, vec3 up)
 {
 	mat4 out = {};
 	vec3 zaxis = normalize(at - eye);
@@ -167,7 +167,7 @@ mat4 ln::lookAt(vec3 at, vec3 eye, vec3 up)
 	return out;
 }
 
-mat3 ln::eulerRotation(vec3 degree)
+mat3 lm::eulerRotation(vec3 degree)
 {
 	vec3 theta = { radians(degree.x), radians(degree.y), radians(degree.z) };
 
@@ -190,7 +190,7 @@ mat3 ln::eulerRotation(vec3 degree)
 	return out;
 }
 
-mat4 ln::transform(vec3 position, vec3 rotation)
+mat4 lm::transform(vec3 position, vec3 rotation)
 {
 	mat4 out = eulerRotation(rotation);
 	out.x.w = position.x;
@@ -199,13 +199,13 @@ mat4 ln::transform(vec3 position, vec3 rotation)
 	return out;
 }
 
-vec3 ln::cutVec3(vec4 vec) { return { vec.x, vec.y, vec.z }; }
-vec2 ln::cutVec2(vec4 vec) { return { vec.x, vec.y }; }
-vec2 ln::cutVec2(vec3 vec) { return { vec.x, vec.y }; }
+vec3 lm::cutVec3(vec4 vec) { return { vec.x, vec.y, vec.z }; }
+vec2 lm::cutVec2(vec4 vec) { return { vec.x, vec.y }; }
+vec2 lm::cutVec2(vec3 vec) { return { vec.x, vec.y }; }
 
-mat2 ln::cutMat2(mat4 matrix) { return { cutVec2(matrix.x), cutVec2(matrix.y) }; }
-mat2 ln::cutMat2(mat3 matrix) { return { cutVec2(matrix.x), cutVec2(matrix.y) }; }
-mat3 ln::cutMat3(mat4 matrix) { return { cutVec3(matrix.x), cutVec3(matrix.y), cutVec3(matrix.z) }; }
+mat2 lm::cutMat2(mat4 matrix) { return { cutVec2(matrix.x), cutVec2(matrix.y) }; }
+mat2 lm::cutMat2(mat3 matrix) { return { cutVec2(matrix.x), cutVec2(matrix.y) }; }
+mat3 lm::cutMat3(mat4 matrix) { return { cutVec3(matrix.x), cutVec3(matrix.y), cutVec3(matrix.z) }; }
 
 
 std::ostream& operator <<(std::ostream& os, vec2 vec)

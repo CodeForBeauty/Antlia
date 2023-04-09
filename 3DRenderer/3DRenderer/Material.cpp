@@ -14,13 +14,13 @@ Material::Material(Shader vs, Shader fs, Shader gs)
 	CompileShaders(); 
 }
 
-Material::Material(Shader vs, Shader fs, Shader gs, ln::vec4 albedo) 
+Material::Material(Shader vs, Shader fs, Shader gs, lm::vec4 albedo) 
 	: vs(vs), fs(fs), gs(gs), albedo(albedo)
 {
 	CompileShaders();
 }
 
-Material::Material(ln::vec4 albedo) 
+Material::Material(lm::vec4 albedo) 
 	: albedo(albedo),
 	vs(Shader("shaders/BasicVertex.vert", GL_VERTEX_SHADER)),
 	fs(Shader("shaders/BasicFragment.frag", GL_FRAGMENT_SHADER)),
@@ -68,20 +68,17 @@ void Material::SetCamPos(float x, float y, float z)
 {
 	glUniform3f(camPos, -x, -y, -z);
 }
-void Material::SetCamPos(ln::vec3 position)
+void Material::SetCamPos(lm::vec3 position)
 {
 	glUniform3fv(camPos, 1, -position);
-	//glUniform3fv(camPos, 1, position);
-	//glUniform3f(camPos, -position.x, -position.y, -position.z);
 }
-void Material::SetView(ln::mat4 value)
+void Material::SetView(lm::mat4 value)
 {
 	glUniformMatrix4fv(view, 1, GL_TRUE, value);
 }
-void Material::SetProj(ln::mat4 value)
+void Material::SetProj(lm::mat4 value)
 {
 	glUniformMatrix4fv(proj, 1, GL_TRUE, value);
-	//glUniformMatrix4fv(proj, 1, GL_TRUE, &value.x.x);
 }
 
 
@@ -93,7 +90,7 @@ void Material::SetAlbedo(float r, float g, float b, float a)
 	albedo.w = a;
 	glUniform4f(color, r, g, b, a);
 }
-ln::vec4 Material::GetAlbedo()
+lm::vec4 Material::GetAlbedo()
 {
 	return albedo;
 }

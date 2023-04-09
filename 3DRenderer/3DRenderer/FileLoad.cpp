@@ -10,9 +10,9 @@ namespace fs = std::filesystem;
 
 std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 {
-	std::vector<ln::vec3> verPos;
-	std::vector<ln::vec3> verNor;
-	std::vector<ln::vec2> verUV;
+	std::vector<lm::vec3> verPos;
+	std::vector<lm::vec3> verNor;
+	std::vector<lm::vec2> verUV;
 
 	std::vector<std::string> names;
 	std::vector<int> materialIdx;
@@ -92,7 +92,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 						}
 						else if (word == "Kd")
 						{
-							ln::vec3 color{};
+							lm::vec3 color{};
 							ss >> word;
 							color.x = std::stof(word);
 							ss >> word;
@@ -232,9 +232,9 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 					std::string vtind;
 					Vertex vertex{};
 
-					ln::vec3 position{};
-					ln::vec3 normal{};
-					ln::vec2 uv{};
+					lm::vec3 position{};
+					lm::vec3 normal{};
+					lm::vec2 uv{};
 					int crnt = 0;
 
 					std::getline(index, vind, '/');
@@ -281,7 +281,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			}
 			else if (word == "vt")
 			{
-				ln::vec2 uv{};
+				lm::vec2 uv{};
 				ss >> word;
 				uv.x = std::stof(word);
 				ss >> word;
@@ -292,7 +292,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			}
 			else if (word == "vn")
 			{
-				ln::vec3 normal{};
+				lm::vec3 normal{};
 				ss >> word;
 				normal.x = std::stof(word);
 				ss >> word;
@@ -303,7 +303,7 @@ std::vector<Mesh*> load::loadObj(std::string filepath, Scene* scene)
 			}
 			else if (word == "v")
 			{
-				ln::vec3 vertex{};
+				lm::vec3 vertex{};
 				ss >> word;
 				vertex.x = std::stof(word);
 				ss >> word;
@@ -351,8 +351,8 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 	std::string line;
 	line = std::to_string(scene->preview.fov) + " " + std::to_string(scene->preview.near) + " " + std::to_string(scene->preview.far) + "\n";
 	file << line;
-	ln::vec3 pos = scene->preview.GetPosition();
-	ln::vec3 rot = scene->preview.GetRotation();
+	lm::vec3 pos = scene->preview.GetPosition();
+	lm::vec3 rot = scene->preview.GetRotation();
 	line = std::to_string(pos.x) + " " + std::to_string(pos.y) + " " + std::to_string(pos.z) + "\n";
 	file << line;
 	line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
@@ -367,7 +367,7 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 	line = std::to_string(rot.x) + " " + std::to_string(rot.y) + " " + std::to_string(rot.z) + "\n";
 	file << line;
 
-	ln::vec4 color;
+	lm::vec4 color;
 	for (Light* light : scene->lights)
 	{
 		int type = light->GetType();
@@ -425,7 +425,7 @@ bool load::SaveScene(std::string filepath, Scene* scene)
 	}
 	file << "entity\n";
 
-	ln::vec3 scale;
+	lm::vec3 scale;
 	for (Entity* entity : scene->entities)
 	{
 		pos = entity->GetPosition();
@@ -501,7 +501,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	scene->preview.far = far;
 
 	file >> line;
-	ln::vec3 pos;
+	lm::vec3 pos;
 	ss = std::stringstream(line);
 	ss >> word;
 	pos.x = std::stof(word);
@@ -512,7 +512,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	scene->preview.SetPosition(pos);
 
 	file >> line;
-	ln::vec3 rot;
+	lm::vec3 rot;
 	ss = std::stringstream(line);
 	ss >> word;
 	rot.x = std::stof(word);
@@ -555,7 +555,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	scene->renderCamera.SetRotation(rot);
 
 
-	ln::vec3 color;
+	lm::vec3 color;
 	while (true)
 	{
 		file >> line;
@@ -630,7 +630,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 	}
 	while (true)
 	{
-		ln::vec4 albedo;
+		lm::vec4 albedo;
 		file >> line;
 		if (line == "entity") break;
 		ss = std::stringstream(line);
@@ -669,7 +669,7 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 
 		scene->AddMaterial(mat);
 	}
-	ln::vec3 scale;
+	lm::vec3 scale;
 	while (true)
 	{
 		file >> line;
@@ -747,26 +747,26 @@ bool load::LoadScene(std::string filepath, Scene* scene)
 		Vertex* verticies = new Vertex[verticiesCount];
 		for (int i = 0; i < verticiesCount; i++)
 		{
-			ln::vec3 pos{};
+			lm::vec3 pos{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> pos.x;
 			ss >> pos.y;
 			ss >> pos.z;
-			ln::vec3 normal{};
+			lm::vec3 normal{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> normal.x;
 			ss >> normal.y;
 			ss >> normal.z;
-			ln::vec4 color{};
+			lm::vec4 color{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> color.x;
 			ss >> color.y;
 			ss >> color.z;
 			ss >> color.w;
-			ln::vec2 uv{};
+			lm::vec2 uv{};
 			file >> line;
 			ss = std::stringstream(line);
 			ss >> uv.x;

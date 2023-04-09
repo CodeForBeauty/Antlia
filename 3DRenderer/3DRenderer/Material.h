@@ -16,12 +16,12 @@ class Material
 public:
 	Material();
 	Material(Shader vs, Shader fs, Shader gs);
-	Material(Shader vs, Shader fs, Shader gs, ln::vec4 albedo);
-	Material(ln::vec4 albedo);
+	Material(Shader vs, Shader fs, Shader gs, lm::vec4 albedo);
+	Material(lm::vec4 albedo);
 	~Material();
 
 	void SetAlbedo(float r, float g, float b, float a);
-	ln::vec4 GetAlbedo();
+	lm::vec4 GetAlbedo();
 	void SetMetalic(float value);
 	float GetMetalic();
 	void SetRoughness(float value);
@@ -39,9 +39,9 @@ public:
 	void Bind();
 
 	void SetCamPos(float x, float y, float z);
-	void SetCamPos(ln::vec3 position);
-	void SetView(ln::mat4 value);
-	void SetProj(ln::mat4 value);
+	void SetCamPos(lm::vec3 position);
+	void SetView(lm::mat4 value);
+	void SetProj(lm::mat4 value);
 	unsigned int program;
 	unsigned int sceneSlot;
 	Texture* texture;
@@ -54,7 +54,7 @@ private:
 	Shader vs;
 	Shader fs;
 	Shader gs;
-	ln::vec4 albedo = {1, 1, 1, 1};
+	lm::vec4 albedo = {1, 1, 1, 1};
 	float metalic = 0.0;
 	float roughness = 0.5;
 	float specular = 0.5;

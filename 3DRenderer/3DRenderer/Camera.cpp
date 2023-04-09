@@ -6,12 +6,12 @@
 
 
 Camera::Camera(float fov, float near, float far, int width, int height)
-	: fov(ln::radians(fov)), near(near), far(far), width(width), height(height)
+	: fov(lm::radians(fov)), near(near), far(far), width(width), height(height)
 {
 	int AAsamples = 4;
 
-	camProjection = ln::perspective(fov, near, far, (float)height/width);
-	camMetricies = ln::eulerRotation(rotation);
+	camProjection = lm::perspective(fov, near, far, (float)height/width);
+	camMetricies = lm::eulerRotation(rotation);
 	camMetricies.w.w = 1.0f;
 
 	// Creating framebuffers for post processing and antialiasing.
@@ -127,7 +127,7 @@ Camera::Camera(float fov, float near, float far, int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Camera::SetPosition(ln::vec3 pos)
+void Camera::SetPosition(lm::vec3 pos)
 {
 	position = pos;
 	update = true;
@@ -138,7 +138,7 @@ void Camera::SetPosition(ln::vec3 pos)
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
-void Camera::Move(ln::vec3 offset)
+void Camera::Move(lm::vec3 offset)
 {
 	position += offset;
 	update = true;
@@ -149,13 +149,14 @@ void Camera::Move(ln::vec3 offset)
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
-void Camera::SetRotation(ln::vec3 rot)
+void Camera::SetRotation(lm::vec3 rot)
 {
 	rotation = rot;
 	update = true;
-	ln::mat3 tmpMat = ln::eulerRotation(rotation);
-	forward = tmpMat * ln::vec3(0, 0, 1);
-	right = tmpMat * ln::vec3(1, 0, 0);
+	lm::mat3 tmpMat = lm::eulerRotation(rotation);
+	forward = tmpMat * lm::vec3(0, 0, 1);
+	right = tmpMat * lm::vec3(1, 0, 0);
+	up = tmpMat * lm::vec3(0, 1, 0);
 	camMetricies = tmpMat;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
@@ -164,13 +165,14 @@ void Camera::SetRotation(ln::vec3 rot)
 	glUniform3fv(glGetUniformLocation(cubeShadowRendererProgram, "u_CamPos"), 1, -position);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
-void Camera::Rotate(ln::vec3 offset)
+void Camera::Rotate(lm::vec3 offset)
 {
 	rotation += offset;
 	update = true;
-	ln::mat3 tmpMat = ln::eulerRotation(rotation);
-	forward = tmpMat * ln::vec3(0, 0, 1);
-	right = tmpMat * ln::vec3(1, 0, 0);
+	lm::mat3 tmpMat = lm::eulerRotation(rotation);
+	forward = tmpMat * lm::vec3(0, 0, 1);
+	right = tmpMat * lm::vec3(1, 0, 0);
+	up = tmpMat * lm::vec3(0, 1, 0);
 	camMetricies = tmpMat;
 	glUseProgram(shadowRendererProgram);
 	glUniform3fv(glGetUniformLocation(shadowRendererProgram, "u_CamPos"), 1, -position);
@@ -180,18 +182,18 @@ void Camera::Rotate(ln::vec3 offset)
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_View"), 1, GL_TRUE, camMetricies);
 }
 
-ln::vec3 Camera::GetPosition() const
+lm::vec3 Camera::GetPosition() const
 {
 	return position;
 }
-ln::vec3 Camera::GetRotation() const
+lm::vec3 Camera::GetRotation() const
 {
 	return rotation;
 }
 
 void Camera::UpdateProjection(int windowWidth, int windowHeight)
 {
-	camProjection = ln::perspective(fov, near, far, (float)windowHeight / windowWidth);
+	camProjection = lm::perspective(fov, near, far, (float)windowHeight / windowWidth);
 	glUseProgram(cubeShadowRendererProgram);
 	glUniformMatrix4fv(glGetUniformLocation(cubeShadowRendererProgram, "u_Proj"), 1, GL_TRUE, camProjection);
 	glUseProgram(shadowRendererProgram);
@@ -233,7 +235,7 @@ void Camera::Render(Material* material, int dataSize, int windowWidth, int windo
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void Camera::RenderDirectShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize)
+void Camera::RenderDirectShadow(lm::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererDirectFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -261,7 +263,7 @@ void Camera::RenderDirectShadow(ln::mat4 lightProj, unsigned int shadowMap, bool
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Camera::RenderSpotShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize)
+void Camera::RenderSpotShadow(lm::mat4 lightProj, lm::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererSpotFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -281,7 +283,7 @@ void Camera::RenderSpotShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned in
 
 	glDrawElements(GL_TRIANGLES, dataSize, GL_UNSIGNED_INT, nullptr);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, shadowRendererSpotFBO);//shadowRendererSpotFBO
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, shadowRendererSpotFBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, shadowStoreSpotFBO);
 	glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	glActiveTexture(GL_TEXTURE0);
@@ -289,7 +291,7 @@ void Camera::RenderSpotShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned in
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Camera::RenderPointShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize)
+void Camera::RenderPointShadow(lm::mat4 lightProj, lm::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowRendererPointFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);

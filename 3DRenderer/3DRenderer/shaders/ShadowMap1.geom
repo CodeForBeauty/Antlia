@@ -15,10 +15,10 @@ void main()
 		for (int i = 0; i < 3; i++)
 		{
 			fragPos = gl_in[i].gl_Position;
-			fragPos.xz = -fragPos.xz;
+			fragPos.x = -fragPos.x;
 			gl_Position = matrix[face] * fragPos;
-			gl_Position.z /= gl_Position.w;
-			//gl_Position.z = -gl_Position.z;
+			gl_Position.z /= -gl_Position.w;
+			//gl_Position.xyz = -gl_Position.xyz;
 			EmitVertex();
 		}
 		EndPrimitive();

@@ -4,7 +4,7 @@
 
 const double PI = 3.14159265359;
 
-namespace ln
+namespace lm
 {
 	float radians(float angle);
 
@@ -300,14 +300,14 @@ namespace ln
 	mat3 cutMat3(mat4 matrix);
 }
 
-std::ostream& operator <<(std::ostream& os, ln::vec2 vec);
-std::ostream& operator <<(std::ostream& os, ln::vec3 vec);
-std::ostream& operator <<(std::ostream& os, ln::vec4 vec);
+std::ostream& operator <<(std::ostream& os, lm::vec2 vec);
+std::ostream& operator <<(std::ostream& os, lm::vec3 vec);
+std::ostream& operator <<(std::ostream& os, lm::vec4 vec);
 
 struct Vertex
 {
-	ln::vec3 position;
-	ln::vec3 normal;
-	ln::vec2 uv;
-	ln::vec4 color;
+	lm::vec3 position;
+	lm::vec3 normal;
+	lm::vec2 uv;
+	lm::vec4 color;
 };

@@ -19,6 +19,7 @@ void main()
 {
 	float shadow = 0.0f;
 	vec3 lightUV = v_Pos - u_Pos;
+	//lightUV.x = -lightUV.x;
 	float currentDepth = length(v_Pos - u_Pos);
 	vec2 screenSpace = (v_ScreenPos.xy / v_ScreenPos.w) * 0.5f + 0.5f;
 	
@@ -37,7 +38,7 @@ void main()
 			{
 				float closestDepth = texture(u_ShadowMap, lightUV + vec3(x, y, z) * pixelSize).r;
 				closestDepth *= 10;
-				if (currentDepth < closestDepth + 0.05f)
+				if (currentDepth < closestDepth + 0.01f)
 					shadow += 1.0f + previous / 2;
 				shadow += previous;
 			}

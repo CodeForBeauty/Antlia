@@ -8,30 +8,24 @@ class Camera
 public:
 	Camera(float fov, float near, float far, int width, int height);
 
-	void SetPosition(ln::vec3 position);
-	void Move(ln::vec3 offset);
-	void SetRotation(ln::vec3 rotation);
-	void Rotate(ln::vec3 offset);
+	void SetPosition(lm::vec3 position);
+	void Move(lm::vec3 offset);
+	void SetRotation(lm::vec3 rotation);
+	void Rotate(lm::vec3 offset);
 
-	ln::vec3 GetPosition() const;
-	ln::vec3 GetRotation() const;
+	lm::vec3 GetPosition() const;
+	lm::vec3 GetRotation() const;
 
 	void UpdateProjection(int windowWidth, int windowHeight);
 
 	void Render(Material* material, int dataSize, int windowWidth, int windowHeight);
 
-	void RenderDirectShadow(ln::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize);
-	void RenderSpotShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize);
-	void RenderPointShadow(ln::mat4 lightProj, ln::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize);
-
-	unsigned int GetDirectShadow();
-	unsigned int GetSpotShadow();
-	unsigned int GetPointShadow();
+	void RenderDirectShadow(lm::mat4 lightProj, unsigned int shadowMap, bool hasPrevious, int dataSize);
+	void RenderSpotShadow(lm::mat4 lightProj, lm::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize);
+	void RenderPointShadow(lm::mat4 lightProj, lm::vec3 lightPos, unsigned int shadowMap, bool hasPrevious, int dataSize);
 
 	void ClearBuffers();
-
 	void BindBuffer();
-
 
 	float fov;
 	float near;
@@ -40,15 +34,16 @@ public:
 
 	bool update = true;
 
-	ln::mat4 camMetricies = {};
-	ln::mat4 camProjection = {};
+	lm::mat4 camMetricies = {};
+	lm::mat4 camProjection = {};
 
-	ln::vec3 forward = ln::vec3(0, 0, 1);
-	ln::vec3 right = ln::vec3(1, 0, 0);
+	lm::vec3 forward = { 0, 0, 1 };
+	lm::vec3 right = { 1, 0, 0 };
+	lm::vec3 up = { 0, 1, 0 };
 
 private:
-	ln::vec3 position = {};
-	ln::vec3 rotation = {};
+	lm::vec3 position = {};
+	lm::vec3 rotation = {};
 
 	unsigned int rectVAO, rectVBO;
 

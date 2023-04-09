@@ -33,7 +33,6 @@ Scene::Scene()
 
 	glActiveTexture(GL_TEXTURE0);
 	glGenFramebuffers(1, &directShadowFBO);
-	//directShadowMap = CreateNewTexture(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT, GL_NEAREST, GL_CLAMP_TO_BORDER);
 	glGenTextures(1, &directShadowMap);
 	glBindTexture(GL_TEXTURE_2D, directShadowMap);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -59,7 +58,6 @@ Scene::Scene()
 
 	glGenFramebuffers(1, &cubeShadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, cubeShadowFBO);
-	//cubeShadowMap = CreateNewCubeMap(shadowWidth, shadowHeight, GL_DEPTH_COMPONENT, GL_FLOAT);
 	glGenTextures(1, &cubeShadowMap);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeShadowMap);
 	for (int i = 0; i < 6; i++)
@@ -82,15 +80,15 @@ Scene::Scene()
 	glValidateProgram(cubeShadowProgram);
 	glUseProgram(cubeShadowProgram);
 	
-	ln::mat4 perspective = ln::perspective(ln::radians(90), 0.1f, 10.0f);
-	ln::mat4 metricies[6] =
+	lm::mat4 perspective = lm::perspective(lm::radians(90), 0.1f, 10.0f);
+	lm::mat4 metricies[6] =
 	{
-		ln::lookAt({0, 0, 0}, { 1,  0,  0}, {0, -1,  0}) * perspective,
-		ln::lookAt({0, 0, 0}, {-1,  0,  0}, {0, -1,  0}) * perspective,
-		ln::lookAt({0, 0, 0}, { 0,  1,  0}, {0,  0,  1}) * perspective,
-		ln::lookAt({0, 0, 0}, { 0, -1,  0}, {0,  0, -1}) * perspective,
-		ln::lookAt({0, 0, 0}, { 0,  0,  1}, {0, -1,  0}) * perspective,
-		ln::lookAt({0, 0, 0}, { 0,  0, -1}, {0, -1,  0}) * perspective,
+		lm::lookAt({0, 0, 0}, { 1,  0,  0}, {0, -1,  0}) * perspective,
+		lm::lookAt({0, 0, 0}, {-1,  0,  0}, {0, -1,  0}) * perspective,
+		lm::lookAt({0, 0, 0}, { 0, -1,  0}, {0,  0, 1}) * perspective,
+		lm::lookAt({0, 0, 0}, { 0,  1,  0}, {0,  0,  -1}) * perspective,
+		lm::lookAt({0, 0, 0}, { 0,  0,  1}, {0, -1,  0}) * perspective,
+		lm::lookAt({0, 0, 0}, { 0,  0, -1}, {0, -1,  0}) * perspective,
 	};
 
 
@@ -222,7 +220,7 @@ void Scene::DeleteObject(Mesh* object)
 }
 
 
-void Scene::Render(float* proj, int width, int height)
+void Scene::Render(int width, int height)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -281,13 +279,13 @@ void Scene::Render(float* proj, int width, int height)
 				if (updateLight)
 				{
 					std::string buff = "u_DirectLightColor[" + std::to_string(count) + "]";
-					ln::vec4 color = light->GetColor();
+					lm::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 					buff = "u_DirectLightDir[" + std::to_string(count) + "]";
-					ln::vec3 dir = light->GetForward();
+					lm::vec3 dir = light->GetForward();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 				}
-				ln::vec3 camPos = preview.GetPosition();
+				lm::vec3 camPos = preview.GetPosition();
 				glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
 				glUseProgram(directShadowProgram);
 				glClear(GL_DEPTH_BUFFER_BIT);
@@ -302,12 +300,12 @@ void Scene::Render(float* proj, int width, int height)
 			if (type == 2)
 			{
 				PointLight* light = static_cast<PointLight*>(*j);
-				ln::vec3 position = light->GetPosition();
+				lm::vec3 position = light->GetPosition();
 				if (updateLight)
 				{
 					materials[i]->Use();
 					std::string buff = "u_PointLightColor[" + std::to_string(count) + "]";
-					ln::vec4 color = light->GetColor();
+					lm::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 					buff = "u_PointLightPos[" + std::to_string(count) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), -position.x, -position.y, -position.z, light->GetDistance());
@@ -329,24 +327,24 @@ void Scene::Render(float* proj, int width, int height)
 			if (type == 3)
 			{
 				SpotLight* light = static_cast<SpotLight*>(*j);
-				ln::vec3 position = light->GetPosition();
+				lm::vec3 position = light->GetPosition();
 				if (updateLight)
 				{
 					std::string buff = "u_SpotLightColor[" + std::to_string(count) + "]";
-					ln::vec4 color = light->GetColor();
+					lm::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 
 					buff = "u_SpotLightPos[" + std::to_string(count) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), position.x, position.y, position.z, light->GetDistance());
 
 					buff = "u_SpotLightDir[" + std::to_string(count) + "]";
-					ln::vec3 dir = light->GetForward();
+					lm::vec3 dir = light->GetForward();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 
 					buff = "u_SpotLightAngle[" + std::to_string(count) + "]";
 					float angle = light->GetAngle();
-					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(ln::radians(angle-5)),
-						std::cos(ln::radians(angle)));
+					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(lm::radians(angle-5)),
+						std::cos(lm::radians(angle)));
 				}
 				glBindFramebuffer(GL_FRAMEBUFFER, directShadowFBO);
 				glUseProgram(directShadowProgram);

@@ -8,29 +8,29 @@ class Entity
 {
 public:
 	Entity();
-	Entity(ln::vec3 position);
-	Entity(ln::vec3 position, ln::vec3 rotation);
-	Entity(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
+	Entity(lm::vec3 position);
+	Entity(lm::vec3 position, lm::vec3 rotation);
+	Entity(lm::vec3 position, lm::vec3 rotation, lm::vec3 scale);
 	~Entity();
 
-	virtual void SetPosition(ln::vec3 position);
-	virtual void Move(ln::vec3 offset);
-	virtual void SetRotation(ln::vec3 rotation);
-	virtual void Rotate(ln::vec3 offset);
-	virtual void SetScale(ln::vec3 scale);
-	virtual void AddScale(ln::vec3 offset);
+	virtual void SetPosition(lm::vec3 position);
+	virtual void Move(lm::vec3 offset);
+	virtual void SetRotation(lm::vec3 rotation);
+	virtual void Rotate(lm::vec3 offset);
+	virtual void SetScale(lm::vec3 scale);
+	virtual void AddScale(lm::vec3 offset);
 
-	ln::vec3 GetPosition() const;
-	ln::vec3 GetRotation() const;
-	ln::vec3 GetScale() const;
+	lm::vec3 GetPosition() const;
+	lm::vec3 GetRotation() const;
+	lm::vec3 GetScale() const;
 
 	void SetName(std::string newName);
 	std::string GetName() const;
 
 protected:
-	ln::vec3 position;
-	ln::vec3 rotation;
-	ln::vec3 scale;
+	lm::vec3 position;
+	lm::vec3 rotation;
+	lm::vec3 scale;
 	std::string name = "entity";
 };
 
@@ -52,20 +52,20 @@ class Mesh : public Entity
 public:
 	Mesh();
 	Mesh(Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(ln::vec3 position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(ln::vec3 position, ln::vec3 rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
-	Mesh(ln::vec3 position);
-	Mesh(ln::vec3 position, ln::vec3 rotation);
-	Mesh(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
+	Mesh(lm::vec3 position, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(lm::vec3 position, lm::vec3 rotation, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(lm::vec3 position, lm::vec3 rotation, lm::vec3 scale, Vertex* verticies, unsigned int* indecies, unsigned int verticiesCount, unsigned int indeciesCount);
+	Mesh(lm::vec3 position);
+	Mesh(lm::vec3 position, lm::vec3 rotation);
+	Mesh(lm::vec3 position, lm::vec3 rotation, lm::vec3 scale);
 	~Mesh();
 
-	void SetPosition(ln::vec3 position) override;
-	void Move(ln::vec3 offset) override;
-	void SetRotation(ln::vec3 rotation) override;
-	void Rotate(ln::vec3 offset) override;
-	void SetScale(ln::vec3 scale) override;
-	void AddScale(ln::vec3 offset) override;
+	void SetPosition(lm::vec3 position) override;
+	void Move(lm::vec3 offset) override;
+	void SetRotation(lm::vec3 rotation) override;
+	void Rotate(lm::vec3 offset) override;
+	void SetScale(lm::vec3 scale) override;
+	void AddScale(lm::vec3 offset) override;
 
 	Geometry* geometry = new Geometry(
 		new Vertex[3]{ { {  0.5,  0.5, 0 }, {0.0, 0.0, 1.0}, {1.0, 1.0}},
@@ -76,16 +76,16 @@ public:
 	);
 	Material* material;
 	bool isSmooth = true;
-	ln::mat4 transformMatrix = {};
+	lm::mat4 transformMatrix = {};
 };
 
 class Plane : public Mesh
 {
 public:
 	Plane();
-	Plane(ln::vec3 position);
-	Plane(ln::vec3 position, ln::vec3 rotation);
-	Plane(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
+	Plane(lm::vec3 position);
+	Plane(lm::vec3 position, lm::vec3 rotation);
+	Plane(lm::vec3 position, lm::vec3 rotation, lm::vec3 scale);
 private:
 	void setGeometry();
 };
@@ -94,9 +94,9 @@ class Cube : public Mesh
 {
 public:
 	Cube();
-	Cube(ln::vec3 position);
-	Cube(ln::vec3 position, ln::vec3 rotation);
-	Cube(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale);
+	Cube(lm::vec3 position);
+	Cube(lm::vec3 position, lm::vec3 rotation);
+	Cube(lm::vec3 position, lm::vec3 rotation, lm::vec3 scale);
 private:
 	void setGeometry();
 };
@@ -105,9 +105,9 @@ class Sphere : public Mesh
 {
 public:
 	Sphere(int resolution = 10);
-	Sphere(ln::vec3 position, int resolution = 10);
-	Sphere(ln::vec3 position, ln::vec3 rotation, int resolution = 10);
-	Sphere(ln::vec3 position, ln::vec3 rotation, ln::vec3 scale, int resolution = 10);
+	Sphere(lm::vec3 position, int resolution = 10);
+	Sphere(lm::vec3 position, lm::vec3 rotation, int resolution = 10);
+	Sphere(lm::vec3 position, lm::vec3 rotation, lm::vec3 scale, int resolution = 10);
 private:
 	void setGeometry(int resolution);
 };
