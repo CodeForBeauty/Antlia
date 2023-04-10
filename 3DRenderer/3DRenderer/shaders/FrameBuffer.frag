@@ -28,5 +28,4 @@ void main()
 	color = texture(u_ScreenTex, v_TexCoord);//vec4(v_TexCoord, 0, 0);//
 	for (int i = 0; i < 9; i++)
 		col += vec3(texture(u_ScreenTex, v_TexCoord.st + offsets[i])) * kernel[i];
-	//color = vec4(v_TexCoord, 0.0f, 1.0f);
 }

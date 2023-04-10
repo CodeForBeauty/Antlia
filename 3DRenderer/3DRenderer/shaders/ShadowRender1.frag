@@ -19,7 +19,6 @@ void main()
 {
 	float shadow = 0.0f;
 	vec3 lightUV = v_Pos - u_Pos;
-	//lightUV.x = -lightUV.x;
 	float currentDepth = length(v_Pos - u_Pos);
 	vec2 screenSpace = (v_ScreenPos.xy / v_ScreenPos.w) * 0.5f + 0.5f;
 	
@@ -45,9 +44,5 @@ void main()
 		}
 	}
 	shadow /= pow((sampleRadius * 2 + 1), 3);
-	//shadow = 1 - shadow;
 	color = vec4(shadow, shadow, shadow, 1.0f);
-	//color = vec4(texture(u_ShadowMap, lightUV).r);
-	//color = vec4(lightUV.y);
-	//color = vec4(currentDepth/10);
 }

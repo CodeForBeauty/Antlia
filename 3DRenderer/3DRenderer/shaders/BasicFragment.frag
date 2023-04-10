@@ -138,7 +138,6 @@ vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float i
 	float a = 0.1 / distance;
 	float b = 0.1;
 	float intens = intensity / (a * (dist * dist) + b * dist + 1.0f);
-	//float intens = intensity / (a * (dist * dist) + 1.0f);
 	vec3 radiance = lightColor * intens;
 
 	vec3 lightDir = normalize(lightVec);
@@ -172,7 +171,6 @@ void main()
 	float specular = (texture(u_SpecularTexture, v_TexCoord).r * u_UseSpecTex) + (u_Specular * (1 - u_UseSpecTex));
 	float metalic = (texture(u_MetalicTexture, v_TexCoord).r * u_UseMetalTex) + (u_Metalic * (1 - u_UseMetalTex));
 	float roughness = (texture(u_RoughnessTexture, v_TexCoord).r * u_UseRoughTex) + (u_Roughness * (1 - u_UseRoughTex));
-	//float normal = (texture(u_NormalTexture, v_TexCoord) * u_UseSpecTex) + (u_Specular * (1 - u_UseSpecTex))
 	vec3 normal;
 	if (u_UseNormTex == 1)
 	{
@@ -224,9 +222,7 @@ void main()
 
 	vec4 ambient = vec4(0.1, 0.1, 0.1, 1.0) * albedo;
 	
-	//shadow.x = 1.0f;
 
 	color = ambient + vec4(totalLight, 1.0);
 	color.rgb = pow(color.rgb, vec3(1 / gamma));
-	//color = vec4(shadow3);
 }

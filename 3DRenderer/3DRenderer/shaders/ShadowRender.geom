@@ -25,7 +25,6 @@ void main()
 		gl_Position = data_in[i].projection * (data_in[i].view * vec4(data_in[i].pos + data_in[i].camPos, 1));
 		v_ScreenPos = gl_Position;
 		gl_Position.z /=  -gl_Position.w;
-		//gl_Position.z = -gl_Position.z;
 		v_CamPos = data_in[i].camPos;
 		v_Pos = data_in[i].pos;
 		v_LightPos = data_in[i].lightPos;

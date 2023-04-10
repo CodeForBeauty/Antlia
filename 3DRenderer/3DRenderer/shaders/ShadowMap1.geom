@@ -18,7 +18,6 @@ void main()
 			fragPos.x = -fragPos.x;
 			gl_Position = matrix[face] * fragPos;
 			gl_Position.z /= -gl_Position.w;
-			//gl_Position.xyz = -gl_Position.xyz;
 			EmitVertex();
 		}
 		EndPrimitive();
