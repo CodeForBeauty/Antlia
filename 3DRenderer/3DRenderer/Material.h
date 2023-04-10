@@ -38,6 +38,8 @@ public:
 	void Use();
 	void Bind();
 
+	void ClearLights();
+
 	void SetCamPos(float x, float y, float z);
 	void SetCamPos(lm::vec3 position);
 	void SetView(lm::mat4 value);

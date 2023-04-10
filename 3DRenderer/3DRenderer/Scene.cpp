@@ -236,6 +236,7 @@ void Scene::Render(int width, int height)
 		preview.UpdateProjection(width, height);
 		materials[i]->Use();
 		materials[i]->SetProj(preview.camProjection);
+		materials[i]->ClearLights();
 
 		if (preview.update)
 		{
@@ -270,6 +271,11 @@ void Scene::Render(int width, int height)
 
 		int count = 0;
 
+		int countDirect = 0;
+		int countPoint = 0;
+		int countSpot = 0;
+
+
 		for (auto j = lights.begin(); j != lights.end(); j++)
 		{
 			int type = (*j)->GetType();
@@ -278,10 +284,11 @@ void Scene::Render(int width, int height)
 				DirectLight* light = static_cast<DirectLight*>(*j);
 				if (updateLight)
 				{
-					std::string buff = "u_DirectLightColor[" + std::to_string(count) + "]";
+					materials[i]->Use();
+					std::string buff = "u_DirectLightColor[" + std::to_string(countDirect) + "]";
 					lm::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
-					buff = "u_DirectLightDir[" + std::to_string(count) + "]";
+					buff = "u_DirectLightDir[" + std::to_string(countDirect) + "]";
 					lm::vec3 dir = light->GetForward();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 				}
@@ -296,6 +303,7 @@ void Scene::Render(int width, int height)
 				
 				preview.RenderDirectShadow(light->projection, directShadowMap, rendered, batchIndecies.size());
 				rendered = true;
+				countDirect++;
 			}
 			if (type == 2)
 			{
@@ -304,10 +312,10 @@ void Scene::Render(int width, int height)
 				if (updateLight)
 				{
 					materials[i]->Use();
-					std::string buff = "u_PointLightColor[" + std::to_string(count) + "]";
+					std::string buff = "u_PointLightColor[" + std::to_string(countPoint) + "]";
 					lm::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
-					buff = "u_PointLightPos[" + std::to_string(count) + "]";
+					buff = "u_PointLightPos[" + std::to_string(countPoint) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), -position.x, -position.y, -position.z, light->GetDistance());
 				}
 
@@ -323,6 +331,7 @@ void Scene::Render(int width, int height)
 
 				preview.RenderPointShadow(light->projection, position, cubeShadowMap, renderedPoint, batchIndecies.size());
 				renderedPoint = true;
+				countPoint++;
 			}
 			if (type == 3)
 			{
@@ -330,18 +339,19 @@ void Scene::Render(int width, int height)
 				lm::vec3 position = light->GetPosition();
 				if (updateLight)
 				{
-					std::string buff = "u_SpotLightColor[" + std::to_string(count) + "]";
+					materials[i]->Use();
+					std::string buff = "u_SpotLightColor[" + std::to_string(countSpot) + "]";
 					lm::vec4 color = light->GetColor();
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), color.x, color.y, color.z, light->intensity);
 
-					buff = "u_SpotLightPos[" + std::to_string(count) + "]";
+					buff = "u_SpotLightPos[" + std::to_string(countSpot) + "]";
 					glUniform4f(glGetUniformLocation(materials[i]->program, buff.c_str()), position.x, position.y, position.z, light->GetDistance());
 
-					buff = "u_SpotLightDir[" + std::to_string(count) + "]";
+					buff = "u_SpotLightDir[" + std::to_string(countSpot) + "]";
 					lm::vec3 dir = light->GetForward();
 					glUniform3f(glGetUniformLocation(materials[i]->program, buff.c_str()), dir.x, dir.y, dir.z);
 
-					buff = "u_SpotLightAngle[" + std::to_string(count) + "]";
+					buff = "u_SpotLightAngle[" + std::to_string(countSpot) + "]";
 					float angle = light->GetAngle();
 					glUniform2f(glGetUniformLocation(materials[i]->program, buff.c_str()), std::cos(lm::radians(angle-5)),
 						std::cos(lm::radians(angle)));
@@ -356,6 +366,7 @@ void Scene::Render(int width, int height)
 
 				preview.RenderSpotShadow(light->projection, position, directShadowMap, renderedSpot, batchIndecies.size());
 				renderedSpot = true;
+				countSpot++;
 			}
 			count++;
 		}

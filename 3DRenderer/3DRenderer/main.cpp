@@ -50,8 +50,8 @@ int main(void)
     mat2->SetSpecular(0.5f);
     mat2->SetAlbedo(0.8, 0.2, 0.2, 1.0);
 
-    DirectLight* dirLight = new DirectLight({ 0.8, 0.8, 1 });
-    SpotLight* spotLight = new SpotLight({ 1, 0, 0 });
+    DirectLight* dirLight = new DirectLight({ 0, 0, 1 });
+    SpotLight* spotLight = new SpotLight({ 0, 1, 0 });
     PointLight* pointLight = new PointLight({ 1, 0, 0 });
 
     spotLight->SetPosition({ 0, 5, 0 });
@@ -80,6 +80,9 @@ int main(void)
 
     std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", &scene);
     Mesh* suzanne = objs[0];
+
+    for (Mesh* i : objs)
+        std::cout << i->GetName() << std::endl;
 
 
     glEnable(GL_DEPTH_TEST);

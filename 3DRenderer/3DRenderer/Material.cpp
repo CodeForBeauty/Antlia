@@ -194,3 +194,23 @@ void Material:: Bind()
 		glUniform1i(glGetUniformLocation(program, "u_UseMetalTex"), 1);
 	} else glUniform1i(glGetUniformLocation(program, "u_UseMetalTex"), 0);
 }
+
+void Material::ClearLights()
+{
+	for (int i = 0; i < 4; i++)
+	{
+		std::string buff = "u_DirectLightColor[" + std::to_string(i) + "]";
+		glUniform4f(glGetUniformLocation(program, buff.c_str()), 0, 0, 0, 0);
+		buff = "u_PointLightColor[" + std::to_string(i) + "]";
+		glUniform4f(glGetUniformLocation(program, buff.c_str()), 0, 0, 0, 0);
+		buff = "u_SpotLightColor[" + std::to_string(i) + "]";
+		glUniform4f(glGetUniformLocation(program, buff.c_str()), 0, 0, 0, 0);
+	}
+	for (int i = 4; i < 8; i++)
+	{
+		std::string buff = "u_PointLightColor[" + std::to_string(i) + "]";
+		glUniform4f(glGetUniformLocation(program, buff.c_str()), 0, 0, 0, 0);
+		buff = "u_SpotLightColor[" + std::to_string(i) + "]";
+		glUniform4f(glGetUniformLocation(program, buff.c_str()), 0, 0, 0, 0);
+	}
+}

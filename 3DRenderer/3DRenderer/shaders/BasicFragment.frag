@@ -162,7 +162,7 @@ vec3 spotLight(vec3 lightColor, vec3 lightVec, vec3 dir, float distance, float i
 	float angle = dot(dir, lightDir);
 	float cone = clamp((angle - outerCone) / (innerCone - outerCone), 0.0f, 1.0f);
 
-	return (KD * albedo / Pi + spec * shadow) * cone * radiance * lightReflect * shadow;
+	return ((KD * albedo / Pi + spec * shadow) * cone * radiance * lightReflect) * shadow;
 }
 
 void main()
@@ -184,14 +184,15 @@ void main()
 
 	vec3 reflectivity = mix(vec3(0.04), vec3(albedo), metalic);
 
-	int lightCount = 1;
+	int lightCount = 0;
 	vec3 totalLight = vec3(0, 0, 0);
+	vec3 totalDirect = vec3(0, 0, 0);
 	float shadow1 = texture(u_ShadowDir, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
 	float shadow2 = texture(u_ShadowSpot, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
 	float shadow3 = texture(u_ShadowPoint, (v_ScreenPos.xy / v_ScreenPos.w + 1.0f) / 2.0f).r;
 	for (int i = 0; i < 8; i++)
 	{
-		if (u_PointLightPos[i].w > 0)
+		if (u_PointLightColor[i].w > 0)
 		{
 			vec3 lightVec = vec3(u_PointLightPos[i]) - v_Pos;
 			totalLight += pointLight(vec3(u_PointLightColor[i]), lightVec, u_PointLightColor[i].w, u_PointLightPos[i].w,

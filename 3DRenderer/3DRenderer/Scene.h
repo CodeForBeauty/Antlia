@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <unordered_set>
+#include <set>
 
 #include "Objects.h"
 #include "Lighting.h"
@@ -33,12 +34,12 @@ public:
 	std::string savePath = "";
 
 	std::unordered_set<Mesh*> objects;
-	std::unordered_set<Light*> lights;
+	std::set <Light*> lights;
 	std::unordered_set<Entity*> entities;
 	std::vector <Material*> materials;
 
 private:
-	std::vector <std::unordered_set <Mesh*>> materialGroup;
+	std::vector <std::set <Mesh*>> materialGroup;
 
 	unsigned int vao, vbo, ibo;
 
