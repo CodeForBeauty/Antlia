@@ -81,8 +81,6 @@ int main(void)
     std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", &scene);
     Mesh* suzanne = objs[0];
 
-    for (Mesh* i : objs)
-        std::cout << i->GetName() << std::endl;
 
 
     glEnable(GL_DEPTH_TEST);

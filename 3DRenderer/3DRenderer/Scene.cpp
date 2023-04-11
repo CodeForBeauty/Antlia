@@ -126,14 +126,14 @@ void Scene::AddObject(Mesh* object)
 	else
 		object->material = materials[0];
 
-	for (auto i = materialGroup[mat].begin(); i != materialGroup[mat].end(); i++)
-		offset += (*i)->geometry->verticiesCount;
+	for (Mesh* i : materialGroup[mat])
+		offset += i->geometry->verticiesCount;
 	
 	for (int i = 0; i < object->geometry->indeciesCount; i++)
 		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
 	
 	objects.insert(object);
-	materialGroup[mat].insert(object);
+	materialGroup[mat].push_back(object);
 }
 
 void Scene::AddEntity(Entity* entity)
@@ -156,25 +156,25 @@ void Scene::AddMaterial(Material* material)
 
 void Scene::SetObjectMaterial(Mesh* object, Material* material)
 {
-	auto start = materialGroup[object->material->sceneSlot].find(object);
-
-	for (auto i = start;
-		i != materialGroup[object->material->sceneSlot].end();
-		i++)
+	bool start = false;
+	for (Mesh* i : materialGroup[object->material->sceneSlot])
 	{
-		for (int j = 0; j < (*i)->geometry->indeciesCount; j++)
-			(*i)->geometry->transformedIndecies[j] -= object->geometry->verticiesCount;
+		if (start)
+			for (int j = 0; j < i->geometry->indeciesCount; j++)
+				i->geometry->transformedIndecies[j] -= object->geometry->verticiesCount;
+		if (i == object) start = true;
 	}
 	
-	materialGroup[object->material->sceneSlot].erase(object);
+	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
+		materialGroup[object->material->sceneSlot].end(),
+		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
 	
-	materialGroup[material->sceneSlot].insert(object);
+	materialGroup[material->sceneSlot].push_back(object);
 	object->material = material;
 
 	int offset = 0;
-	for (auto i = materialGroup[material->sceneSlot].begin();
-		i != materialGroup[material->sceneSlot].end(); i++)
-			offset += (*i)->geometry->verticiesCount;
+	for (Mesh* i : materialGroup[material->sceneSlot])
+		offset += i->geometry->verticiesCount;
 	
 	for (int i = 0; i < object->geometry->indeciesCount; i++)
 		object->geometry->transformedIndecies[i] = object->geometry->indecies[i] + offset;
@@ -183,16 +183,15 @@ void Scene::SetObjectMaterial(Mesh* object, Material* material)
 void Scene::DeleteMaterial(Material* material)
 {
 	int offset = 0;
-	for (auto i = materialGroup[0].begin(); i != materialGroup[0].end(); i++)
-		offset += (*i)->geometry->verticiesCount;
+	for (Mesh* i : materialGroup[0])
+		offset += i->geometry->verticiesCount;
 
-	for (auto i = materialGroup[material->sceneSlot].begin();
-		i != materialGroup[material->sceneSlot].end(); i++)
+	for (Mesh* i : materialGroup[material->sceneSlot])
 	{
-		materialGroup[0].insert(*i);
-		for (int j = 0; j < (*i)->geometry->indeciesCount; j++)
-			(*i)->geometry->transformedIndecies[j] = (*i)->geometry->indecies[j] + offset;
-		offset += (*i)->geometry->indeciesCount;
+		materialGroup[0].push_back(i);
+		for (int j = 0; j < i->geometry->indeciesCount; j++)
+			i->geometry->transformedIndecies[j] = i->geometry->indecies[j] + offset;
+		offset += i->geometry->indeciesCount;
 	}
 	
 	materials.erase(materials.begin() + material->sceneSlot);
@@ -206,17 +205,18 @@ void Scene::DeleteLight(Light* light)
 
 void Scene::DeleteObject(Mesh* object)
 {
-	auto start = materialGroup[object->material->sceneSlot].find(object);
-
-	for (auto i = start;
-		i != materialGroup[object->material->sceneSlot].end();
-		i++)
+	bool start = false;
+	for (Mesh* i : materialGroup[object->material->sceneSlot])
 	{
-		for (int j = 0; j < (*i)->geometry->indeciesCount; j++)
-			(*i)->geometry->transformedIndecies[j] = object->geometry->transformedIndecies[j] - object->geometry->verticiesCount;
+		if (i == object) start = true;
+		if (start)
+			for (int j = 0; j < i->geometry->indeciesCount; j++)
+				i->geometry->transformedIndecies[j] = i->geometry->transformedIndecies[j] - object->geometry->verticiesCount;
 	}
 
-	materialGroup[object->material->sceneSlot].erase(object);
+	materialGroup[object->material->sceneSlot].erase(std::remove_if(materialGroup[object->material->sceneSlot].begin(),
+		materialGroup[object->material->sceneSlot].end(),
+		[&](Mesh* i) { return i == object; }), materialGroup[object->material->sceneSlot].end());
 }
 
 
@@ -247,13 +247,16 @@ void Scene::Render(int width, int height)
 		std::vector <Vertex> batchVerticies;
 		std::vector <unsigned int> batchIndecies;
 
-		for (auto j = materialGroup[i].begin(); j != materialGroup[i].end(); j++)
-		{
-			batchVerticies.insert(batchVerticies.end(), (*j)->geometry->transformedVerticies,
-				(*j)->geometry->transformedVerticies + (*j)->geometry->verticiesCount);
+		int c = 0;
 
-			batchIndecies.insert(batchIndecies.end(), (*j)->geometry->transformedIndecies,
-				(*j)->geometry->transformedIndecies + (*j)->geometry->indeciesCount);
+		for (Mesh* j : materialGroup[i])
+		{
+			batchVerticies.insert(batchVerticies.end(), j->geometry->transformedVerticies,
+				j->geometry->transformedVerticies + j->geometry->verticiesCount);
+
+			batchIndecies.insert(batchIndecies.end(), j->geometry->transformedIndecies,
+				j->geometry->transformedIndecies + j->geometry->indeciesCount);
+			c++;
 		}
 
 		glBindVertexArray(vao);

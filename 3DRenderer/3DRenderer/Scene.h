@@ -39,7 +39,7 @@ public:
 	std::vector <Material*> materials;
 
 private:
-	std::vector <std::set <Mesh*>> materialGroup;
+	std::vector <std::vector <Mesh*>> materialGroup;
 
 	unsigned int vao, vbo, ibo;
 
