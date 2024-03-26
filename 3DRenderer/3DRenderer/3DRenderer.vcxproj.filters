@@ -204,5 +204,8 @@
     <Image Include="test.png">
       <Filter>res\textures</Filter>
     </Image>
+    <Image Include="waterNormal.jpg">
+      <Filter>res\textures</Filter>
+    </Image>
   </ItemGroup>
 </Project>

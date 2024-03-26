@@ -71,16 +71,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\Dependencies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\Dependencies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\Dependencies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\Dependencies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\bosse\Documents\portfolio\OpenglRenderer\3DRenderer\Dependencies\include;$(IncludePath)</IncludePath>
@@ -93,11 +93,14 @@
       <PreprocessorDefinitions>GLEW_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;libglew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,11 +128,14 @@
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;libglew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -214,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="test.png" />
+    <Image Include="waterNormal.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

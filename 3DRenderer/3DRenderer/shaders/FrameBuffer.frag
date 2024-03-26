@@ -19,11 +19,11 @@ vec2 offsets[25] = vec2[]
 
 float kernel[25] = float[]
 (
-	1f/256, 1f/128, 1f/64, 1f/128, 1f/256,
-	1f/128, 1f/32,  1f/16, 1f/32,  1f/128,
-	1f/64,  1f/16,  1f/4,  1f/16,  1f/64,
-	1f/128, 1f/32,  1f/16, 1f/32,  1f/128,
-	1f/256, 1f/128, 1f/64, 1f/128, 1f/256
+	1.f/256, 1.f/128, 1.f/64, 1.f/128, 1.f/256,
+	1.f/128, 1.f/32,  1.f/16, 1.f/32,  1.f/128,
+	1.f/64,  1.f/16,  1.f/4,  1.f/16,  1.f/64,
+	1.f/128, 1.f/32,  1.f/16, 1.f/32,  1.f/128,
+	1.f/256, 1.f/128, 1.f/64, 1.f/128, 1.f/256
 );
 
 void main()
@@ -34,7 +34,7 @@ void main()
 	for (int i = 0; i < 25; i++)
 	{
 		vec4 texColor = texture(u_ScreenTex, v_TexCoord.xy + pixelSize * offsets[i]);
-		texColor = mix(texColor * 1.5f, mix(vec4(0.5, 0.5, 0.5, 1.0), texColor, 5f), 0.5f);
+		texColor = mix(texColor * 1.5f, mix(vec4(0.5, 0.5, 0.5, 1.0), texColor, 5.f), 0.5f);
 		col += vec3(texColor) * kernel[i];
 	}
 	color += vec4(col, 1.0f)*0.1;

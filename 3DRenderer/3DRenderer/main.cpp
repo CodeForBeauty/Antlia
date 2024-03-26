@@ -53,7 +53,7 @@ int main(void)
 
     Scene scene = Scene();
 
-
+    
     Material* mat1 = new Material();
     mat1->SetMetalic(0.0f);
     mat1->SetRoughness(1.0f);
@@ -73,7 +73,7 @@ int main(void)
     dirLight->SetRotation({ 0, 0, 0 });
     pointLight->SetPosition({ 0, 5, 0 });
 
-
+    
     mat1->LoadTexture("test.png", TEXTURE_ALBEDO);
     mat1->LoadTexture("waterNormal.jpg", TEXTURE_NORMAL);
 
@@ -93,7 +93,7 @@ int main(void)
     lm::vec3 i = {};
     lm::vec3 i1 = {};
 
-    std::vector<Mesh*> objs = load::loadObj("C:/Users/bosse/Desktop/cube.obj", &scene);
+    std::vector<Mesh*> objs = load::loadObj("TestModels/cube.obj", &scene);
     Mesh* suzanne = objs[0];
 
 
