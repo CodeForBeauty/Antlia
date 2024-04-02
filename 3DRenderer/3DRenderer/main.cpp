@@ -130,31 +130,31 @@ int main(void)
         glfwGetCursorPos(window, &xpos, &ypos);
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
-            scene.preview.Move(scene.preview.forward * 0.05f);
+            scene.preview.Move(scene.preview.forward * 5.0f * deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         {
-            scene.preview.Move(scene.preview.forward * -0.05f);
+            scene.preview.Move(scene.preview.forward * -5.0f * deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            scene.preview.Move(scene.preview.right * -0.05f);
+            scene.preview.Move(scene.preview.right * -5.0f * deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         {
-            scene.preview.Move(scene.preview.right * 0.05f);
+            scene.preview.Move(scene.preview.right * 5.0f * deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
         {
-            scene.preview.Move({ 0, 0.05, 0 });
+            scene.preview.Move({ 0, 5.0f * deltaTime, 0 });
         }
         if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         {
-            scene.preview.Move({ 0, -0.05, 0 });
+            scene.preview.Move({ 0, -5.0f * deltaTime, 0 });
         }
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS && (xpos != lastxpos || ypos != lastypos))
         {
-            scene.preview.Rotate({ (float)(lastypos - ypos) * 10 * deltaTime, (float)(xpos - lastxpos) * 10 * deltaTime, 0 });
+            scene.preview.Rotate({ (float)(lastypos - ypos) * 30 * deltaTime, (float)(xpos - lastxpos) * 30 * deltaTime, 0 });
         }
         lastxpos = xpos;
         lastypos = ypos;
@@ -171,7 +171,8 @@ int main(void)
 
         glfwSetWindowTitle(window, title.c_str());
 
-        i.y += 1;
+        i.y += 10.0f * deltaTime;
+        i.x += 10.0f * deltaTime;
         i1.y += 1;
         suzanne->SetRotation(i);
 
